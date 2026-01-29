@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                        'bg-dashboard': '#14110F',
+                        'card-bg': '#1C1917',
+                        'border-color': '#292524',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body style="background: #f8fafc; color: #1e293b;">
+    <aside style="width: 240px; background: #0f172a; position: fixed; height: 100vh; padding: 24px; color: white;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 10px;">
+            <img src="https://api.iconify.design/lucide:spice.svg?color=%23ff7e21" alt="" width="32">
+            <div>
+                <h3 style="font-size: 16px; margin: 0; color: white;">Caravan</h3>
+                <small style="font-size: 9px; color: #94a3b8; letter-spacing: 0.5px;">ADMIN PANEL</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="#" onclick="switchView('overview')" id="nav-overview"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: white; background: rgba(255, 255, 255, 0.1); font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:layout-grid.svg?color=white" width="18" alt="">
+                Overview
+            </a>
+            <a href="#" onclick="switchView('users')" id="nav-users"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:users.svg?color=%2394a3b8" width="18" alt="">
+                Manage Users
+            </a>
+            <a href="#"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%2394a3b8" width="18" alt="">
+                Transactions
+            </a>
+            <a href="#"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%2394a3b8" width="18" alt="">
+                Global Analytics
+            </a>
+            <a href="#"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:file-text.svg?color=%2394a3b8" width="18" alt="">
+                Export Logs
+            </a>
+            <a href="#"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2394a3b8" width="18" alt="">
+                Security
+            </a>
+        </nav> <!-- ... end nav update ... -->
+        <!-- Script moved to bottom -->
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main style="margin-left: 240px; padding: 40px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <div>
+                <h1 style="font-size: 28px; font-weight: 700; margin: 0;">System Overview</h1>
+                <p style="color: #64748b; margin-top: 4px;">Real-time performance metrics for Caravan of Flavours.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <!-- System Online Badge Removed -->
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; font-size: 14px;">Admin</div>
+                        <div style="font-size: 12px; color: #64748b;">Super Administrator</div>
+                    </div>
+                    <div
+                        style="width: 44px; height: 44px; background: #ff7e21; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                        AD</div>
+                </div>
+            </div>
+        </header>
+
+        <div id="dashboard-overview">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px;">
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #eff6ff; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:users.svg?color=%233b82f6" width="24" alt="">
+                        </div>
+                        <span style="color: #22c55e; font-size: 12px; font-weight: 700;">Live</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Total Users</div>
+                    <div id="total-users" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #fdf2f8; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:credit-card.svg?color=%23ec4899" width="24"
+                                alt="">
+                        </div>
+                        <span style="color: #22c55e; font-size: 12px; font-weight: 700;">Global</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Total Revenue</div>
+                    <div id="total-revenue" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #f0fdf4; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%2322c55e" width="24"
+                                alt="">
+                        </div>
+                        <span style="color: #64748b; font-size: 12px;">Active</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Active Orders</div>
+                    <div id="active-orders" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #fffbeb; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:shield-alert.svg?color=%23f59e0b" width="24"
+                                alt="">
+                        </div>
+                        <span style="color: #f59e0b; font-size: 12px; font-weight: 700;">Needs Action</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Pending Approvals</div>
+                    <div id="pending-approvals" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+            </div>
+
+            <!-- Charts & User Insights -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 40px;">
+                <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Global Sales Performance</h3>
+                        <select
+                            style="background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                            <option>Last 12 Months</option>
+                            <option>Last 30 Days</option>
+                        </select>
+                    </div>
+                    <canvas id="salesChart" height="300" style="max-height: 300px;"></canvas>
+                </div>
+
+                <div style="background: #0f172a; border-radius: 20px; padding: 32px; color: white;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 24px 0;">User Insights</h3>
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- Pending Verifications Removed -->
+
+                        <!-- Top Farmers -->
+                        <div>
+                            <h4 style="font-size: 13px; font-weight: 700; color: #94a3b8; margin: 0 0 12px 0;">Top
+                                Farmers
+                                (Revenue)</h4>
+                            <div id="top-farmers-list" style="display: flex; flex-direction: column; gap: 12px;">
+                                <div style="font-size: 12px; color: #64748b;">Loading...</div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Registrations -->
+                        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                            <h4 style="font-size: 13px; font-weight: 700; color: #94a3b8; margin: 0 0 12px 0;">Newest
+                                Registrations</h4>
+                            <div id="recent-registrations-list"
+                                style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="font-size: 12px; color: #64748b;">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Users Section (Hidden by Default) -->
+        <div id="manage-users-view" style="display: none;">
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 700;">User Management</h2>
+                    <input type="text" placeholder="Search users..."
+                        style="border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 8px; font-size: 14px;">
+                </div>
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">User</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Role</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Status</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Joined</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Recent User Activity</h3>
+                <button
+                    style="color: #3b82f6; background: transparent; border: none; font-weight: 700; font-size: 13px; cursor: pointer;">View
+                    All Logs</button>
+            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <th style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700;">
+                            USER</th>
+                        <th style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700;">
+                            ACTION</th>
+                        <th style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700;">
+                            TIMESTAMP</th>
+                        <th style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700;">
+                            STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="activity-list">
+                    <tr style="border-bottom: 1px solid #f8fafc;">
+                        <td colspan="4" style="padding: 40px; text-align: center;">
+                            <img src="https://api.iconify.design/lucide:loader-2.svg"
+                                class="w-8 h-8 animate-spin mx-auto text-orange-500" alt="">
+                            <p style="color: #94a3b8; font-size: 13px; margin-top: 10px;">Syncing global logs...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function switchView(viewName) {
+            const overview = document.getElementById('dashboard-overview');
+            const manageUsers = document.getElementById('manage-users-view');
+            const navOverview = document.getElementById('nav-overview');
+            const navUsers = document.getElementById('nav-users');
+
+            if (viewName === 'users') {
+                overview.style.display = 'none';
+                manageUsers.style.display = 'block';
+
+                // Active Styling
+                navUsers.style.color = 'white';
+                navUsers.style.background = 'rgba(255, 255, 255, 0.1)';
+                navUsers.querySelector('img').src = navUsers.querySelector('img').src.replace('%2394a3b8', 'white');
+
+                navOverview.style.color = '#94a3b8';
+                navOverview.style.background = 'transparent';
+                navOverview.querySelector('img').src = navOverview.querySelector('img').src.replace('white', '%2394a3b8');
+
+                loadUsers();
+            } else {
+                overview.style.display = 'block';
+                manageUsers.style.display = 'none';
+
+                // Active Styling
+                navOverview.style.color = 'white';
+                navOverview.style.background = 'rgba(255, 255, 255, 0.1)';
+                navOverview.querySelector('img').src = navOverview.querySelector('img').src.replace('%2394a3b8', 'white');
+
+                navUsers.style.color = '#94a3b8';
+                navUsers.style.background = 'transparent';
+                navUsers.querySelector('img').src = navUsers.querySelector('img').src.replace('white', '%2394a3b8');
+            }
+        }
+
+        async function loadUsers() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">Loading users...</td></tr>';
+
+            try {
+                console.log('Fetching users from ../../backend/api/admin/get-users.php');
+                const response = await fetch('../../backend/api/admin/get-users.php');
+                console.log('Response status:', response.status);
+
+                const rawText = await response.text();
+                console.log('Raw response:', rawText);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${rawText.substring(0, 50)}...`);
+                }
+
+                let result;
+                try {
+                    result = JSON.parse(rawText);
+                } catch (e) {
+                    throw new Error('Invalid JSON response. The server probably returned a PHP error.');
+                }
+
+                if (result.success) {
+                    tbody.innerHTML = '';
+                    if (result.users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">No users found.</td></tr>';
+                        return;
+                    }
+
+                    result.users.forEach(user => {
+                        const roleColor = user.role === 'farmer' ? '#22c55e' : (user.role === 'admin' ? '#ff0000' : '#3b82f6');
+                        const isVerified = user.is_verified == 1;
+                        const statusBadge = isVerified
+                            ? '<span style="color:#22c55e; font-weight:700; font-size:11px; background:#dcfce7; padding:4px 8px; border-radius:4px;">VERIFIED</span>'
+                            : '<span style="color:#eab308; font-weight:700; font-size:11px; background:#fef9c3; padding:4px 8px; border-radius:4px;">PENDING</span>';
+
+                        tbody.innerHTML += `
+                        <tr style="border-bottom: 1px solid #f8fafc; hover:background:#f1f5f9;">
+                            <td style="padding: 16px;">
+                                <div style="font-weight:600;">${user.full_name}</div>
+                                <div style="font-size:12px; color:#64748b;">${user.email}</div>
+                            </td>
+                            <td style="padding: 16px;">
+                                <span style="color:${roleColor}; font-weight:600; text-transform:uppercase; font-size:12px;">${user.role}</span>
+                            </td>
+                            <td style="padding: 16px;">${statusBadge}</td>
+                            <td style="padding: 16px; color:#64748b; font-size:13px;">${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td style="padding: 16px;">
+                                <button style="color:#3b82f6; font-weight:600; font-size:13px; margin-right:8px;">Edit</button>
+                                <button style="color:#ff0000; font-weight:600; font-size:13px;">Block</button>
+                            </td>
+                        </tr>
+                    `;
+                    });
+                } else {
+                    console.error('Users load failed:', result.message);
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Failed to load users: ' + result.message + '</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error loading users:", error);
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Connection Error: ' + error.message + '</td></tr>';
+            }
+        }
+
+        // Check Admin Auth (Simple client-side check, real protection is on backend)
+        // In a real app, we'd check a session token or cookie.
+
+        async function loadAdminStats() {
+            try {
+                // Pointing to absolute path to avoid confusion if files are moved
+                // Trying analytics first, if not found (404), maybe it's in admin
+                // But we confirmed it is in analytics via view_file.
+                const response = await fetch('../../backend/api/analytics/get-admin-stats.php');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update Top Cards
+                    // Use optional chaining just in case
+                    const stats = result.stats || {};
+                    document.getElementById('total-users').innerText = (stats.total_users || 0).toLocaleString();
+                    document.getElementById('total-revenue').innerText = '$' + parseFloat(stats.revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Fixed: total_revenue -> revenue
+                    document.getElementById('active-orders').innerText = (stats.active_orders || 0).toLocaleString();
+                    document.getElementById('pending-approvals').innerText = (stats.pending_approvals || 0).toLocaleString();
+
+                    // 2. Top Farmers
+                    const topFarmersList = document.getElementById('top-farmers-list');
+                    if (topFarmersList) {
+                        topFarmersList.innerHTML = '';
+                        if (result.top_farmers && result.top_farmers.length > 0) {
+                            result.top_farmers.forEach(farmer => {
+                                topFarmersList.innerHTML += `
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 32px; height: 32px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #94a3b8; font-size: 12px;">
+                                            ${farmer.full_name.charAt(0)}
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 13px; font-weight: 700; color: white;">${farmer.full_name}</div>
+                                            <div style="font-size: 11px; color: #64748b;">$${parseFloat(farmer.total_sales).toLocaleString()} Sales</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            topFarmersList.innerHTML = '<div style="font-size: 12px; color: #64748b;">No sales data yet.</div>';
+                        }
+                    }
+
+                    // 3. Recent Registrations
+                    const recentRegList = document.getElementById('recent-registrations-list');
+                    if (recentRegList) {
+                        recentRegList.innerHTML = '';
+                        if (result.recent_registrations && result.recent_registrations.length > 0) {
+                            result.recent_registrations.forEach(user => {
+                                const roleColor = user.role === 'farmer' ? '#22c55e' : '#3b82f6';
+                                const timeAgo = new Date(user.created_at).toLocaleDateString();
+
+                                recentRegList.innerHTML += `
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 6px; height: 6px; border-radius: 50%; background: ${roleColor};"></div>
+                                            <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">${user.full_name}</span>
+                                        </div>
+                                        <span style="font-size: 10px; color: #64748b;">${timeAgo}</span>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            recentRegList.innerHTML = '<div style="font-size: 12px; color: #64748b;">No recent users.</div>';
+                        }
+                    }
+
+                    if (result.sales_chart) {
+                        renderSalesChart(result.sales_chart.labels, result.sales_chart.data);
+                    }
+
+                    // Render Recent Activity
+                    const activityList = document.getElementById('activity-list');
+                    if (activityList) {
+                        activityList.innerHTML = '';
+
+                        if (result.recent_activity && result.recent_activity.length > 0) {
+                            result.recent_activity.forEach(log => {
+                                const date = new Date(log.timestamp).toLocaleString();
+                                let statusColor = '#16a34a'; // Green
+                                let statusText = 'SUCCESS';
+                                let icon = 'lucide:shopping-bag';
+
+                                if (log.status === 'pending') { statusColor = '#ca8a04'; statusText = 'PENDING'; }
+                                if (log.status === 'cancelled') { statusColor = '#dc2626'; statusText = 'FAILED'; icon = 'lucide:x-circle'; }
+
+                                activityList.innerHTML += `
+                                    <tr style="border-bottom: 1px solid #f8fafc;">
+                                        <td style="padding: 20px;">
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
+                                                    <img src="https://api.iconify.design/lucide:user.svg?color=%2364748b" width="16">
+                                                </div>
+                                                <div style="font-size: 14px; font-weight: 700;">${log.user}</div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 20px; font-size: 13px;">${log.action} - $${parseFloat(log.total_price).toFixed(2)}</td>
+                                        <td style="padding: 20px; font-size: 13px; color: #64748b;">${date}</td>
+                                        <td style="padding: 20px;">
+                                            <span style="background: ${statusColor}15; color: ${statusColor}; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700;">${statusText}</span>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            activityList.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #94a3b8;">No recent activity found.</td></tr>';
+                        }
+                    }
+
+                } else {
+                    console.error('Failed to load stats:', result.message);
+                }
+            } catch (error) {
+                console.error('Connection error:', error);
+            }
+        }
+
+        let salesChart;
+
+        function renderSalesChart(labels, data) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            if (salesChart) {
+                salesChart.destroy();
+            }
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Data'],
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: data.length > 0 ? data : [0],
+                        borderColor: '#ff7e21',
+                        backgroundColor: 'rgba(255, 126, 33, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

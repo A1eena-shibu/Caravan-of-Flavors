@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auctions | Farmer Dashboard | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="farmer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="inventory.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="18" alt="">
+                Inventory
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="exports.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
+                Exports
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=white" width="18" alt="">
+                Auctions
+            </a>
+            <a href="analysis.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%231c1917" width="18" alt="">
+                Analysis
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px; min-height: 100vh;">
+        <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
+            <div>
+                <h1 style="font-size: 32px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">Auction House
+                </h1>
+                <p style="font-size: 15px; color: #1c1917; margin-top: 4px;">Launch and manage your premium spice
+                    auctions.</p>
+            </div>
+
+            <button onclick="openAuctionModal()"
+                class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center gap-3 transition-all shadow-xl shadow-primary/20 transform hover:-translate-y-0.5 active:scale-95">
+                <img src="https://api.iconify.design/lucide:plus-circle.svg?color=white" width="20" alt="">
+                LAUNCH NEW AUCTION
+            </button>
+        </header>
+
+        <!-- Stats Row -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+            <div
+                style="background: white; border: 1px solid #e7e5e4; padding: 24px; border-radius: 24px; display: flex; align-items: center; gap: 16px;">
+                <div
+                    style="width: 48px; height: 48px; background: #fff7ed; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://api.iconify.design/lucide:activity.svg?color=%23FF7E21" width="24" alt="">
+                </div>
+                <div>
+                    <p style="font-size: 12px; font-weight: 700; color: #a8a29e; text-transform: uppercase;">Active
+                        Auctions</p>
+                    <p id="active-count" style="font-size: 20px; font-weight: 700; color: #1c1917;">0</p>
+                </div>
+            </div>
+            <div
+                style="background: white; border: 1px solid #e7e5e4; padding: 24px; border-radius: 24px; display: flex; align-items: center; gap: 16px;">
+                <div
+                    style="width: 48px; height: 48px; background: #f0fdf4; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://api.iconify.design/lucide:check-circle.svg?color=%2310b981" width="24" alt="">
+                </div>
+                <div>
+                    <p style="font-size: 12px; font-weight: 700; color: #a8a29e; text-transform: uppercase;">Competed
+                    </p>
+                    <p id="completed-count" style="font-size: 20px; font-weight: 700; color: #1c1917;">0</p>
+                </div>
+            </div>
+            <div
+                style="background: white; border: 1px solid #e7e5e4; padding: 24px; border-radius: 24px; display: flex; align-items: center; gap: 16px;">
+                <div
+                    style="width: 48px; height: 48px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://api.iconify.design/lucide:users.svg?color=%233b82f6" width="24" alt="">
+                </div>
+                <div>
+                    <p style="font-size: 12px; font-weight: 700; color: #a8a29e; text-transform: uppercase;">Total Bids
+                    </p>
+                    <p id="total-bids-count" style="font-size: 20px; font-weight: 700; color: #1c1917;">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auctions List Title -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: #1c1917;">Live & Recent Auctions</h2>
+            <div style="display: flex; gap: 8px;">
+                <span
+                    class="bg-white border border-stone-200 px-4 py-1.5 rounded-full text-xs font-bold text-stone-600">All</span>
+                <span
+                    class="bg-white border border-transparent px-4 py-1.5 rounded-full text-xs font-bold text-stone-400">Active</span>
+                <span
+                    class="bg-white border border-transparent px-4 py-1.5 rounded-full text-xs font-bold text-stone-400">Completed</span>
+            </div>
+        </div>
+
+        <!-- Auctions List Grid -->
+        <div id="auctions-list"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;">
+            <div class="col-span-full py-20 text-center bg-white border border-dashed border-stone-200 rounded-[32px]">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%23a8a29e" width="48" class="mx-auto mb-4"
+                    alt="">
+                <p style="color: #a8a29e; font-size: 15px;">Setting up your auction floor...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Auction Modal -->
+    <div id="createAuctionModal"
+        onclick="if(event.target === this) { this.classList.add('hidden'); document.body.style.overflow = 'auto'; }"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <div id="auctionModalContent"
+            class="bg-white p-10 rounded-[40px] w-full max-w-xl relative shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <button
+                onclick="document.getElementById('createAuctionModal').classList.add('hidden'); document.body.style.overflow = 'auto';"
+                class="absolute top-8 right-8 text-gray-400 hover:text-gray-600 transition-colors">
+                <img src="https://api.iconify.design/lucide:x.svg" width="28" alt="">
+            </button>
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Launch Auction</h2>
+                <p class="text-gray-500 mt-2 text-sm">Provide details for your premium spice harvest.</p>
+            </div>
+
+            <form id="createAuctionForm" onsubmit="createAuction(event)" class="space-y-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="col-span-full">
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Product
+                            Name</label>
+                        <input type="text" name="product_name" required placeholder="e.g. Premium Grade-A Saffron"
+                            class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Detailed
+                        Description</label>
+                    <textarea name="description" rows="3"
+                        placeholder="Harvest methods, quality notes, origin details..."
+                        class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Product
+                        Image</label>
+                    <div id="image-dropzone" onclick="document.getElementById('product-image').click()"
+                        class="relative border-2 border-dashed border-stone-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-orange-50/10 transition-all group overflow-hidden">
+                        <input type="file" id="product-image" name="image" accept="image/*" class="hidden"
+                            onchange="previewImage(this)">
+                        <div id="preview-container"
+                            class="hidden absolute inset-0 bg-white rounded-2xl overflow-hidden">
+                            <img id="image-preview" src="#" alt="Preview" class="w-full h-full object-cover">
+                        </div>
+                        <div id="upload-placeholder" class="text-center">
+                            <img src="https://api.iconify.design/lucide:image.svg"
+                                class="w-8 h-8 mx-auto mb-2 text-stone-400 group-hover:text-primary transition-colors"
+                                alt="">
+                            <p class="text-xs font-semibold text-stone-600">Click to upload image</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label
+                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Quantity</label>
+                        <div class="relative">
+                            <input type="number" step="0.01" name="quantity" required placeholder="50.00"
+                                class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold">
+                            <select name="unit"
+                                class="absolute right-2 top-2 bottom-2 bg-white border border-stone-100 rounded-xl px-2 text-xs font-bold text-stone-500">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="ton">ton</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Starting
+                            Price ($)</label>
+                        <input type="number" step="0.01" name="starting_price" required placeholder="250.00"
+                            class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Start
+                            Timing</label>
+                        <input type="datetime-local" name="start_time" required
+                            class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">End
+                            Timing</label>
+                        <input type="datetime-local" name="end_time" required
+                            class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold">
+                    </div>
+                </div>
+
+                <div class="col-span-full pt-4">
+                    <button type="submit"
+                        class="w-full bg-primary hover:bg-primary-hover text-white py-5 rounded-[24px] font-bold text-sm tracking-widest shadow-2xl shadow-primary/30 transition-all transform hover:-translate-y-1 active:scale-95">
+                        OPEN AUCTION TO GLOBAL MARKET
+                    </button>
+                    <p class="text-center text-[10px] text-gray-400 mt-4 font-bold uppercase tracking-tighter">By
+                        launching, you agree to the auction house platform terms</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Auction Details Modal -->
+    <div id="detailsModal"
+        onclick="if(event.target === this) { this.classList.add('hidden'); document.body.style.overflow = 'auto'; }"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-6">
+        <div
+            class="bg-white p-0 rounded-[40px] w-full max-w-2xl relative shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
+
+
+            <div class="h-64 bg-stone-100 relative">
+                <img id="detailImage" src="" class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8">
+                    <h2 id="detailTitle" class="text-3xl font-bold text-white mb-1"></h2>
+                    <p id="detailSubtitle" class="text-white/70 text-sm font-semibold uppercase tracking-widest"></p>
+                </div>
+            </div>
+
+            <div class="p-8 space-y-8">
+                <div>
+                    <h4 class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-3">About this harvest
+                    </h4>
+                    <p id="detailDesc" class="text-stone-600 leading-relaxed"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-stone-50 p-6 rounded-3xl border border-stone-100">
+                        <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Economics</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-stone-500">Floor Price</span>
+                                <span id="detailFloorPrice" class="font-bold text-stone-900"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-stone-500">Current High Bid</span>
+                                <span id="detailCurrentBid" class="font-bold text-primary text-lg"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-50 p-6 rounded-3xl border border-stone-100 flex flex-col justify-center">
+                        <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Timeline</p>
+                        <div class="flex items-center gap-3 text-stone-900 font-bold" id="detailTimeline">
+                            <img src="https://api.iconify.design/lucide:clock.svg?color=%23FF7E21" width="20">
+                            <span class="text-sm"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button
+                        onclick="document.getElementById('detailsModal').classList.add('hidden'); document.body.style.overflow = 'auto';"
+                        class="flex-1 px-8 py-4 rounded-2xl border border-stone-200 text-stone-900 font-bold text-sm hover:bg-stone-100 transition-all">
+                        CLOSE
+                    </button>
+                    <button id="deleteAuctionBtn"
+                        class="flex-1 px-8 py-4 rounded-2xl bg-red-50 text-red-600 font-bold text-sm hover:bg-red-100 transition-all flex items-center justify-center gap-2">
+                        <img src="https://api.iconify.design/lucide:trash-2.svg?color=%23dc2626" width="18">
+                        DELETE AUCTION
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allAuctions = [];
+
+        function showAuctionDetails(id) {
+            const auction = allAuctions.find(a => a.id == id);
+            if (!auction) return;
+
+            document.getElementById('detailTitle').innerText = auction.product_name;
+            document.getElementById('detailSubtitle').innerText = `${auction.quantity}${auction.unit} • #AUC-${auction.id}`;
+            document.getElementById('detailDesc').innerText = auction.description || 'No detailed description available for this harvest.';
+            document.getElementById('detailFloorPrice').innerText = `$${parseFloat(auction.starting_price).toFixed(2)}`;
+            document.getElementById('detailCurrentBid').innerText = `$${parseFloat(auction.current_bid).toFixed(2)}`;
+            document.getElementById('detailTimeline').querySelector('span').innerText = `Closing on ${new Date(auction.end_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+
+            const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
+            document.getElementById('detailImage').src = imgSrc;
+
+            const deleteBtn = document.getElementById('deleteAuctionBtn');
+            deleteBtn.onclick = () => deleteAuction(auction.id);
+
+            document.getElementById('detailsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        async function deleteAuction(id) {
+            if (!await showConfirm('Are you sure you want to permanently delete this auction? This will also remove any placed bids.')) return;
+
+            try {
+                const response = await fetch('../../backend/api/auctions/delete-auction.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ auction_id: id })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('detailsModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    loadAuctions();
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+            }
+        }
+
+        function openAuctionModal() {
+            const modal = document.getElementById('createAuctionModal');
+            const content = document.getElementById('auctionModalContent');
+            modal.classList.remove('hidden');
+            content.scrollTop = 0;
+            document.body.style.overflow = 'hidden';
+        }
+
+        async function logout() {
+            try {
+                await fetch('../../backend/api/auth/logout.php');
+                window.location.href = '../auth/login.html';
+                document.body.style.overflow = 'auto';
+            } catch (error) { console.error('Logout error:', error); }
+        }
+
+        async function createAuction(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            btn.disabled = true;
+            btn.innerText = "OPENING AUCTION...";
+
+            try {
+                const response = await fetch('../../backend/api/auctions/create-auction.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('createAuctionModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    loadAuctions();
+                    e.target.reset();
+                    document.getElementById('preview-container').classList.add('hidden');
+                    document.getElementById('upload-placeholder').classList.remove('hidden');
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating auction:', error);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('image-preview');
+            const container = document.getElementById('preview-container');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function loadAuctions() {
+            try {
+                const response = await fetch('../../backend/api/auctions/get-farmer-auctions.php');
+                const result = await response.json();
+                const list = document.getElementById('auctions-list');
+
+                if (result.success && result.auctions.length > 0) {
+                    allAuctions = result.auctions;
+                    list.innerHTML = '';
+                    let active = 0, completed = 0;
+
+                    result.auctions.forEach(auction => {
+                        if (auction.status === 'active') active++;
+                        if (auction.status === 'completed') completed++;
+
+                        const statusColor = auction.status === 'active' ? '#10b981' : '#1c1917';
+                        const badgeBg = auction.status === 'active' ? '#f0fdf4' : '#f5f5f4';
+
+                        list.innerHTML += `
+                            <div class="bg-white border border-stone-200 rounded-[32px] overflow-hidden hover:shadow-2xl transition-all group">
+                                <div class="relative h-48 overflow-hidden bg-stone-100">
+                                    <img src="${auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80'}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90">
+                                    <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full text-[10px] font-bold text-stone-900 border border-stone-100 shadow-sm">
+                                        ID: #AUC-${auction.id}
+                                    </div>
+                                    <div class="absolute bottom-4 left-4 flex gap-2">
+                                        <span style="background: ${badgeBg}; color: ${statusColor};" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                            ${auction.status}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="p-8">
+                                    <h3 class="font-bold text-xl text-stone-900 mb-2 truncate">${auction.product_name}</h3>
+                                    <p class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-6">${auction.quantity}${auction.unit} AVAILABLE</p>
+                                    
+                                    <div class="grid grid-cols-2 gap-4 mb-6">
+                                        <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100">
+                                            <p class="text-[9px] font-bold text-stone-400 uppercase tracking-tighter mb-1">Floor Price</p>
+                                            <p class="text-sm font-bold text-stone-800">$${parseFloat(auction.starting_price).toFixed(2)}</p>
+                                        </div>
+                                        <div class="bg-primary/5 p-3 rounded-2xl border border-primary/10">
+                                            <p class="text-[9px] font-bold text-primary/60 uppercase tracking-tighter mb-1">Current Bid</p>
+                                            <p class="text-sm font-bold text-primary">$${parseFloat(auction.current_bid).toFixed(2)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-6 border-t border-stone-100 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://api.iconify.design/lucide:clock.svg?color=%23a8a29e" width="14" alt="">
+                                            <span class="text-[11px] font-bold text-stone-400">${new Date(auction.end_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                        </div>
+                                        <button onclick="showAuctionDetails('${auction.id}')" class="text-[11px] font-bold text-stone-900 uppercase tracking-widest hover:text-primary transition-colors">Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    document.getElementById('active-count').innerText = active;
+                    document.getElementById('completed-count').innerText = completed;
+                } else {
+                    list.innerHTML = `
+                        <div class="col-span-full py-20 text-center bg-white border border-dashed border-stone-200 rounded-[32px]">
+                            <img src="https://api.iconify.design/lucide:gavel.svg?color=%23a8a29e" width="48" class="mx-auto mb-4" alt="">
+                            <h4 class="font-bold text-stone-800 text-lg mb-2">No active auctions</h4>
+                            <p style="color: #a8a29e; font-size: 14px;">Your auction floor is currently quiet. <br>Create a new listing to start trading.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading auctions:', error);
+            }
+        }
+
+        window.onload = loadAuctions;
+    </script>
+</body>
+
+</html>

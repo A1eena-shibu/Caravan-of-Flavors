@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Analysis | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes growUp {
+            from {
+                height: 0;
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .animate-bar {
+            animation: growUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .chart-tooltip {
+            position: fixed;
+            background: #1c1917;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="farmer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="inventory.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="18" alt="">
+                Inventory
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="exports.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
+                Exports
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="analysis.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=white" width="18" alt="">
+                Analysis
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px; min-height: 100vh;">
+        <header style="margin-bottom: 32px;">
+            <h1 style="font-size: 28px; font-weight: 700; color: #1c1917;">Business Analysis</h1>
+            <p style="font-size: 15px; color: #1c1917; margin-top: 4px;">Deep dive into your sales and inventory
+                performance.</p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 32px;">
+            <!-- Sales Trends (Relocated) -->
+            <div
+                style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; display: flex; flex-direction: column;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #1c1917;">Sales Performance</h3>
+                        <p style="font-size: 14px; color: #1c1917; margin-top: 4px;">Revenue trends over the last 4
+                            weeks</p>
+                    </div>
+                </div>
+                <div id="sales-chart"
+                    style="flex: 1; display: flex; align-items: flex-end; gap: 16px; min-height: 200px; padding-bottom: 20px; border-bottom: 1px solid #f5f5f4;">
+                    <p style="margin: auto; color: #a8a29e; font-size: 12px;">No sales data available yet.</p>
+                </div>
+                <div id="graph-labels"
+                    style="display: flex; justify-content: space-between; margin-top: 12px; font-size: 11px; color: #a8a29e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <!-- Labels injected by JS -->
+                </div>
+            </div>
+
+            <!-- Top Products -->
+            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px;">
+                <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Top Products</h3>
+                <div id="top-products-list" style="display: flex; flex-direction: column; gap: 20px;">
+                    <p style="color: #a8a29e; font-size: 12px;">No sales data yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+            <!-- Order Status Distribution -->
+            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px;">
+                <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 24px;">Order Status
+                    Distribution</h3>
+                <div id="status-distribution" style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Status bars will go here -->
+                    <p style="color: #a8a29e; font-size: 12px;">No status data available.</p>
+                </div>
+            </div>
+
+            <!-- Satisfaction & Growth -->
+            <div
+                style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Customer
+                        Satisfaction</h3>
+                    <div id="rating-distribution" style="display: flex; flex-direction: column; gap: 12px;">
+                        <p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>
+                    </div>
+                </div>
+
+                <div style="padding-top: 24px; border-top: 1px solid #f5f5f4;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 14px; font-weight: 700; color: #1c1917;">Growth Target</h4>
+                        <span id="target-percentage"
+                            style="font-size: 12px; font-weight: 700; color: #FF7E21; background: #fff7ed; padding: 2px 8px; border-radius: 6px;">0%</span>
+                    </div>
+                    <div
+                        style="width: 100%; height: 12px; background: #f5f5f4; border-radius: 6px; overflow: hidden; margin-bottom: 8px;">
+                        <div id="target-progress"
+                            style="width: 0%; height: 100%; background: linear-gradient(90deg, #FF7E21 0%, #ff9d52 100%); border-radius: 6px; transition: width 1s ease-in-out;">
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; color: #1c1917;">Targeting $2,500 monthly revenue</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function logout() {
+            try {
+                await fetch('../../backend/api/auth/logout.php');
+                window.location.href = '../auth/login.html';
+            } catch (error) { console.error('Logout error:', error); }
+        }
+
+        window.onload = loadAnalysis;
+
+        async function loadAnalysis() {
+            try {
+                const response = await fetch('../../backend/api/analytics/get-farmer-stats.php');
+                const result = await response.json();
+
+                if (result.success) {
+                    // 1. Sales Chart
+                    const chart = document.getElementById('sales-chart');
+                    if (result.weekly_performance && result.weekly_performance.length > 0) {
+                        chart.innerHTML = '';
+                        const maxVal = Math.max(...result.weekly_performance.map(w => w.weekly_total)) || 1;
+                        const labelsContainer = document.getElementById('graph-labels');
+                        labelsContainer.innerHTML = '';
+
+                        // Create Tooltip Element if not exists
+                        let tooltip = document.getElementById('chart-tooltip');
+                        if (!tooltip) {
+                            tooltip = document.createElement('div');
+                            tooltip.id = 'chart-tooltip';
+                            tooltip.className = 'chart-tooltip';
+                            document.body.appendChild(tooltip);
+                        }
+
+                        result.weekly_performance.forEach((w, i) => {
+                            const height = (w.weekly_total / maxVal) * 100;
+                            const bar = document.createElement('div');
+                            bar.className = 'animate-bar';
+                            bar.style.flex = '1';
+                            bar.style.background = '#FF7E21';
+                            bar.style.height = `${Math.max(height, 5)}%`;
+                            bar.style.borderRadius = '8px 8px 0 0';
+                            bar.style.opacity = (0.5 + (i * 0.15)); // Gradient opacity
+                            bar.style.animationDelay = `${i * 0.1}s`;
+                            bar.style.cursor = 'pointer';
+                            bar.style.transition = 'all 0.2s';
+
+                            // Hover Effects
+                            bar.onmouseover = () => {
+                                bar.style.opacity = '1';
+                                bar.style.transform = 'scaleY(1.05)';
+                                tooltip.innerText = `$${parseFloat(w.weekly_total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                tooltip.classList.add('visible');
+                            };
+
+                            bar.onmousemove = (e) => {
+                                tooltip.style.left = `${e.clientX - (tooltip.offsetWidth / 2)}px`;
+                                tooltip.style.top = `${e.clientY - 40}px`;
+                            };
+
+                            bar.onmouseout = () => {
+                                bar.style.opacity = (0.5 + (i * 0.15));
+                                bar.style.transform = 'scaleY(1)';
+                                tooltip.classList.remove('visible');
+                            };
+
+                            chart.appendChild(bar);
+
+                            // Add Label
+                            const label = document.createElement('span');
+                            label.innerText = w.label;
+                            label.style.textAlign = 'center';
+                            label.style.flex = '1';
+                            labelsContainer.appendChild(label);
+                        });
+                    } else {
+                        chart.innerHTML = '<p style="margin: auto; color: #a8a29e; font-size: 12px;">No sales data available yet.</p>';
+                    }
+
+                    // 2. Top Products
+                    const topList = document.getElementById('top-products-list');
+                    if (result.top_products && result.top_products.length > 0) {
+                        topList.innerHTML = '';
+                        const maxRevenue = Math.max(...result.top_products.map(p => p.revenue)) || 1;
+                        result.top_products.forEach(product => {
+                            const width = (product.revenue / maxRevenue) * 100;
+                            topList.innerHTML += `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 8px;">
+                                        <span>${product.product_name}</span>
+                                        <span style="color: #FF7E21;">$${parseFloat(product.revenue).toLocaleString()}</span>
+                                    </div>
+                                    <div style="width: 100%; height: 8px; background: #f5f5f4; border-radius: 4px; overflow: hidden;">
+                                        <div style="width: ${width}%; height: 100%; background: #FF7E21; border-radius: 4px;"></div>
+                                    </div>
+                                    <p style="font-size: 11px; color: #a8a29e; margin-top: 4px;">${product.sales_count} sales generated</p>
+                                </div>`;
+                        });
+                    } else {
+                        topList.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No sales data yet.</p>';
+                    }
+
+                    // 3. Status Distribution
+                    const statusDist = document.getElementById('status-distribution');
+                    if (result.status_distribution && result.status_distribution.length > 0) {
+                        statusDist.innerHTML = '';
+                        const total = result.status_distribution.reduce((acc, curr) => acc + parseInt(curr.count), 0);
+                        result.status_distribution.forEach(s => {
+                            const percentage = Math.round((s.count / total) * 100);
+                            statusDist.innerHTML += `
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 100px; font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">${s.status}</div>
+                                    <div style="flex: 1; height: 12px; background: #f5f5f4; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: ${percentage}%; height: 100%; background: ${getStatusColor(s.status)};"></div>
+                                    </div>
+                                    <div style="width: 40px; text-align: right; font-size: 12px; font-weight: 700;">${percentage}%</div>
+                                </div>`;
+                        });
+                    } else {
+                        statusDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No status data.</p>';
+                    }
+
+                    // 4. Rating Distribution
+                    const ratingDist = document.getElementById('rating-distribution');
+                    if (result.rating_distribution) {
+                        ratingDist.innerHTML = '';
+                        const total = result.rating_distribution.reduce((acc, curr) => acc + parseInt(curr.count), 0) || 1;
+
+                        // Map results to a fixed 5-star list
+                        const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+                        result.rating_distribution.forEach(r => distribution[r.rating] = r.count);
+
+                        [5, 4, 3, 2, 1].forEach(star => {
+                            const count = distribution[star];
+                            const percentage = Math.round((count / total) * 100);
+                            ratingDist.innerHTML += `
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 45px; font-size: 12px; font-weight: 700; color: #1c1917; display: flex; align-items: center; gap: 4px;">
+                                        ${star} <img src="https://api.iconify.design/lucide:star.svg?color=%23eab308" width="12" alt="">
+                                    </div>
+                                    <div style="flex: 1; height: 8px; background: #f5f5f4; border-radius: 4px; overflow: hidden;">
+                                        <div style="width: ${percentage}%; height: 100%; background: #eab308; border-radius: 4px;"></div>
+                                    </div>
+                                    <span style="font-size: 11px; font-weight: 700; color: #1c1917; width: 30px; text-align: right;">${percentage}%</span>
+                                </div>`;
+                        });
+                    } else {
+                        ratingDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>';
+                    }
+
+                    // 5. Growth Target Logic
+                    const monthlyTarget = 2500;
+                    const revenue = result.stats.revenue;
+                    const progress = Math.min(Math.round((revenue / monthlyTarget) * 100), 100);
+
+                    document.getElementById('target-progress').style.width = `${progress}%`;
+                    document.getElementById('target-percentage').innerText = `${progress}%`;
+                }
+            } catch (error) {
+                console.error('Data error:', error);
+            }
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'confirmed': '#10B981',
+                'pending': '#FACC15',
+                'shipped': '#3B82F6',
+                'cancelled': '#EF4444',
+                'delivered': '#10B981'
+            };
+            return colors[status] || '#a8a29e';
+        }
+    </script>
+</body>
+
+</html>

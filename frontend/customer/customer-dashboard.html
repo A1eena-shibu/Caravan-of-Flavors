@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                        'bg-dashboard': '#14110F',
+                        'card-bg': '#1C1917',
+                        'border-color': '#292524',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="customer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=white" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="catalog.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:book-open.svg?color=%231c1917" width="18" alt="">
+                Catalog
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="cart.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Cart
+            </a>
+            <a href="bulk-orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:boxes.svg?color=%231c1917" width="18" alt="">
+                Bulk Order
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="market-analytics.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:trending-up.svg?color=%231c1917" width="18" alt="">
+                Analytics
+            </a>
+
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+        <script>
+            async function logout() {
+                try {
+                    await fetch('../../backend/api/auth/logout.php');
+                    window.location.href = '../auth/login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+
+            async function loadDashboard() {
+                try {
+                    const response = await fetch('../../backend/api/customers/get-stats.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const name = result.stats.full_name;
+                        document.getElementById('welcome-name').innerText = `Hello, ${name.split(' ')[0]}`;
+                        document.getElementById('user-name').innerText = name;
+
+                        const avatarEl = document.getElementById('user-avatar');
+                        if (result.stats.profile_image) {
+                            avatarEl.innerHTML = `<img src="${result.stats.profile_image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                            avatarEl.style.background = 'transparent';
+                        } else {
+                            avatarEl.innerText = name.split(' ').map(n => n[0]).join('').toUpperCase();
+                        }
+                        document.getElementById('spice-points').innerText = result.stats.spice_points.toLocaleString();
+                        document.getElementById('active-shipments-text').innerText = `${result.stats.active_orders} Active Shipments`;
+
+                        const list = document.getElementById('active-orders-list');
+                        if (result.recent_orders.length > 0) {
+                            list.innerHTML = '';
+                            result.recent_orders.forEach(order => {
+                                list.innerHTML += `
+                                    <div style="border: 1px solid #e7e5e4; border-radius: 12px; padding: 20px; position: relative;">
+                                        <div style="font-size: 11px; color: #1c1917; margin-bottom: 4px;">ORDER #ORD-${order.id.toString().padStart(4, '0')}</div>
+                                        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">${order.product_name}</h3>
+                                        <div style="margin-bottom: 8px;">
+                                            <div style="font-size: 11px; color: #1c1917; margin-bottom: 4px;">Status</div>
+                                            <div style="font-size: 13px; font-weight: 700; color: #f97316;">${order.status.toUpperCase()}</div>
+                                        </div>
+                                        <div style="height: 2px; background: #e7e5e4; margin: 12px 0;"></div>
+                                        <div style="font-size: 11px; color: #1c1917; display: flex; align-items: center; gap: 6px;">
+                                            <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="12">
+                                            Total: $${parseFloat(order.total_price).toFixed(2)}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            list.innerHTML = '<div class="col-span-full py-10 text-center text-stone-400 text-sm">No active orders found.</div>';
+                        }
+
+                        // Populate Transaction History Table
+                        const tableBody = document.getElementById('transactions-body');
+                        if (result.transaction_history && result.transaction_history.length > 0) {
+                            tableBody.innerHTML = result.transaction_history.map(tx => `
+                                <tr style="border-bottom: 1px solid #f5f5f4;">
+                                    <td style="padding: 16px; font-weight: 700; font-size: 13px;">ORD-${tx.id}</td>
+                                    <td style="padding: 16px; font-size: 13px; color: #1c1917;">${new Date(tx.order_date).toLocaleDateString()}</td>
+                                    <td style="padding: 16px; font-size: 13px;">${tx.product_name} x${tx.quantity}</td>
+                                    <td style="padding: 16px; font-size: 13px;"><span style="text-transform: capitalize; padding: 2px 8px; border-radius: 10px; background: ${tx.status === 'delivered' ? '#dcfce7' : '#fff7ed'}; color: ${tx.status === 'delivered' ? '#166534' : '#c2410c'}; font-weight: 700; font-size: 11px;">${tx.status}</span></td>
+                                    <td style="padding: 16px; font-weight: 700; font-size: 14px;">$${parseFloat(tx.total_price).toFixed(2)}</td>
+                                </tr>
+                            `).join('');
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="5" style="padding: 24px; text-align: center; color: #a8a29e;">No transaction history available.</td></tr>';
+                        }
+                    } else {
+                        console.error('Failed to load dashboard data:', result.message);
+                        // Optionally redirect to login if not authenticated
+                        if (result.message === 'Unauthorized') {
+                            window.location.href = '../auth/login.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading dashboard:', error);
+                }
+            }
+
+            window.onload = loadDashboard;
+        </script>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px;">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <div style="flex: 1;">
+                <!-- Search bar removed as requested -->
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="text-align: right;">
+                        <div id="user-name" style="font-weight: 700; font-size: 14px;">Loading...</div>
+                        <div style="font-size: 11px; color: #1c1917;">Global Buyer</div>
+                    </div>
+                    <div id="user-avatar"
+                        style="width: 40px; height: 40px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">
+                        ...</div>
+                </div>
+            </div>
+        </header>
+
+        <div
+            style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border-radius: 16px; padding: 32px; margin-bottom: 32px;">
+            <h1 id="welcome-name" style="font-size: 32px; font-weight: 700; margin-bottom: 8px; color: #1c1917;">Hello,
+                ...</h1>
+            <p style="color: #1c1917; font-size: 15px;">Welcome back to your global spice command center.</p>
+            <div
+                style="background: white; border-radius: 12px; padding: 16px; margin-top: 24px; display: inline-block;">
+                <div
+                    style="font-size: 11px; color: #1c1917; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                    SPICE POINTS BALANCE</div>
+                <div id="spice-points" style="font-size: 28px; font-weight: 700; color: var(--primary);">0</div>
+                <div
+                    style="height: 4px; background: linear-gradient(90deg, var(--primary), #fbbf24); border-radius: 2px; margin-top: 8px; width: 200px;">
+                </div>
+                <div style="font-size: 10px; color: #1c1917; margin-top: 6px;">Earn 5 points for every $10 spent</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://api.iconify.design/lucide:package.svg?color=%23ff7e21" width="22" alt="">
+                        Active Orders
+                    </h2>
+                    <a href="orders.html"
+                        style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 13px;">Track
+                        all orders</a>
+                </div>
+                <div id="active-orders-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <!-- Active orders will be loaded here -->
+                </div>
+            </div>
+
+            <div
+                style="background: linear-gradient(135deg, #fff7ed, #fed7aa); border: 1px solid #fb923c; border-radius: 16px; padding: 24px; text-align: center;">
+                <img src="https://api.iconify.design/lucide:truck.svg?color=%23f97316" width="48"
+                    style="margin-bottom: 16px;" alt="">
+                <h3 id="active-shipments-text"
+                    style="font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #1c1917;">0 Active Shipments
+                </h3>
+                <button onclick="window.location.href='orders.html?filter=shipped'"
+                    style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 16px; font-size: 13px;">Manage
+                    All</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <!-- Removed Market Price Alerts Section -->
+
+            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; font-weight: 700;">Market Trends</h2>
+                    <a href="market-analytics.html"
+                        style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 13px;">View
+                        Analytics</a>
+                </div>
+                <div style="padding: 20px; text-align: center;">
+                    <img src="https://api.iconify.design/lucide:trending-up.svg?color=%23FF7E21"
+                        class="w-12 h-12 mx-auto mb-4">
+                    <p class="text-sm text-stone-500 italic">Check global order trends and top selling products.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 18px; font-weight: 700;">Recent Transactions</h2>
+            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #e7e5e4;">
+                        <th
+                            style="text-align: left; padding: 12px; font-size: 11px; color: #1c1917; font-weight: 700; text-transform: uppercase;">
+                            Order ID</th>
+                        <th
+                            style="text-align: left; padding: 12px; font-size: 11px; color: #1c1917; font-weight: 700; text-transform: uppercase;">
+                            Date</th>
+                        <th
+                            style="text-align: left; padding: 12px; font-size: 11px; color: #1c1917; font-weight: 700; text-transform: uppercase;">
+                            Product</th>
+                        <th
+                            style="text-align: left; padding: 12px; font-size: 11px; color: #1c1917; font-weight: 700; text-transform: uppercase;">
+                            Status</th>
+                        <th
+                            style="text-align: left; padding: 12px; font-size: 11px; color: #1c1917; font-weight: 700; text-transform: uppercase;">
+                            Total</th>
+                    </tr>
+                </thead>
+                <tbody id="transactions-body">
+                    <!-- Dynamic Data -->
+                    <tr>
+                        <td colspan="5" style="padding: 24px; text-align: center; color: #a8a29e;">Loading
+                            transactions...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="orders.html"
+                    style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 13px;">View all
+                    orders</a>
+            </div>
+        </div>
+        <!-- Removed New Bulk Order Button -->
+    </main>
+</body>
+
+</html>

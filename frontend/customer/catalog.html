@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Catalog | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="customer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="catalog.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:book-open.svg?color=white" width="18" alt="">
+                Catalog
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="cart.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Cart
+            </a>
+            <a href="bulk-orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:boxes.svg?color=%231c1917" width="18" alt="">
+                Bulk Order
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="market-analytics.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:trending-up.svg?color=%231c1917" width="18" alt="">
+                Analytics
+            </a>
+
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+        <script>
+            async function logout() {
+                try {
+                    await fetch('../../backend/api/auth/logout.php');
+                    window.location.href = '../auth/login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+        </script>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px;">
+        <header style="margin-bottom: 56px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div class="max-w-xl">
+                <span
+                    class="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-widest mb-4">Direct
+                    from Source</span>
+                <h1 style="font-size: 48px; font-weight: 700; color: #1c1917; letter-spacing: -0.04em; line-height: 1;">
+                    Global Spice Catalog</h1>
+                <p style="font-size: 18px; color: #1c1917; margin-top: 16px; font-weight: 500; line-height: 1.6;">Browse
+                    rare harvests and premium essential spices curated from smallholder farms across the spice belt.</p>
+            </div>
+
+            <div class="flex gap-4">
+                <!-- Search bar removed as requested -->
+            </div>
+        </header>
+
+        <!-- Filters Removed - Replaced with Simple Header -->
+        <div class="mb-12">
+            <h2 class="text-xl font-bold text-stone-800 tracking-tight">All Approved Harvests</h2>
+            <div class="h-1 w-20 bg-primary rounded-full mt-2"></div>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="catalog-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px;">
+            <!-- Loading State -->
+            <div class="col-span-full py-40 text-center">
+                <img src="https://api.iconify.design/lucide:loader-2.svg"
+                    class="w-12 h-12 animate-spin mx-auto text-primary mb-6">
+                <p class="text-stone-400 font-bold uppercase tracking-widest text-xs">Unpacking the day's harvest...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Details Modal -->
+    <div id="productModal" onclick="if(event.target === this) closeProductModal();"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] hidden flex items-center justify-center p-6">
+        <div
+            class="bg-white p-0 rounded-3xl w-full max-w-4xl relative shadow-2xl animate-in zoom-in-95 duration-300 overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+            <button onclick="closeProductModal()"
+                class="absolute top-6 right-6 z-10 w-12 h-12 bg-stone-100 hover:bg-stone-200 rounded-full flex items-center justify-center transition-all">
+                <img src="https://api.iconify.design/lucide:x.svg?color=%231c1917" width="24" alt="">
+            </button>
+
+            <div class="md:w-1/2 h-80 md:h-auto relative bg-stone-100">
+                <img id="modal-image" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+
+            <div class="md:w-1/2 p-12 space-y-8 overflow-y-auto no-scrollbar">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span id="modal-badge"
+                            class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">PREMIUM
+                            GRADE</span>
+                        <span id="modal-organic"
+                            class="hidden bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">ORGANIC</span>
+                    </div>
+                    <h2 id="modal-title" class="text-4xl font-bold text-stone-900 tracking-tight leading-none mb-4">
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden">
+                            <img id="modal-farmer-img" src="https://api.iconify.design/lucide:user.svg?color=%23a8a29e"
+                                width="16">
+                        </div>
+                        <p id="modal-farmer" class="text-sm font-bold text-stone-400 uppercase tracking-widest"></p>
+                    </div>
+                </div>
+
+                <div class="bg-stone-50 p-6 rounded-3xl border border-stone-100">
+                    <div class="flex flex-col gap-8 items-start">
+                        <div>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Direct Price
+                            </p>
+                            <div class="flex items-baseline gap-1">
+                                <p class="text-4xl font-bold text-stone-900 leading-none">$<span
+                                        id="modal-price">0.00</span></p>
+                                <span class="text-lg text-stone-400 font-medium">/kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">In Stock</p>
+                            <p id="modal-stock" class="text-xl font-bold text-stone-900 leading-none"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-3">About this harvest
+                    </p>
+                    <p id="modal-desc" class="text-stone-600 leading-relaxed text-sm"></p>
+                </div>
+
+                <div class="space-y-4 pt-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <label
+                                class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Order
+                                Quantity (kg)</label>
+                            <div class="flex items-center bg-stone-50 border border-stone-200 rounded-2xl px-4 py-1">
+                                <button onclick="updateQty(-1)"
+                                    class="w-8 h-8 flex items-center justify-center hover:bg-stone-200 rounded-lg transition-all"><img
+                                        src="https://api.iconify.design/lucide:minus.svg" width="14"></button>
+                                <input id="order-qty" type="number" value="1" min="0.1" step="0.1"
+                                    class="flex-1 bg-transparent border-none text-center font-bold text-stone-900 outline-none">
+                                <button onclick="updateQty(1)"
+                                    class="w-8 h-8 flex items-center justify-center hover:bg-stone-200 rounded-lg transition-all"><img
+                                        src="https://api.iconify.design/lucide:plus.svg" width="14"></button>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <label
+                                class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Estimated
+                                Total</label>
+                            <div class="py-4 text-2xl font-bold text-primary font-mono">$<span
+                                    id="order-total">0.00</span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 pt-4">
+                        <button onclick="addToCart()"
+                            class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-900 py-6 rounded-[24px] font-bold text-sm tracking-widest transition-all">
+                            ADD TO CART
+                        </button>
+                        <button onclick="placeOrder()"
+                            class="flex-[1.5] bg-stone-900 hover:bg-black text-white py-6 rounded-[24px] font-bold text-sm tracking-[0.2em] shadow-2xl transition-all transform hover:-translate-y-1 active:scale-95">
+                            SECURE BUY NOW
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-stone-400 text-center font-bold uppercase tracking-widest">Protected by
+                        Caravan buyer guarantee</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+        let selectedProduct = null;
+
+        async function loadCatalog() {
+            try {
+                const response = await fetch('../../backend/api/products/get-all-products.php');
+                const result = await response.json();
+                const grid = document.getElementById('catalog-grid');
+
+                if (result.success && result.products.length > 0) {
+                    allProducts = result.products;
+                    grid.innerHTML = '';
+
+                    result.products.forEach(product => {
+                        const imgSrc = product.image_url ? '../../' + product.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
+
+                        grid.innerHTML += `
+                            <div class="bg-white border border-stone-200 rounded-[40px] overflow-hidden group hover:shadow-2xl transition-all duration-500 cursor-pointer" onclick="openProductModal(${product.id})">
+                                <div class="relative h-72 overflow-hidden">
+                                     <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                     <div class="absolute top-6 left-6">
+                                          <span class="bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-extrabold text-stone-900 border border-white/50 shadow-sm uppercase tracking-wider">
+                                              ${product.category.replace('_', ' ')}
+                                          </span>
+                                     </div>
+                                     <div class="absolute bottom-6 right-6 flex flex-col items-end">
+                                          <p class="text-[9px] font-bold text-white/70 uppercase tracking-widest mb-1 leading-none">Starting from</p>
+                                          <p class="text-2xl font-bold text-white leading-none">$${parseFloat(product.price).toFixed(2)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
+                                     </div>
+                                </div>
+                                <div class="p-10">
+                                    <div class="mb-6">
+                                        <h3 class="font-bold text-2xl text-stone-900 truncate mb-2">${product.product_name}</h3>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded-full bg-stone-100 flex items-center justify-center">
+                                                <img src="https://api.iconify.design/lucide:store.svg?color=%23FF7E21" width="10">
+                                            </div>
+                                            <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">${product.farmer_name}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between pt-6 border-t border-stone-50">
+                                        <span class="text-[11px] font-bold text-green-500 bg-green-50 px-3 py-1 rounded-full uppercase tracking-widest">In Stock</span>
+                                        <div class="flex items-center gap-2 text-stone-300 group-hover:text-primary transition-colors">
+                                             <span class="text-[11px] font-bold uppercase tracking-widest">Explore</span>
+                                             <img src="https://api.iconify.design/lucide:arrow-right.svg" width="16">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = '<div class="col-span-full py-40 text-center"><p class="text-stone-400">The catalog is currently being refreshed. Check back soon!</p></div>';
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function openProductModal(id) {
+            selectedProduct = allProducts.find(p => p.id == id);
+            if (!selectedProduct) return;
+
+            document.getElementById('modal-title').innerText = selectedProduct.product_name;
+            document.getElementById('modal-farmer').innerText = `Harvested by ${selectedProduct.farmer_name}`;
+            document.getElementById('modal-desc').innerText = selectedProduct.description || 'Premium quality spice harvested with traditional methods and care for sustainable agriculture.';
+            document.getElementById('modal-price').innerText = parseFloat(selectedProduct.price).toFixed(2);
+            document.getElementById('modal-stock').innerText = `${selectedProduct.quantity}${selectedProduct.unit}`;
+
+            const imgSrc = selectedProduct.image_url ? '../../' + selectedProduct.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
+            document.getElementById('modal-image').src = imgSrc;
+
+            if (selectedProduct.is_organic) document.getElementById('modal-organic').classList.remove('hidden');
+            else document.getElementById('modal-organic').classList.add('hidden');
+
+            document.getElementById('order-qty').value = 1;
+            document.getElementById('order-qty').max = selectedProduct.quantity;
+            updateOrderTotal();
+
+            document.getElementById('productModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateQty(delta) {
+            const input = document.getElementById('order-qty');
+            // Use parseFloat for decimals
+            let val = parseFloat(input.value) + delta;
+
+            // Round to 2 decimal places to avoid floating point errors like 1.0000000001
+            val = Math.round(val * 100) / 100;
+
+            if (val < 0.1) val = 0.1; // Minimum quantity
+            if (val > selectedProduct.quantity) val = selectedProduct.quantity;
+
+            input.value = val;
+            updateOrderTotal();
+        }
+
+        function updateOrderTotal() {
+            const qty = parseFloat(document.getElementById('order-qty').value) || 0;
+            const price = parseFloat(selectedProduct.price);
+            document.getElementById('order-total').innerText = (qty * price).toFixed(2);
+        }
+
+        document.getElementById('order-qty').addEventListener('input', updateOrderTotal);
+
+        async function addToCart() {
+            if (!selectedProduct) return;
+            // Parse as float
+            const qty = parseFloat(document.getElementById('order-qty').value);
+            const availableStock = parseFloat(selectedProduct.quantity);
+
+            if (qty > availableStock) {
+                showToast(`Sorry, only ${availableStock}kg available in stock.`, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('../../backend/api/cart/add-to-cart.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id: selectedProduct.id,
+                        quantity: qty
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Item added to your global spice cart!', 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function placeOrder() {
+            if (!selectedProduct) return;
+            // Parse as float
+            const qty = parseFloat(document.getElementById('order-qty').value);
+            const btn = document.querySelector('#productModal button[onclick="placeOrder()"]');
+            const originalText = btn.innerText;
+
+            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for $${(qty * selectedProduct.price).toFixed(2)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
+
+            btn.disabled = true;
+            btn.innerText = "AUTHENTICATING ORDER...";
+
+            try {
+                const response = await fetch('../../backend/api/orders/place-order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id: selectedProduct.id,
+                        quantity: qty
+                    })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('SUCCESS! Your order has been placed directly with the farmer.', 'success');
+                    closeProductModal();
+                    loadCatalog();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Order error:', error);
+                showToast('Connection to marketplace failed.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        window.onload = loadCatalog;
+    </script>
+</body>
+
+</html>
