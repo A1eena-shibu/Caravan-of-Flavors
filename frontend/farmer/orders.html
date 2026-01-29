@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="farmer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="inventory.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="18" alt="">
+                Inventory
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=white" width="18" alt="">
+                Orders
+            </a>
+            <a href="exports.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
+                Exports
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="analysis.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%231c1917" width="18" alt="">
+                Analysis
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px; min-height: 100vh;">
+        <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
+            <div>
+                <h1 style="font-size: 32px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">Order
+                    Fulfillment</h1>
+                <p style="font-size: 15px; color: #1c1917; margin-top: 4px;">Monitor incoming requests and manage
+                    international delivery states.</p>
+            </div>
+
+
+        </header>
+
+        <!-- Filters & Search -->
+        <div class="flex flex-wrap gap-2 mb-8">
+            <button class="filter-btn active" onclick="loadByStatus('all')">ALL ORDERS</button>
+            <button class="filter-btn" onclick="loadByStatus('pending')">PENDING</button>
+            <button class="filter-btn" onclick="loadByStatus('confirmed')">ACCEPTED</button>
+            <button class="filter-btn" onclick="loadByStatus('shipped')">SHIPPED</button>
+            <button class="filter-btn" onclick="loadByStatus('delivered')">DELIVERED</button>
+            <button class="filter-btn" onclick="loadByStatus('customer_cancelled')">CANCELLED</button>
+            <button class="filter-btn" onclick="loadByStatus('rejected')">REJECTED</button>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-[32px] border border-stone-200 overflow-hidden shadow-sm">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-stone-50/50 border-b border-stone-100">
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Order
+                            Details</th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Direct
+                            Buyer</th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Product
+                        </th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Total</th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Payment
+                        </th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Status</th>
+                        <th
+                            class="px-8 py-5 text-[11px] font-bold text-stone-400 uppercase tracking-widest text-center">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr>
+                        <!-- Loading placeholder -->
+                        <td colspan="7" class="px-8 py-20 text-center">
+                            <img src="https://api.iconify.design/lucide:loader-2.svg"
+                                class="w-8 h-8 animate-spin mx-auto text-primary mb-4">
+                            <p class="text-stone-400 text-sm font-medium">Syncing order ledger...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <style>
+        .filter-btn {
+            background: white;
+            border: 1px solid #e7e5e4;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #1c1917;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .filter-btn.active {
+            background: #1c1917;
+            color: white;
+            border-color: #1c1917;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+
+    <!-- Rejection Reason Modal -->
+    <div id="rejectModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-[32px] w-full max-w-md relative shadow-2xl animate-in zoom-in-95 duration-200"
+            onclick="event.stopPropagation()">
+            <h3 class="text-xl font-bold text-stone-900 mb-2">Reject Order</h3>
+            <p class="text-stone-500 text-sm mb-6">Please provide a reason for rejecting this order. This will be shown
+                to the customer.</p>
+
+            <textarea id="reject-reason" rows="3"
+                class="w-full bg-stone-50 border border-stone-200 rounded-xl p-4 text-sm font-semibold outline-none focus:border-red-500 transition-all mb-6"
+                placeholder="e.g., Out of stock, Quality issues..."></textarea>
+
+            <div class="flex gap-3">
+                <button onclick="closeRejectModal()"
+                    class="flex-1 py-3 rounded-xl border border-stone-200 text-stone-600 font-bold text-xs uppercase tracking-widest hover:bg-stone-50">Cancel</button>
+                <button onclick="confirmReject()"
+                    class="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-red-700 shadow-lg shadow-red-500/20">Reject
+                    Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOrderIdToReject = null;
+
+        async function logout() {
+            try {
+                await fetch('../../backend/api/auth/logout.php');
+                window.location.href = '../auth/login.html';
+            } catch (error) { console.error('Logout error:', error); }
+        }
+
+        let allOrders = [];
+
+        async function loadOrders() {
+            try {
+                const response = await fetch('../../backend/api/orders/get-farmer-orders.php');
+                const result = await response.json();
+                const container = document.getElementById('orders-table-body');
+
+                if (result.success && result.data.length > 0) {
+                    allOrders = result.data;
+                    renderTable(allOrders);
+                } else {
+                    container.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="px-8 py-32 text-center">
+                                 <div class="w-16 h-16 bg-stone-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                     <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%23a8a29e" width="32">
+                                 </div>
+                                 <h3 class="text-lg font-bold text-stone-900 mb-1">No orders yet</h3>
+                                 <p class="text-stone-400 text-sm max-w-xs mx-auto">Your marketplace entries are live. New global orders will appear here.</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function renderTable(orders) {
+            const container = document.getElementById('orders-table-body');
+            container.innerHTML = '';
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-8 py-32 text-center">
+                                <div class="w-16 h-16 bg-stone-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                    <img src="https://api.iconify.design/lucide:search-x.svg?color=%23a8a29e" width="32">
+                                </div>
+                                <h3 class="text-lg font-bold text-stone-900 mb-1">No orders found</h3>
+                                <p class="text-stone-400 text-sm max-w-xs mx-auto">There are no orders matching this filter.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            orders.forEach(order => {
+                const date = new Date(order.order_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const statusBadge = getStatusBadge(order.status, order.rejection_reason);
+                const actions = getActionButtons(order);
+                const imgSrc = order.product_image ? '../../' + order.product_image : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=400&q=80';
+
+                container.innerHTML += `
+                    <tr class="border-b border-stone-50 hover:bg-stone-50/50 transition-colors">
+                        <td class="px-8 py-6 text-center">
+                            <div class="font-bold text-stone-900 text-sm">ORD-${order.id.toString().padStart(5, '0')}</div>
+                            <div class="text-[10px] text-stone-400 font-bold uppercase mt-0.5">${date}</div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <div class="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center font-bold text-xs text-stone-500">
+                                    ${order.customer_name.charAt(0)}
+                                </div>
+                                <div class="text-sm font-semibold text-stone-700">${order.customer_name}</div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <div class="w-10 h-10 rounded-xl overflow-hidden border border-stone-100 bg-stone-50">
+                                    <img src="${imgSrc}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-[13px] font-bold text-stone-900 leading-tight">${order.product_name}</div>
+                                    <div class="text-[11px] font-semibold text-stone-500 mt-0.5">Quantity: <span class="text-stone-900">${order.quantity}kg</span></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <span class="text-sm font-bold text-stone-900 font-mono">$${parseFloat(order.total_price).toFixed(2)}</span>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}">
+                                ${order.payment_status || 'Pending'}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            ${statusBadge}
+                        </td>
+                        <td class="px-8 py-6 text-center">
+                            <div class="flex justify-center gap-2">
+                                ${actions}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function loadByStatus(status) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (status === 'all') renderTable(allOrders);
+            else if (status === 'customer_cancelled') {
+                renderTable(allOrders.filter(o => o.status === 'cancelled' && (o.rejection_reason && o.rejection_reason.includes('Cancelled by Customer'))));
+            }
+            else if (status === 'rejected') {
+                renderTable(allOrders.filter(o => o.status === 'rejected' || (o.status === 'cancelled' && (!o.rejection_reason || !o.rejection_reason.includes('Cancelled by Customer')))));
+            }
+            else renderTable(allOrders.filter(o => o.status === status));
+        }
+
+        function getStatusBadge(status, reason) {
+            const styles = {
+                pending: 'bg-stone-100 text-stone-500',
+                confirmed: 'bg-green-100 text-green-700',
+                processing: 'bg-orange-50 text-orange-600',
+                shipped: 'bg-primary/10 text-primary',
+                delivered: 'bg-green-50 text-green-600',
+                cancelled: 'bg-red-50 text-red-600',
+                rejected: 'bg-red-50 text-red-600'
+            };
+
+            let displayStatus = status.toUpperCase();
+            if (status === 'confirmed') displayStatus = 'ACCEPTED';
+            if (status === 'cancelled') {
+                if (reason && reason.includes('Cancelled by Customer')) {
+                    displayStatus = 'CANCELLED';
+                } else {
+                    displayStatus = 'REJECTED';
+                }
+            }
+            if (status === 'rejected') displayStatus = 'REJECTED';
+
+            return `<span class="px-3 py-1 rounded-full text-[9px] font-bold tracking-widest ${styles[status] || styles.pending}">${displayStatus}</span>`;
+        }
+
+        function getActionButtons(order) {
+            if (order.status === 'pending') {
+                return `
+                    <button onclick="updateStatus('${order.id}', 'confirmed')" class="bg-stone-900 text-white hover:bg-black action-btn uppercase text-[10px]">ACCEPT</button>
+                    <button onclick="openRejectModal('${order.id}')" class="bg-stone-50 text-red-600 hover:bg-red-50 action-btn uppercase text-[10px]">REJECT</button>
+                `;
+            } else if (order.status === 'confirmed') {
+                if (order.payment_status === 'paid') {
+                    return `<button onclick="updateStatus('${order.id}', 'shipped')" class="bg-primary hover:bg-primary-hover text-white action-btn uppercase text-[10px]">SHIP NOW</button>`;
+                } else {
+                    return `<button disabled class="bg-stone-200 text-stone-400 cursor-not-allowed action-btn uppercase text-[10px]" title="Wait for Payment">SHIP NOW</button>`;
+                }
+            }
+            return '<span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">PROCESSED</span>';
+        }
+
+        function openRejectModal(orderId) {
+            currentOrderIdToReject = orderId;
+            document.getElementById('rejectModal').classList.remove('hidden');
+            document.getElementById('reject-reason').value = '';
+            document.getElementById('reject-reason').focus();
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').classList.add('hidden');
+            currentOrderIdToReject = null;
+        }
+
+        async function confirmReject() {
+            if (!currentOrderIdToReject) return;
+
+            const reason = document.getElementById('reject-reason').value;
+            const orderId = currentOrderIdToReject; // Capture ID before it gets cleared
+
+            if (!reason) {
+                showToast('Please provide a reason', 'error');
+                return;
+            }
+
+            closeRejectModal();
+            await updateStatus(orderId, 'rejected', reason);
+        }
+
+        async function updateStatus(orderId, status, rejectionReason = null) {
+            if (status !== 'cancelled' && status !== 'rejected' && !await showConfirm(`Are you sure you want to mark this order as ${status === 'confirmed' ? 'ACCEPTED' : status.toUpperCase()}?`)) return;
+
+            try {
+                const response = await fetch('../../backend/api/orders/update-order-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: status,
+                        reason: rejectionReason
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    loadOrders();
+                    showToast(`Order status updated to ${status === 'confirmed' ? 'ACCEPTED' : status.toUpperCase()}.`, 'success');
+                } else {
+                    showToast(result.message || 'Update failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Connection error', 'error');
+            }
+        }
+
+        window.onload = loadOrders;
+    </script>
+</body>
+
+</html>

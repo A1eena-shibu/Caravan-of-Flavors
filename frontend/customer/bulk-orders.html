@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Orders | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-stone-50 text-stone-800 font-['Outfit'] antialiased selection:bg-orange-100 selection:text-orange-600">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="customer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="catalog.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:book-open.svg?color=%231c1917" width="18" alt="">
+                Catalog
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="cart.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Cart
+            </a>
+            <a href="bulk-orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(255, 126, 33, 0.25);">
+                <img src="https://api.iconify.design/lucide:boxes.svg?color=white" width="18" alt="">
+                Bulk Order
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="market-analytics.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:trending-up.svg?color=%231c1917" width="18" alt="">
+                Analytics
+            </a>
+
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+        <script>
+            async function logout() {
+                try {
+                    await fetch('../../backend/api/auth/logout.php');
+                    window.location.href = '../auth/login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+        </script>
+    </aside>
+
+    <main class="ml-[200px] p-10 min-h-screen">
+        <header class="flex justify-between items-end mb-12 animate-fade-in">
+            <div>
+                <span
+                    class="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[12px] font-bold uppercase tracking-widest mb-4">Volume
+                    Purchasing</span>
+                <h1 class="text-4xl font-bold tracking-tight text-stone-900">Bulk Orders</h1>
+                <p class="text-stone-500 mt-2 font-medium text-base max-w-2xl">Need more than usual? Request a custom
+                    quote directly from our farmer network for large quantity orders.</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Left: Form -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
+                    <h2 class="text-xl font-bold text-stone-900 mb-6">Request a Quote</h2>
+                    <form id="bulk-order-form" onsubmit="submitBulkOrder(event)" class="space-y-6">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Product
+                                    Name</label>
+                                <input type="text" name="product_name" required placeholder="e.g. Kashmiri Saffron"
+                                    class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Estimated
+                                    Quantity (kg)</label>
+                                <input type="number" name="quantity" required min="50" placeholder="Min. 50kg"
+                                    class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Target
+                                    Price / kg ($)</label>
+                                <input type="number" name="target_price" step="0.01" placeholder="Optional"
+                                    class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Required
+                                    By Date</label>
+                                <input type="date" name="deadline" required
+                                    class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Additional
+                                Requirements</label>
+                            <textarea name="requirements" rows="4"
+                                placeholder="Specific quality grades, packaging requirements, or delivery instructions..."
+                                class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-900 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"></textarea>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" id="submit-btn"
+                                class="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-sm tracking-widest shadow-lg shadow-orange-200 transition-all transform active:scale-[0.98]">
+                                SUBMIT REQUEST
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="space-y-6">
+                <!-- Benefits -->
+                <div class="bg-stone-900 text-white p-8 rounded-3xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10">
+                        <img src="https://api.iconify.design/lucide:boxes.svg?color=white" class="w-32 h-32">
+                    </div>
+                    <h3 class="text-xl font-bold mb-6 relative z-10">Why Buy Bulk?</h3>
+                    <ul class="space-y-4 relative z-10">
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <img src="https://api.iconify.design/lucide:check.svg?color=white" class="w-3 h-3">
+                            </div>
+                            <p class="text-sm text-stone-300 font-medium">Significant volume discounts directly from
+                                farmers</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <img src="https://api.iconify.design/lucide:check.svg?color=white" class="w-3 h-3">
+                            </div>
+                            <p class="text-sm text-stone-300 font-medium">Custom processing and packaging options</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <img src="https://api.iconify.design/lucide:check.svg?color=white" class="w-3 h-3">
+                            </div>
+                            <p class="text-sm text-stone-300 font-medium">Priority logistical handling and insurance</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Process -->
+                <div class="bg-white p-8 rounded-3xl border border-stone-100">
+                    <h3 class="text-lg font-bold text-stone-900 mb-6">How It Works</h3>
+                    <div class="space-y-6 relative">
+                        <div class="absolute left-[19px] top-2 bottom-4 w-0.5 bg-stone-100"></div>
+
+                        <div class="flex gap-4 relative">
+                            <div
+                                class="w-10 h-10 rounded-full bg-orange-50 text-primary font-bold flex items-center justify-center text-sm border-4 border-white z-10">
+                                1</div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-stone-900 text-sm">Submit Request</h4>
+                                <p class="text-xs text-stone-500 mt-1">Detail your needs and quantity.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 relative">
+                            <div
+                                class="w-10 h-10 rounded-full bg-stone-50 text-stone-400 font-bold flex items-center justify-center text-sm border-4 border-white z-10">
+                                2</div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-stone-900 text-sm">Receive Quotes</h4>
+                                <p class="text-xs text-stone-500 mt-1">Farmers compete to offer best rates.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 relative">
+                            <div
+                                class="w-10 h-10 rounded-full bg-stone-50 text-stone-400 font-bold flex items-center justify-center text-sm border-4 border-white z-10">
+                                3</div>
+                            <div class="pt-2">
+                                <h4 class="font-bold text-stone-900 text-sm">Finalize Deal</h4>
+                                <p class="text-xs text-stone-500 mt-1">Approve sample and sign contract.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function submitBulkOrder(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const originalText = btn.innerHTML;
+
+            // Basic simulation since backend might not be ready
+            btn.innerHTML = `<img src="https://api.iconify.design/line-md:loading-loop.svg?color=white" class="w-5 h-5 animate-spin mx-auto">`;
+            btn.disabled = true;
+
+            // Simulate network delay
+            await new Promise(r => setTimeout(r, 1500));
+
+            // In a real app, we would POST to an endpoint here.
+            // For now, showcase success UI
+            showToast('Bulk request submitted! Farmers will be notified.', 'success');
+            e.target.reset();
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    </script>
+</body>
+
+</html>
