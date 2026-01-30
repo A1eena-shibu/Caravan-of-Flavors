@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -147,7 +148,7 @@
                                         <div style="height: 2px; background: #e7e5e4; margin: 12px 0;"></div>
                                         <div style="font-size: 11px; color: #1c1917; display: flex; align-items: center; gap: 6px;">
                                             <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="12">
-                                            Total: $${parseFloat(order.total_price).toFixed(2)}
+                                            Total: ${formatCurrency(order.total_price)}
                                         </div>
                                     </div>
                                 `;
@@ -165,7 +166,7 @@
                                     <td style="padding: 16px; font-size: 13px; color: #1c1917;">${new Date(tx.order_date).toLocaleDateString()}</td>
                                     <td style="padding: 16px; font-size: 13px;">${tx.product_name} x${tx.quantity}</td>
                                     <td style="padding: 16px; font-size: 13px;"><span style="text-transform: capitalize; padding: 2px 8px; border-radius: 10px; background: ${tx.status === 'delivered' ? '#dcfce7' : '#fff7ed'}; color: ${tx.status === 'delivered' ? '#166534' : '#c2410c'}; font-weight: 700; font-size: 11px;">${tx.status}</span></td>
-                                    <td style="padding: 16px; font-weight: 700; font-size: 14px;">$${parseFloat(tx.total_price).toFixed(2)}</td>
+                                    <td style="padding: 16px; font-weight: 700; font-size: 14px;">${formatCurrency(tx.total_price)}</td>
                                 </tr>
                             `).join('');
                         } else {
@@ -219,7 +220,8 @@
                 <div
                     style="height: 4px; background: linear-gradient(90deg, var(--primary), #fbbf24); border-radius: 2px; margin-top: 8px; width: 200px;">
                 </div>
-                <div style="font-size: 10px; color: #1c1917; margin-top: 6px;">Earn 5 points for every $10 spent</div>
+                <div style="font-size: 10px; color: #1c1917; margin-top: 6px;">Earn 5 points for every
+                    ${formatCurrency(10)} spent</div>
             </div>
         </div>
 

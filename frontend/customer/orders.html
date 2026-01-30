@@ -319,7 +319,7 @@
 
                             <div class="px-8 flex flex-col items-center justify-center min-w-[150px]">
                                     <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Total Paid</p>
-                                    <p class="text-2xl font-bold text-primary font-mono">$${order.status === 'cancelled' ? '0.00' : parseFloat(order.total_price).toFixed(2)}</p>
+                                    <p class="text-2xl font-bold text-primary font-mono">${order.status === 'cancelled' ? formatCurrency(0) : formatCurrency(order.total_price)}</p>
                             </div>
 
                             <div class="flex gap-2">

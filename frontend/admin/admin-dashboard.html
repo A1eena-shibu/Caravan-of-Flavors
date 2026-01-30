@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -378,7 +379,7 @@
                     // Use optional chaining just in case
                     const stats = result.stats || {};
                     document.getElementById('total-users').innerText = (stats.total_users || 0).toLocaleString();
-                    document.getElementById('total-revenue').innerText = '$' + parseFloat(stats.revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }); // Fixed: total_revenue -> revenue
+                    document.getElementById('total-revenue').innerText = formatCurrency(stats.revenue || 0);
                     document.getElementById('active-orders').innerText = (stats.active_orders || 0).toLocaleString();
                     document.getElementById('pending-approvals').innerText = (stats.pending_approvals || 0).toLocaleString();
 
@@ -395,7 +396,7 @@
                                         </div>
                                         <div style="flex: 1;">
                                             <div style="font-size: 13px; font-weight: 700; color: white;">${farmer.full_name}</div>
-                                            <div style="font-size: 11px; color: #64748b;">$${parseFloat(farmer.total_sales).toLocaleString()} Sales</div>
+                                            <div style="font-size: 11px; color: #64748b;">${formatCurrency(farmer.total_sales)} Sales</div>
                                         </div>
                                     </div>
                                 `;
@@ -458,7 +459,7 @@
                                                 <div style="font-size: 14px; font-weight: 700;">${log.user}</div>
                                             </div>
                                         </td>
-                                        <td style="padding: 20px; font-size: 13px;">${log.action} - $${parseFloat(log.total_price).toFixed(2)}</td>
+                                        <td style="padding: 20px; font-size: 13px;">${log.action} - ${formatCurrency(log.total_price)}</td>
                                         <td style="padding: 20px; font-size: 13px; color: #64748b;">${date}</td>
                                         <td style="padding: 20px;">
                                             <span style="background: ${statusColor}15; color: ${statusColor}; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700;">${statusText}</span>
@@ -493,7 +494,7 @@
                 data: {
                     labels: labels.length > 0 ? labels : ['No Data'],
                     datasets: [{
-                        label: 'Revenue ($)',
+                        label: `Revenue (${getCurrencySymbol()})`,
                         data: data.length > 0 ? data : [0],
                         borderColor: '#ff7e21',
                         backgroundColor: 'rgba(255, 126, 33, 0.1)',

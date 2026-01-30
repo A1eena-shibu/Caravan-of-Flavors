@@ -198,8 +198,8 @@
                             <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Direct Price
                             </p>
                             <div class="flex items-baseline gap-1">
-                                <p class="text-4xl font-bold text-stone-900 leading-none">$<span
-                                        id="modal-price">0.00</span></p>
+                                <p class="text-4xl font-bold text-stone-900 leading-none" id="modal-price-display">$0.00
+                                </p>
                                 <span class="text-lg text-stone-400 font-medium">/kg</span>
                             </div>
                         </div>
@@ -237,8 +237,8 @@
                             <label
                                 class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Estimated
                                 Total</label>
-                            <div class="py-4 text-2xl font-bold text-primary font-mono">$<span
-                                    id="order-total">0.00</span></div>
+                            <div class="py-4 text-2xl font-bold text-primary font-mono" id="order-total-display">$0.00
+                            </div>
                         </div>
                     </div>
                     <div class="flex gap-4 pt-4">
@@ -287,7 +287,7 @@
                                      </div>
                                      <div class="absolute bottom-6 right-6 flex flex-col items-end">
                                           <p class="text-[9px] font-bold text-white/70 uppercase tracking-widest mb-1 leading-none">Starting from</p>
-                                          <p class="text-2xl font-bold text-white leading-none">$${parseFloat(product.price).toFixed(2)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
+                                           <p class="text-2xl font-bold text-white leading-none">${formatCurrency(product.price)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
                                      </div>
                                 </div>
                                 <div class="p-10">
@@ -325,7 +325,7 @@
             document.getElementById('modal-title').innerText = selectedProduct.product_name;
             document.getElementById('modal-farmer').innerText = `Harvested by ${selectedProduct.farmer_name}`;
             document.getElementById('modal-desc').innerText = selectedProduct.description || 'Premium quality spice harvested with traditional methods and care for sustainable agriculture.';
-            document.getElementById('modal-price').innerText = parseFloat(selectedProduct.price).toFixed(2);
+            document.getElementById('modal-price-display').innerText = formatCurrency(selectedProduct.price);
             document.getElementById('modal-stock').innerText = `${selectedProduct.quantity}${selectedProduct.unit}`;
 
             const imgSrc = selectedProduct.image_url ? '../../' + selectedProduct.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
@@ -362,11 +362,9 @@
             updateOrderTotal();
         }
 
-        function updateOrderTotal() {
-            const qty = parseFloat(document.getElementById('order-qty').value) || 0;
-            const price = parseFloat(selectedProduct.price);
-            document.getElementById('order-total').innerText = (qty * price).toFixed(2);
-        }
+        const qty = parseFloat(document.getElementById('order-qty').value) || 0;
+        const price = parseFloat(selectedProduct.price);
+        document.getElementById('order-total-display').innerText = formatCurrency(qty * price);
 
         document.getElementById('order-qty').addEventListener('input', updateOrderTotal);
 
@@ -406,7 +404,7 @@
             const btn = document.querySelector('#productModal button[onclick="placeOrder()"]');
             const originalText = btn.innerText;
 
-            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for $${(qty * selectedProduct.price).toFixed(2)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
+            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for ${formatCurrency(qty * selectedProduct.price)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
 
             btn.disabled = true;
             btn.innerText = "AUTHENTICATING ORDER...";

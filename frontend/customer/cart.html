@@ -264,7 +264,7 @@
                                         </div>
                                         <div class="text-right">
                                             <!-- CLEAN PRICE DISPLAY: NO FAKE OFFERS -->
-                                            <p class="text-xl font-bold text-stone-900">$${parseFloat(item.price).toFixed(2)}</p>
+                                            <p class="text-xl font-bold text-stone-900">${formatCurrency(item.price)}</p>
                                         </div>
                                     </div>
 
@@ -316,8 +316,8 @@
                         </div>
                     `;
                     document.getElementById('checkout-btn').disabled = true;
-                    document.getElementById('price-subtotal').innerText = "$0.00";
-                    document.getElementById('price-total').innerText = "$0.00";
+                    document.getElementById('price-subtotal').innerText = formatCurrency(0);
+                    document.getElementById('price-total').innerText = formatCurrency(0);
                 }
             } catch (error) { console.error(error); }
         }
@@ -340,13 +340,13 @@
                     subtotal += item.price * item.quantity;
                     unitTotal += parseFloat(item.price);
                     count++;
-                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">$${(item.price * item.quantity).toFixed(2)}</span></div>`;
+                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`;
                 }
             });
 
             document.getElementById('price-count-label').innerText = `Price (${count} items)`;
-            document.getElementById('price-subtotal').innerText = `$${unitTotal.toFixed(2)}`;
-            document.getElementById('price-total').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('price-subtotal').innerText = formatCurrency(unitTotal);
+            document.getElementById('price-total').innerText = formatCurrency(subtotal);
 
             const summaryListEl = document.getElementById('summary-items-list');
             if (summaryListEl) {
@@ -476,7 +476,7 @@
             // Truncate if too long
             const displayItems = itemsStr.length > 60 ? itemsStr.substring(0, 60) + '...' : itemsStr;
 
-            const msg = `Confirm purchase of ${displayItems} for $${totalStr}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
+            const msg = `Confirm purchase of ${displayItems} for ${formatCurrency(subtotal)}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
 
             showModal('Confirm Action', msg);
         }

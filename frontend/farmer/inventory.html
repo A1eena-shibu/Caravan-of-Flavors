@@ -201,13 +201,24 @@
                             class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none transition-all">
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Price (USD /
-                            kg)</label>
+                        <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Price (Base
+                            USD / kg)</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">$</span>
-                            <input type="number" step="0.01" name="price" placeholder="25.00"
+                            <input type="number" step="0.01" name="price" placeholder="25.00" id="price-input"
                                 class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-8 pr-4 py-3 text-sm focus:border-primary outline-none transition-all">
+                            <p id="local-price-hint" class="text-[10px] text-stone-400 mt-1 italic"></p>
                         </div>
+                        <script>
+                            document.getElementById('price-input').addEventListener('input', (e) => {
+                                const val = parseFloat(e.target.value);
+                                if (!isNaN(val)) {
+                                    document.getElementById('local-price-hint').innerText = `≈ ${formatCurrency(val)} in your local currency`;
+                                } else {
+                                    document.getElementById('local-price-hint').innerText = '';
+                                }
+                            });
+                        </script>
                     </div>
                     <div class="space-y-2">
                         <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Quantity
@@ -370,7 +381,7 @@
                             </div>
                         </td>
                         <td style="padding: 16px 24px; font-size: 14px; font-weight: 700; color: #1c1917;">
-                            $${parseFloat(product.price).toFixed(2)}
+                            ${formatCurrency(product.price)}
                         </td>
                         <td style="padding: 16px 24px;">
                             <div style="display: flex; gap: 8px;">

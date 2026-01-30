@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.4"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -229,7 +230,7 @@
 
                 if (result.success) {
                     // Update Stats Cards
-                    document.getElementById('stat-revenue').textContent = `$${result.stats.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    document.getElementById('stat-revenue').textContent = formatCurrency(result.stats.revenue);
                     document.getElementById('stat-orders').textContent = result.stats.active_orders;
                     document.getElementById('stat-customers').textContent = result.stats.customers;
 
@@ -273,7 +274,7 @@
                                     </div>
                                     <div style="overflow: hidden;">
                                         <p style="font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${activity.product_name} • ${activity.customer_name}</p>
-                                        <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • $${activity.total_price}</p>
+                                        <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${formatCurrency(activity.total_price)}</p>
                                     </div>
                                 </div>`;
                         });
@@ -292,7 +293,7 @@
                                 <div>
                                     <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 8px;">
                                         <span style="color: #1c1917;">${p.product_name}</span>
-                                        <span style="color: #FF7E21;">$${parseFloat(p.revenue).toFixed(0)}</span>
+                                        <span style="color: #FF7E21;">${formatCurrency(p.revenue)}</span>
                                     </div>
                                     <div style="width: 100%; height: 6px; background: #f5f5f4; border-radius: 3px; overflow: hidden;">
                                         <div style="width: ${width}%; height: 100%; background: #FF7E21; border-radius: 3px;"></div>
@@ -333,7 +334,7 @@
                                     </div>
                                     <div style="text-align: right;">
                                         <p style="font-size: 12px; font-weight: 700; color: ${badgeColor};">${badgeText}</p>
-                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">$${parseFloat(a.current_bid).toFixed(2)}</p>
+                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${formatCurrency(a.current_bid)}</p>
                                     </div>
                                 </div>`;
                         });

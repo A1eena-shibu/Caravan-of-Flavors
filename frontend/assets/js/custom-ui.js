@@ -137,6 +137,69 @@ const CustomUI = {
     }
 };
 
+const CurrencyHelper = {
+    exchangeRates: {
+        'INR': 83.25,
+        'EUR': 0.92,
+        'GBP': 0.79,
+        'AED': 3.67,
+        'USD': 1.0
+    },
+    
+    userCurrency: 'USD',
+    userLocale: undefined,
+    
+    init() {
+        try {
+            // Detect locale and currency
+            this.userLocale = navigator.language || 'en-US';
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            
+            if (timezone.includes('Calcutta') || timezone.includes('Kolkata') || this.userLocale.includes('IN')) {
+                this.userCurrency = 'INR';
+            } else if (this.userLocale.includes('GB')) {
+                this.userCurrency = 'GBP';
+            } else if (this.userLocale.includes('EU') || ['DE', 'FR', 'IT', 'ES'].some(c => this.userLocale.includes(c))) {
+                this.userCurrency = 'EUR';
+            } else if (timezone.includes('Dubai') || timezone.includes('Abu_Dhabi')) {
+                this.userCurrency = 'AED';
+            } else {
+                this.userCurrency = 'USD';
+            }
+        } catch (e) {
+            console.error('Currency detection failed:', e);
+            this.userCurrency = 'USD';
+        }
+    },
+
+    convert(usdPrice) {
+        const rate = this.exchangeRates[this.userCurrency] || 1.0;
+        return usdPrice * rate;
+    },
+
+    format(usdPrice) {
+        const converted = this.convert(usdPrice);
+        return new Intl.NumberFormat(this.userLocale, {
+            style: 'currency',
+            currency: this.userCurrency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(converted);
+    }
+};
+
+// Initialize currency helper
+CurrencyHelper.init();
+
 // Expose global helpers
 window.showToast = (msg, type) => CustomUI.showToast(msg, type);
 window.showConfirm = (msg) => CustomUI.showConfirm(msg);
+window.formatCurrency = (usdPrice) => CurrencyHelper.format(usdPrice);
+window.getCurrencySymbol = () => {
+    return new Intl.NumberFormat(CurrencyHelper.userLocale, {
+        style: 'currency',
+        currency: CurrencyHelper.userCurrency,
+    }).format(0).replace(/[0-9.,]/g, '').trim();
+};
+window.convertPrice = (usdPrice) => CurrencyHelper.convert(usdPrice);
+window.getUserCurrency = () => CurrencyHelper.userCurrency;

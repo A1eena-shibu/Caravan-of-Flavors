@@ -309,7 +309,7 @@
                             </div>
                         </td>
                         <td class="px-8 py-6 text-center">
-                            <span class="text-sm font-bold text-stone-900 font-mono">$${parseFloat(order.total_price).toFixed(2)}</span>
+                            <span class="text-sm font-bold text-stone-900 font-mono">${formatCurrency(order.total_price)}</span>
                         </td>
                         <td class="px-8 py-6 text-center">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}">
