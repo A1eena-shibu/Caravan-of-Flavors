@@ -9,7 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+<<<<<<< HEAD
     <script src="../assets/js/custom-ui.js?v=1.4"></script>
+=======
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,15 +31,121 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<<<<<<< HEAD
+=======
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            min-width: 320px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 1px solid #e2e8f0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .toast-success .toast-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .toast-error .toast-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast-warning .toast-icon {
+            background: #fef9c3;
+            color: #ca8a04;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        @keyframes progress {
+            from {
+                width: 100%;
+            }
+
+            to {
+                width: 0%;
+            }
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #e2e8f0;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .toast-success .toast-progress {
+            background: #22c55e;
+        }
+
+        .toast-error .toast-progress {
+            background: #ef4444;
+        }
+
+        .toast-warning .toast-progress {
+            background: #eab308;
+        }
+    </style>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 </head>
 
 <body style="background: #f8fafc; color: #1e293b;">
     <aside style="width: 240px; background: #0f172a; position: fixed; height: 100vh; padding: 24px; color: white;">
+<<<<<<< HEAD
         <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 10px;">
             <img src="https://api.iconify.design/lucide:spice.svg?color=%23ff7e21" alt="" width="32">
             <div>
                 <h3 style="font-size: 16px; margin: 0; color: white;">Caravan</h3>
                 <small style="font-size: 9px; color: #94a3b8; letter-spacing: 0.5px;">ADMIN PANEL</small>
+=======
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #ffffff; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin: 0;">
+                    Caravan</h3>
+                <span
+                    style="font-size: 10px; color: #94a3b8; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">OF
+                    FLAVOURS</span>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             </div>
         </div>
 
@@ -51,27 +160,54 @@
                 <img src="https://api.iconify.design/lucide:users.svg?color=%2394a3b8" width="18" alt="">
                 Manage Users
             </a>
+<<<<<<< HEAD
             <a href="#"
+=======
+            <a href="#" onclick="switchView('transactions')" id="nav-transactions"
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%2394a3b8" width="18" alt="">
                 Transactions
             </a>
+<<<<<<< HEAD
             <a href="#"
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%2394a3b8" width="18" alt="">
                 Global Analytics
             </a>
             <a href="#"
+=======
+            <a href="#" onclick="switchView('activity')" id="nav-activity"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:activity.svg?color=%2394a3b8" width="18" alt="">
+                Activity Logs
+            </a>
+            <a href="#" onclick="switchView('exports')" id="nav-exports"
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:file-text.svg?color=%2394a3b8" width="18" alt="">
                 Export Logs
             </a>
+<<<<<<< HEAD
             <a href="#"
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2394a3b8" width="18" alt="">
                 Security
             </a>
         </nav> <!-- ... end nav update ... -->
+=======
+            <a href="#" onclick="switchView('analysis')" id="nav-analysis"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:pie-chart.svg?color=%2394a3b8" width="18" alt="">
+                Analysis
+            </a>
+            <a href="#" onclick="switchView('profile')" id="nav-profile"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%2394a3b8" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         <!-- Script moved to bottom -->
 
         <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
@@ -84,14 +220,23 @@
         </div>
     </aside>
 
+<<<<<<< HEAD
     <main style="margin-left: 240px; padding: 40px;">
         <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+=======
+    <main style="margin-left: 240px; padding: 24px 40px;">
+        <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             <div>
                 <h1 style="font-size: 28px; font-weight: 700; margin: 0;">System Overview</h1>
                 <p style="color: #64748b; margin-top: 4px;">Real-time performance metrics for Caravan of Flavours.</p>
             </div>
+<<<<<<< HEAD
             <div style="display: flex; align-items: center; gap: 20px;">
                 <!-- System Online Badge Removed and made some changes -->
+=======
+            <div style="display: flex; align-items: center; gap: 20px; margin-top: -8px;">
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="text-align: right;">
                         <div style="font-weight: 700; font-size: 14px;">Admin</div>
@@ -161,10 +306,17 @@
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
                         <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Global Sales Performance</h3>
+<<<<<<< HEAD
                         <select
                             style="background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
                             <option>Last 12 Months</option>
                             <option>Last 30 Days</option>
+=======
+                        <select id="period-filter" onchange="updateSalesChart(this.value)"
+                            style="background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; color: #475569; outline: none;">
+                            <option value="12_months">Last 12 Months</option>
+                            <option value="30_days">Last 30 Days</option>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                         </select>
                     </div>
                     <canvas id="salesChart" height="300" style="max-height: 300px;"></canvas>
@@ -197,25 +349,84 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
         </div>
 
         <!-- Manage Users Section (Hidden by Default) 
          and added some features which makes sense-->
+=======
+
+            <!-- Recent User Activity -->
+            <div
+                style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Recent User Activity</h3>
+                    <button onclick="switchView('activity')"
+                        style="color: #3b82f6; background: transparent; border: none; font-weight: 700; font-size: 13px; cursor: pointer;">View
+                        All Logs</button>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <th
+                                style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700; width: 20%;">
+                                TIME</th>
+                            <th
+                                style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700; width: 20%;">
+                                USER</th>
+                            <th
+                                style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700; width: 45%;">
+                                ACTION</th>
+                            <th
+                                style="padding: 16px; text-align: left; font-size: 12px; color: #64748b; font-weight: 700; width: 15%;">
+                                TYPE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-list">
+                        <tr style="border-bottom: 1px solid #f8fafc;">
+                            <td colspan="4" style="padding: 40px; text-align: center;">
+                                <img src="https://api.iconify.design/lucide:loader-2.svg"
+                                    class="w-8 h-8 animate-spin mx-auto text-orange-500" alt="">
+                                <p style="color: #94a3b8; font-size: 13px; margin-top: 10px;">Syncing global logs...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manage Users Section (Hidden by Default) -->
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         <div id="manage-users-view" style="display: none;">
             <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">User Management</h2>
+<<<<<<< HEAD
                     <input type="text" placeholder="Search users..."
+=======
+                    <input type="text" id="user-search-input" placeholder="Search users..." onkeyup="filterUsers()"
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                         style="border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 8px; font-size: 14px;">
                 </div>
                 <table style="width: 100%; text-align: left; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid #f1f5f9;">
+<<<<<<< HEAD
                             <th style="padding: 12px; font-size: 13px; color: #64748b;">User</th>
                             <th style="padding: 12px; font-size: 13px; color: #64748b;">Role</th>
                             <th style="padding: 12px; font-size: 13px; color: #64748b;">Status</th>
                             <th style="padding: 12px; font-size: 13px; color: #64748b;">Joined</th>
                             <th style="padding: 12px; font-size: 13px; color: #64748b;">Action</th>
+=======
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 35%; text-align: center;">
+                                User</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 20%; text-align: center;">
+                                Role</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 20%; text-align: center;">
+                                Joined</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 25%; text-align: center;">
+                                Action</th>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                         </tr>
                     </thead>
                     <tbody id="users-table-body">
@@ -225,6 +436,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Recent User Activity</h3>
@@ -391,12 +603,883 @@
                         if (result.top_farmers && result.top_farmers.length > 0) {
                             result.top_farmers.forEach(farmer => {
                                 topFarmersList.innerHTML += `
+=======
+        <!-- Transactions View -->
+        <div id="transactions-view" style="display: none;">
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px;">Global Transactions</h2>
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Order ID</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Product</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Customer</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Farmer</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Amount</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Export Logs View -->
+        <div id="exports-view" style="display: none;">
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px;">Export Log Book</h2>
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">ID</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Product</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Farmer</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Destination</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Qty</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exports-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Activity Logs View -->
+        <div id="activity-view" style="display: none;">
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 700;">User Activity Logs</h2>
+                    <button onclick="loadActivityLogs()"
+                        style="color: #64748b; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;">
+                        <img src="https://api.iconify.design/lucide:refresh-cw.svg?color=%2364748b" width="14"> Refresh
+                    </button>
+                </div>
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 20%;">Time</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 20%;">User</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 45%;">Action</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 15%;">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-activity-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+        <!-- Analysis View -->
+        <div id="analysis-view" style="display: none;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 32px;">
+                <!-- User Growth Trend -->
+                <div
+                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://api.iconify.design/lucide:trending-up.svg?color=%233b82f6" width="20">
+                        User Growth Trend (30 Days)
+                    </h3>
+                    <div style="height: 350px;">
+                        <canvas id="growthTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Order Success / Status Funnel -->
+                <div
+                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://api.iconify.design/lucide:filter.svg?color=%238b5cf6" width="20">
+                        Order Funnel
+                    </h3>
+                    <div style="height: 350px;">
+                        <canvas id="orderFunnelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                <!-- Farmer Leaderboard -->
+                <div
+                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://api.iconify.design/lucide:award.svg?color=%23f59e0b" width="20">
+                        Top Farmers by Revenue
+                    </h3>
+                    <div style="height: 300px;">
+                        <canvas id="farmerLeaderboardChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Revenue Trend -->
+                <div
+                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://api.iconify.design/lucide:dollar-sign.svg?color=%2310b981" width="20">
+                        Daily Revenue Trend (30 Days)
+                    </h3>
+                    <div style="height: 300px;">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Profile View -->
+        <div id="profile-view" style="display: none;">
+            <div style="width: 100%;">
+                <div
+                    style="background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%;">
+                    <div
+                        style="display: flex; align-items: center; gap: 32px; border-bottom: 2px solid #f1f5f9; padding-bottom: 32px; margin-bottom: 32px;">
+                        <div style="width: 100px; height: 100px; background: #ff7e21; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700;"
+                            id="profile-avatar-large">
+                            AD
+                        </div>
+                        <div>
+                            <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+                                id="profile-name-display">Admin</h2>
+                            <p style="color: #64748b;" id="profile-role-display">Super Administrator</p>
+                        </div>
+                    </div>
+
+                    <form id="profile-form" onsubmit="event.preventDefault(); handleProfileUpdate();">
+                        <!-- Personal Info Section -->
+                        <h3
+                            style="font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+                            <img src="https://api.iconify.design/lucide:user.svg?color=%2364748b" width="18">
+                            Personal Information
+                        </h3>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Full
+                                    Name</label>
+                                <input type="text" id="profile-full-name" required
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Account
+                                    Type</label>
+                                <input type="text" id="profile-role" disabled
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #94a3b8; font-weight: 500; cursor: not-allowed;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <label
+                                style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Email
+                                Address</label>
+                            <input type="email" id="profile-email" required
+                                style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                        </div>
+
+                        <!-- Security Section -->
+                        <div
+                            style="border-top: 1px solid #f1f5f9; padding-top: 32px; margin-top: 32px; margin-bottom: 32px;">
+                            <h3
+                                style="font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+                                <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2310b981"
+                                    width="18">
+                                Security & Password
+                            </h3>
+
+                            <div style="margin-bottom: 24px;">
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Current
+                                    Password</label>
+                                <input type="password" id="current-password"
+                                    placeholder="Verify with current password to save changes"
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Required only if you are
+                                    changing your password.</p>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                <div>
+                                    <label
+                                        style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">New
+                                        Password</label>
+                                    <input type="password" id="new-password" placeholder="Min. 8 characters"
+                                        style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                </div>
+                                <div>
+                                    <label
+                                        style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Confirm
+                                        New Password</label>
+                                    <input type="password" id="confirm-password" placeholder="Repeat new password"
+                                        style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit"
+                                style="padding: 14px 40px; background: #ff7e21; color: white; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(255, 126, 33, 0.2);"
+                                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 8px -1px rgba(255, 126, 33, 0.3)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(255, 126, 33, 0.2)'">
+                                Save All Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Details Modal -->
+        <div id="user-modal"
+            class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onclick="if(event.target === this) closeUserModal()">
+            <div class="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-stone-900">User Details</h3>
+                    <button onclick="closeUserModal()"
+                        class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200">
+                        <img src="https://api.iconify.design/lucide:x.svg?color=%231c1917" width="18">
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-2xl font-bold text-stone-500"
+                            id="modal-user-avatar">
+                            --
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-stone-900" id="modal-user-name">--</h4>
+                            <p class="text-sm text-stone-500" id="modal-user-role">--</p>
+                            <div id="modal-user-status" class="mt-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-stone-50 rounded-xl">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Email Address
+                            </p>
+                            <p class="text-sm font-semibold text-stone-700 break-all" id="modal-user-email">--</p>
+                        </div>
+                        <div class="p-4 bg-stone-50 rounded-xl">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Phone Number
+                            </p>
+                            <p class="text-sm font-semibold text-stone-700" id="modal-user-phone">--</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-stone-50 rounded-xl">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Address</p>
+                        <p class="text-sm font-semibold text-stone-700" id="modal-user-address">--</p>
+                    </div>
+
+                    <div class="p-4 bg-stone-50 rounded-xl flex justify-between items-center">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Joined On</p>
+                        <p class="text-sm font-semibold text-stone-700" id="modal-user-joined">--</p>
+                    </div>
+
+                    <!-- Dynamic Stats Container -->
+                    <div id="modal-user-stats-container" class="pt-4 border-t border-stone-100">
+                        <!-- Content populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" style="display: none;"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                        id="confirm-icon-container">
+                        <img src="https://api.iconify.design/lucide:alert-triangle.svg?color=%23ef4444" width="24"
+                            id="confirm-icon">
+                    </div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2" id="confirm-title">Are you sure?</h3>
+                    <p class="text-sm text-stone-500 mb-6" id="confirm-message">Do you really want to perform this
+                        action?</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="closeConfirmModal()"
+                            class="px-4 py-2 rounded-lg bg-stone-100 text-stone-600 font-bold text-sm hover:bg-stone-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button id="confirm-action-btn"
+                            class="px-4 py-2 rounded-lg bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30">
+                            Yes, I'm sure
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Global error handler for debugging
+            window.onerror = function (msg, url, lineNo, columnNo, error) {
+                console.error('Global Error: ', msg, ' at ', url, ':', lineNo);
+                return false;
+            };
+
+            function switchView(viewName) {
+                // Views
+                const views = {
+                    overview: document.getElementById('dashboard-overview'),
+                    users: document.getElementById('manage-users-view'),
+                    transactions: document.getElementById('transactions-view'),
+                    exports: document.getElementById('exports-view'),
+                    activity: document.getElementById('activity-view'),
+                    analysis: document.getElementById('analysis-view'),
+                    profile: document.getElementById('profile-view')
+                };
+
+                // Nav Items
+                const navs = {
+                    overview: document.getElementById('nav-overview'),
+                    users: document.getElementById('nav-users'),
+                    transactions: document.getElementById('nav-transactions'),
+                    exports: document.getElementById('nav-exports'),
+                    activity: document.getElementById('nav-activity'),
+                    analysis: document.getElementById('nav-analysis'),
+                    profile: document.getElementById('nav-profile')
+                };
+
+                // Hide all, Show selected
+                Object.keys(views).forEach(key => {
+                    if (views[key]) views[key].style.display = 'none';
+                });
+                if (views[viewName]) views[viewName].style.display = 'block';
+
+                // Reset Nav Styles
+                Object.keys(navs).forEach(key => {
+                    if (navs[key]) {
+                        navs[key].style.color = '#94a3b8';
+                        navs[key].style.background = 'transparent';
+                        // Reset icon color
+                        const img = navs[key].querySelector('img');
+                        if (img) img.src = img.src.replace('white', '%2394a3b8');
+                    }
+                });
+
+                // Set Active Nav
+                if (navs[viewName]) {
+                    navs[viewName].style.color = 'white';
+                    navs[viewName].style.background = 'rgba(255, 255, 255, 0.1)';
+                    const img = navs[viewName].querySelector('img');
+                    if (img) img.src = img.src.replace('%2394a3b8', 'white');
+                }
+
+                // Load Data
+                if (viewName === 'users') loadUsers();
+                if (viewName === 'transactions') loadTransactions();
+                if (viewName === 'exports') loadExports();
+                if (viewName === 'activity') loadActivityLogs();
+                if (viewName === 'analysis') loadAnalysisData();
+                if (viewName === 'profile') loadAdminProfile();
+                if (viewName === 'overview') loadAdminStats();
+            }
+
+            async function loadTransactions() {
+                const tbody = document.getElementById('transactions-table-body');
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">Loading transactions...</td></tr>';
+
+                try {
+                    const response = await fetch('../../backend/api/admin/get-all-orders.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        tbody.innerHTML = '';
+                        if (!result.data || result.data.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">No transactions found.</td></tr>';
+                            return;
+                        }
+
+                        result.data.forEach(order => {
+                            let statusColor = 'bg-stone-100 text-stone-600';
+                            let displayStatus = order.status.toUpperCase();
+                            const s = order.status.toLowerCase();
+                            const p = (order.payment_status || '').toLowerCase();
+
+                            // 1. Determine Color & Label Overrides
+                            if (s === 'delivered') {
+                                statusColor = 'bg-green-100 text-green-700';
+                            } else if (s === 'cancelled' || s === 'cancel' || s === 'canceled') {
+                                statusColor = 'bg-red-100 text-red-700';
+                                displayStatus = 'CANCELLED';
+                            } else if (s === 'rejected' || s === 'declined') {
+                                statusColor = 'bg-red-100 text-red-700';
+                                displayStatus = 'REJECTED';
+                            } else if (s === 'shipped') {
+                                statusColor = 'bg-blue-100 text-blue-700';
+                            } else if (s === 'confirmed' || s === 'approved') {
+                                statusColor = 'bg-cyan-100 text-cyan-700';
+                                displayStatus = 'APPROVED';
+                            } else if (s === 'processing') {
+                                statusColor = 'bg-orange-100 text-orange-700';
+                            } else if (s === 'pending') {
+                                statusColor = 'bg-yellow-100 text-yellow-700';
+                            }
+
+                            // 2. Check Payment Status override (unless already shipped/delivered/cancelled/rejected/declined)
+                            if ((p === 'paid' || p === 'completed') &&
+                                !['shipped', 'delivered', 'cancelled', 'cancel', 'canceled', 'rejected', 'declined'].includes(s)) {
+                                statusColor = 'bg-teal-100 text-teal-700';
+                                displayStatus = 'PAID';
+                            }
+
+                            // 3. Fix Image Path (uploads is in project root, so ../../uploads/...)
+                            const imagePath = order.product_image ? `../../${order.product_image}` : 'https://placehold.co/100x100?text=No+Image';
+
+                            tbody.innerHTML += `
+                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                <td style="padding: 16px; font-weight: 700;">#${order.id}</td>
+                                <td style="padding: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="${imagePath}" style="width: 32px; height: 32px; border-radius: 4px; object-fit: cover; border:1px solid #f1f5f9;">
+                                        <span style="font-size: 14px; font-weight: 500;">${order.product_name}</span>
+                                    </div>
+                                </td>
+                                <td style="padding: 16px; font-size: 13px; color: #57534e;">${order.customer_name}</td>
+                                <td style="padding: 16px; font-size: 13px; color: #57534e;">${order.farmer_name}</td>
+                                <td style="padding: 16px; font-weight: 700;">$${parseFloat(order.total_price).toFixed(2)}</td>
+                                <td style="padding: 16px;">
+                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${displayStatus}</span>
+                                </td>
+                            </tr>
+                        `;
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
+                }
+            }
+
+            async function loadExports() {
+                const tbody = document.getElementById('exports-table-body');
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">Loading exports...</td></tr>';
+
+                try {
+                    const response = await fetch('../../backend/api/admin/get-export-logs.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        tbody.innerHTML = '';
+                        if (!result.data || result.data.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">No export logs found.</td></tr>';
+                            return;
+                        }
+
+                        result.data.forEach(log => {
+                            let statusColor = 'bg-stone-100 text-stone-600';
+                            if (log.status === 'delivered') statusColor = 'bg-green-100 text-green-700';
+                            else if (log.status === 'shipped') statusColor = 'bg-blue-100 text-blue-700';
+                            else if (log.status === 'customs') statusColor = 'bg-purple-100 text-purple-700';
+                            else if (log.status === 'packaged') statusColor = 'bg-orange-100 text-orange-700';
+
+                            tbody.innerHTML += `
+                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                <td style="padding: 16px; font-weight: 700;">#${log.id}</td>
+                                <td style="padding: 16px; font-weight: 600; color:#444;">${log.product_name}</td>
+                                <td style="padding: 16px; font-size: 13px; color: #57534e;">${log.farmer_name}</td>
+                                <td style="padding: 16px; font-size: 13px; font-weight:600;">${log.destination_country}</td>
+                                <td style="padding: 16px;">${parseFloat(log.quantity)} ${log.unit}</td>
+                                <td style="padding: 16px;">
+                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${log.status}</span>
+                                </td>
+                            </tr>
+                        `;
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
+                }
+            }
+
+            async function loadActivityLogs() {
+                const tbody = document.getElementById('all-activity-table-body');
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">Loading activity logs...</td></tr>';
+
+                try {
+                    const response = await fetch('../../backend/api/admin/get-all-activity.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        tbody.innerHTML = '';
+                        if (!result.data || result.data.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">No activity found.</td></tr>';
+                            return;
+                        }
+
+                        result.data.forEach(log => {
+                            const date = new Date(log.timestamp).toLocaleString();
+                            let typeColor = 'bg-gray-100 text-gray-600';
+                            if (log.type === 'order') typeColor = 'bg-blue-50 text-blue-600';
+                            if (log.type === 'product') typeColor = 'bg-orange-50 text-orange-600';
+                            if (log.type === 'user') typeColor = 'bg-green-50 text-green-600';
+                            if (log.type === 'review') typeColor = 'bg-purple-50 text-purple-600';
+
+                            tbody.innerHTML += `
+                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                <td style="padding: 16px; font-size: 13px; color: #64748b;">${date}</td>
+                                <td style="padding: 16px;">
+                                    <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
+                                    <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role}</div>
+                                </td>
+                                <td style="padding: 16px;">
+                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action}</div>
+                                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${log.details}</div>
+                                </td>
+                                <td style="padding: 16px;">
+                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${typeColor}">${log.type}</span>
+                                </td>
+                            </tr>
+                        `;
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
+                    }
+                } catch (error) {
+                    console.error(error);
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
+                }
+            }
+
+            let globalUsers = [];
+
+            async function loadUsers() {
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">Loading users...</td></tr>';
+
+                try {
+                    const response = await fetch('../../backend/api/admin/get-users.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        globalUsers = result.users;
+                        renderUsers(globalUsers);
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
+                    }
+                } catch (error) {
+                    console.error("Error loading users:", error);
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
+                }
+            }
+
+            function filterUsers() {
+                const input = document.getElementById('user-search-input').value.toLowerCase();
+                const filtered = globalUsers.filter(user =>
+                    user.full_name.toLowerCase().startsWith(input)
+                );
+                renderUsers(filtered);
+            }
+
+            function renderUsers(users) {
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = '';
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color: #94a3b8;">No users found.</td></tr>';
+                    return;
+                }
+
+                users.forEach(user => {
+                    const roleColor = user.role === 'farmer' ? '#22c55e' : (user.role === 'admin' ? '#ff0000' : '#3b82f6');
+                    const isActive = user.is_active == 1;
+
+                    // safely stringify the user object for the View button
+                    const userString = JSON.stringify(user).replace(/"/g, '&quot;');
+
+                    tbody.innerHTML += `
+                        <tr style="border-bottom: 1px solid #f8fafc; hover:background:#f1f5f9;">
+                            <td style="padding: 16px; text-align: center;">
+                                <div style="font-weight:600;">${user.full_name}</div>
+                                <div style="font-size:12px; color:#64748b;">${user.email}</div>
+                            </td>
+                            <td style="padding: 16px; text-align: center;">
+                                <span style="color:${roleColor}; font-weight:600; text-transform:uppercase; font-size:12px;">${user.role}</span>
+                            </td>
+                            <td style="padding: 16px; color:#64748b; font-size:13px; text-align: center;">${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td style="padding: 16px;">
+                                <div class="flex gap-2" style="justify-content: center;">
+                                    <button onclick="viewUser(${userString})" style="background:#eff6ff; color:#3b82f6; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">View</button>
+                                    
+                                    ${isActive ?
+                            `<button onclick="updateUserStatus(${user.id}, 'block')" style="background:#fef2f2; color:#ef4444; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">Block</button>` :
+                            `<button onclick="updateUserStatus(${user.id}, 'unblock')" style="background:#f0fdf4; color:#22c55e; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">Unblock</button>`
+                        }
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            function closeConfirmModal() {
+                document.getElementById('confirmation-modal').style.display = 'none';
+            }
+
+            function showConfirmModal(title, message, isDestructive, onConfirm) {
+                const modal = document.getElementById('confirmation-modal');
+                const titleEl = document.getElementById('confirm-title');
+                const messageEl = document.getElementById('confirm-message');
+                const confirmBtn = document.getElementById('confirm-action-btn');
+                const iconContainer = document.getElementById('confirm-icon-container');
+                const icon = document.getElementById('confirm-icon');
+
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+
+                if (isDestructive) {
+                    iconContainer.className = "w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4";
+                    icon.src = "https://api.iconify.design/lucide:alert-triangle.svg?color=%23ef4444";
+                    confirmBtn.className = "px-4 py-2 rounded-lg bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30";
+                } else {
+                    iconContainer.className = "w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4";
+                    icon.src = "https://api.iconify.design/lucide:check-circle.svg?color=%2322c55e";
+                    confirmBtn.className = "px-4 py-2 rounded-lg bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30";
+                }
+
+                confirmBtn.onclick = () => {
+                    onConfirm();
+                    closeConfirmModal();
+                };
+
+                modal.style.display = 'flex';
+            }
+
+            async function updateUserStatus(userId, action) {
+                const isBlock = action === 'block';
+
+                showConfirmModal(
+                    isBlock ? 'Block User?' : 'Unblock User?',
+                    isBlock ? 'Are you sure you want to block this user? They will not be able to log in.' : 'Are you sure you want to unblock this user? Access will be restored.',
+                    isBlock, // true = destructive (red), false = safe (green)
+                    async () => {
+                        try {
+                            const response = await fetch('../../backend/api/admin/update-user-status.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ user_id: userId, action: action })
+                            });
+                            const result = await response.json();
+
+                            if (result.success) {
+                                loadUsers(); // Reload table
+                            } else {
+                                showToast('Error: ' + result.message, 'error');
+                            }
+                        } catch (error) {
+                            showToast('Connection failed', 'error');
+                        }
+                    }
+                );
+            }
+
+            async function viewUser(user) {
+                document.getElementById('modal-user-name').textContent = user.full_name;
+                document.getElementById('modal-user-email').textContent = user.email;
+                document.getElementById('modal-user-phone').textContent = user.phone || 'N/A';
+                document.getElementById('modal-user-address').textContent = user.address || 'N/A';
+                document.getElementById('modal-user-role').textContent = user.role.toUpperCase();
+                document.getElementById('modal-user-joined').textContent = new Date(user.created_at).toLocaleString();
+
+                document.getElementById('modal-user-avatar').textContent = user.full_name.charAt(0);
+
+                // Re-use logic for status badge in modal
+                const isVerified = user.is_verified == 1;
+                const isActive = user.is_active == 1;
+                let badge = '';
+                if (!isActive) badge = '<span class="px-2 py-1 bg-red-100 text-red-600 rounded-md text-xs font-bold">BLOCKED</span>';
+                else if (isVerified) badge = '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-md text-xs font-bold">VERIFIED ACCOUNT</span>';
+                else badge = '<span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded-md text-xs font-bold">VERIFICATION PENDING</span>';
+
+                document.getElementById('modal-user-status').innerHTML = badge;
+
+                const statsContainer = document.getElementById('modal-user-stats-container');
+                statsContainer.innerHTML = '<p class="text-center text-sm text-stone-500 py-4">Loading history...</p>';
+
+                document.getElementById('user-modal').classList.remove('hidden');
+
+                try {
+                    const response = await fetch(`../../backend/api/admin/get-user-history.php?id=${user.id}&role=${user.role}`);
+                    const result = await response.json();
+
+                    if (result.success && result.data) {
+                        const data = result.data;
+                        let html = '';
+
+                        if (user.role === 'farmer') {
+                            html += `
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="p-3 bg-green-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Total Earnings</p>
+                                    <p class="text-lg font-bold text-green-700">$${parseFloat(data.total_earnings).toLocaleString()}</p>
+                                </div>
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Products Listed</p>
+                                    <p class="text-lg font-bold text-orange-700">${data.total_products}</p>
+                                </div>
+                            </div>
+                            <h4 class="text-sm font-bold text-stone-900 mb-2">Recent Sales</h4>
+                        `;
+                        } else {
+                            html += `
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Total Spent</p>
+                                    <p class="text-lg font-bold text-blue-700">$${parseFloat(data.total_spending).toLocaleString()}</p>
+                                </div>
+                                <div class="p-3 bg-purple-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Total Orders</p>
+                                    <p class="text-lg font-bold text-purple-700">${data.total_orders}</p>
+                                </div>
+                            </div>
+                            <h4 class="text-sm font-bold text-stone-900 mb-2">Recent Purchases</h4>
+                        `;
+                        }
+
+                        if (data.history && data.history.length > 0) {
+                            html += `
+                            <div class="overflow-y-auto max-h-40 border rounded-lg border-stone-100">
+                                <table class="w-full text-left border-collapse">
+                                    <thead class="bg-stone-50 sticky top-0">
+                                        <tr>
+                                            <th class="p-2 text-[10px] font-bold text-stone-500">Date</th>
+                                            <th class="p-2 text-[10px] font-bold text-stone-500">${user.role === 'farmer' ? 'Customer' : 'Seller'}</th>
+                                            <th class="p-2 text-[10px] font-bold text-stone-500">Product</th>
+                                            <th class="p-2 text-[10px] font-bold text-stone-500">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                            data.history.forEach(item => {
+                                html += `
+                                <tr class="border-b border-stone-50">
+                                    <td class="p-2 text-xs text-stone-600">${new Date(item.order_date).toLocaleDateString()}</td>
+                                    <td class="p-2 text-xs font-semibold text-stone-700">${user.role === 'farmer' ? item.customer_name : item.farmer_name}</td>
+                                    <td class="p-2 text-xs text-stone-600">${item.product_name}</td>
+                                    <td class="p-2 text-xs font-bold text-stone-900">$${parseFloat(item.total_price).toFixed(2)}</td>
+                                </tr>
+                            `;
+                            });
+                            html += `</tbody></table></div>`;
+                        } else {
+                            html += `<p class="text-xs text-stone-500 italic">No recent activity.</p>`;
+                        }
+
+                        statsContainer.innerHTML = html;
+                    } else {
+                        statsContainer.innerHTML = '<p class="text-red-500 text-xs text-center">Failed to load history.</p>';
+                    }
+                } catch (err) {
+                    console.error(err);
+                    statsContainer.innerHTML = '<p class="text-red-500 text-xs text-center">Error loading history.</p>';
+                }
+            }
+
+            function closeUserModal() {
+                document.getElementById('user-modal').classList.add('hidden');
+            }
+
+            // Check Admin Auth (Simple client-side check, real protection is on backend)
+            // In a real app, we'd check a session token or cookie.
+
+
+            // Toast Notification System
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                if (!container) return;
+
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+
+                const icon = type === 'success' ? 'lucide:check-circle' : (type === 'error' ? 'lucide:alert-circle' : 'lucide:alert-triangle');
+                const iconColor = type === 'success' ? '%2316a34a' : (type === 'error' ? '%23dc2626' : '%23ca8a04');
+
+                toast.innerHTML = `
+                    <div class="toast-icon">
+                        <img src="https://api.iconify.design/${icon}.svg?color=${iconColor}" width="20">
+                    </div>
+                    <div class="toast-message">${message}</div>
+                    <div class="toast-progress" style="animation: progress 3s linear forwards;"></div>
+                `;
+
+                container.appendChild(toast);
+
+                // Force reflow for transform animation
+                setTimeout(() => toast.classList.add('show'), 10);
+
+                // Remove after 3s
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            }
+
+            async function loadAdminStats(period = '12_months') {
+                const activityList = document.getElementById('activity-list');
+                const totalUsersEl = document.getElementById('total-users');
+                const totalRevenueEl = document.getElementById('total-revenue');
+                const activeOrdersEl = document.getElementById('active-orders');
+                const pendingApprovalsEl = document.getElementById('pending-approvals');
+
+                try {
+                    console.log('Fetching admin stats...');
+                    const url = `../../backend/api/analytics/get-admin-stats.php?period=${period}`;
+                    const response = await fetch(url);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('Admin stats result:', result);
+
+                    if (result.success) {
+                        // 1. Update Top Cards
+                        const stats = result.stats || {};
+
+                        if (totalUsersEl) totalUsersEl.innerText = (stats.total_users || 0).toLocaleString();
+                        if (totalRevenueEl) {
+                            const rev = parseFloat(stats.revenue || 0);
+                            totalRevenueEl.innerText = '$' + (isNaN(rev) ? '0' : rev.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                        }
+                        if (activeOrdersEl) activeOrdersEl.innerText = (stats.active_orders || 0).toLocaleString();
+                        if (pendingApprovalsEl) pendingApprovalsEl.innerText = (stats.pending_approvals || 0).toLocaleString();
+
+                        // 2. Top Farmers
+                        const topFarmersList = document.getElementById('top-farmers-list');
+                        if (topFarmersList) {
+                            topFarmersList.innerHTML = '';
+                            if (result.top_farmers && result.top_farmers.length > 0) {
+                                result.top_farmers.forEach(farmer => {
+                                    topFarmersList.innerHTML += `
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                                     <div style="display: flex; align-items: center; gap: 12px;">
                                         <div style="width: 32px; height: 32px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #94a3b8; font-size: 12px;">
                                             ${farmer.full_name.charAt(0)}
                                         </div>
                                         <div style="flex: 1;">
                                             <div style="font-size: 13px; font-weight: 700; color: white;">${farmer.full_name}</div>
+<<<<<<< HEAD
                                             <div style="font-size: 11px; color: #64748b;">${formatCurrency(farmer.total_sales)} Sales</div>
                                         </div>
                                     </div>
@@ -417,6 +1500,28 @@
                                 const timeAgo = new Date(user.created_at).toLocaleDateString();
 
                                 recentRegList.innerHTML += `
+=======
+                                            <div style="font-size: 11px; color: #64748b;">$${parseFloat(farmer.total_sales).toLocaleString()} Sales</div>
+                                        </div>
+                                    </div>
+                                `;
+                                });
+                            } else {
+                                topFarmersList.innerHTML = '<div style="font-size: 12px; color: #64748b;">No sales data yet.</div>';
+                            }
+                        }
+
+                        // 3. Recent Registrations
+                        const recentRegList = document.getElementById('recent-registrations-list');
+                        if (recentRegList) {
+                            recentRegList.innerHTML = '';
+                            if (result.recent_registrations && result.recent_registrations.length > 0) {
+                                result.recent_registrations.forEach(user => {
+                                    const roleColor = user.role === 'farmer' ? '#22c55e' : '#3b82f6';
+                                    const timeAgo = new Date(user.created_at).toLocaleDateString();
+
+                                    recentRegList.innerHTML += `
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <div style="width: 6px; height: 6px; border-radius: 50%; background: ${roleColor};"></div>
@@ -425,6 +1530,7 @@
                                         <span style="font-size: 10px; color: #64748b;">${timeAgo}</span>
                                     </div>
                                 `;
+<<<<<<< HEAD
                             });
                         } else {
                             recentRegList.innerHTML = '<div style="font-size: 12px; color: #64748b;">No recent users.</div>';
@@ -516,6 +1622,356 @@
             });
         }
     </script>
+=======
+                                });
+                            } else {
+                                recentRegList.innerHTML = '<div style="font-size: 12px; color: #64748b;">No recent users.</div>';
+                            }
+                        }
+
+                        if (result.sales_chart) {
+                            renderSalesChart(result.sales_chart.labels, result.sales_chart.data);
+                        }
+
+                        // 4. Render Recent Activity
+                        if (activityList) {
+                            activityList.innerHTML = '';
+
+                            if (result.recent_activity && result.recent_activity.length > 0) {
+                                result.recent_activity.forEach(log => {
+                                    const date = new Date(log.timestamp).toLocaleString();
+                                    let typeColor = 'bg-gray-100 text-gray-600';
+                                    if (log.type === 'order') typeColor = 'bg-blue-50 text-blue-600';
+                                    if (log.type === 'product') typeColor = 'bg-orange-50 text-orange-600';
+                                    if (log.type === 'user') typeColor = 'bg-green-50 text-green-600';
+                                    if (log.type === 'review') typeColor = 'bg-purple-50 text-purple-600';
+
+                                    activityList.innerHTML += `
+                                    <tr style="border-bottom: 1px solid #f8fafc;">
+                                        <td style="padding: 16px; font-size: 13px; color: #64748b;">${date}</td>
+                                        <td style="padding: 16px;">
+                                            <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
+                                            <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role}</div>
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action}</div>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${log.details}</div>
+                                        </td>
+                                        <td style="padding: 16px;">
+                                            <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${typeColor}">${log.type}</span>
+                                        </td>
+                                    </tr>
+                                `;
+                                });
+                            } else {
+                                activityList.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px; color: #94a3b8;">No recent activity found.</td></tr>';
+                            }
+                        }
+
+                    } else {
+                        console.error('Failed to load stats:', result.message);
+                        if (activityList) activityList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: red;">Failed: ${result.message}</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error('Connection error:', error);
+                    if (activityList) activityList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px; color: red;">Error: ${error.message}</td></tr>`;
+                }
+            }
+
+            let salesChart;
+
+            function renderSalesChart(labels, data) {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels.length > 0 ? labels : ['No Data'],
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: data.length > 0 ? data : [0],
+                            borderColor: '#ff7e21',
+                            backgroundColor: 'rgba(255, 126, 33, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9' },
+                                ticks: {
+                                    callback: function (value) {
+                                        if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
+                                        if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'k';
+                                        return '$' + value;
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            let analysisCharts = {};
+
+            async function loadAnalysisData() {
+                try {
+                    const response = await fetch('../../backend/api/admin/get-admin-analytics.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        renderAnalysisCharts(result.data);
+                    } else {
+                        console.error('Failed to load analysis data:', result.message);
+                    }
+                } catch (error) {
+                    console.error('Error in analysis fetch:', error);
+                }
+            }
+
+            function renderAnalysisCharts(data) {
+                const colors = ['#3b82f6', '#ff7e21', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#475569'];
+
+                // Common legend config for dot style and no filtering
+                const dotLegendConfig = {
+                    onClick: (e) => e.stopPropagation(),
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20,
+                        font: { size: 12, weight: '500' }
+                    }
+                };
+
+                // 1. User Growth Chart
+                if (analysisCharts.growth) analysisCharts.growth.destroy();
+                const growthCtx = document.getElementById('growthTrendChart').getContext('2d');
+                const dates = [];
+                for (let i = 29; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    dates.push(d.toISOString().split('T')[0]);
+                }
+                let customerTotal = 0, farmerTotal = 0;
+                const customers = dates.map(d => {
+                    const found = data.user_growth.find(i => i.date === d && i.role === 'customer');
+                    customerTotal += found ? parseInt(found.count) : 0;
+                    return customerTotal;
+                });
+                const farmers = dates.map(d => {
+                    const found = data.user_growth.find(i => i.date === d && i.role === 'farmer');
+                    farmerTotal += found ? parseInt(found.count) : 0;
+                    return farmerTotal;
+                });
+
+                analysisCharts.growth = new Chart(growthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates.map(d => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })),
+                        datasets: [
+                            { label: 'Customers', data: customers, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3 },
+                            { label: 'Farmers', data: farmers, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.3 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: dotLegendConfig, tooltip: { mode: 'index', intersect: false } },
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { autoSkip: true, maxRotation: 0 } } }
+                    }
+                });
+
+                // 2. Order Funnel
+                if (analysisCharts.funnel) analysisCharts.funnel.destroy();
+                const funnelCtx = document.getElementById('orderFunnelChart').getContext('2d');
+                analysisCharts.funnel = new Chart(funnelCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.order_status.map(i => i.status.toUpperCase() + ' (' + i.count + ')'),
+                        datasets: [{ data: data.order_status.map(i => i.count), backgroundColor: colors }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { ...dotLegendConfig, position: 'bottom' } }
+                    }
+                });
+
+                // 3. Farmer Leaderboard
+                if (analysisCharts.leaderboard) analysisCharts.leaderboard.destroy();
+                const leadCtx = document.getElementById('farmerLeaderboardChart').getContext('2d');
+                analysisCharts.leaderboard = new Chart(leadCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.farmer_leaderboard.map(i => i.farmer_name),
+                        datasets: [{ label: 'Revenue ($)', data: data.farmer_leaderboard.map(i => i.total_revenue), backgroundColor: '#ff7e21', borderRadius: 8 }]
+                    },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+
+                // 4. Revenue Trend
+                if (analysisCharts.revenue) analysisCharts.revenue.destroy();
+                const revCtx = document.getElementById('revenueTrendChart').getContext('2d');
+                const revenueData = dates.map(d => {
+                    const found = data.revenue_trend.find(i => i.date === d);
+                    return found ? parseFloat(found.daily_revenue) : 0;
+                });
+                analysisCharts.revenue = new Chart(revCtx, {
+                    type: 'line',
+                    data: {
+                        labels: dates.map(d => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })),
+                        datasets: [{ label: 'Revenue ($)', data: revenueData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v } }, x: { ticks: { autoSkip: true, maxRotation: 0 } } }
+                    }
+                });
+            }
+
+            async function loadAdminProfile() {
+                try {
+                    const response = await fetch('../../backend/api/admin/get-profile.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const user = result.data;
+                        document.getElementById('profile-full-name').value = user.full_name || '';
+                        document.getElementById('profile-email').value = user.email || '';
+                        document.getElementById('profile-role').value = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+                        document.getElementById('profile-name-display').textContent = user.full_name || 'Admin';
+                        document.getElementById('profile-role-display').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1) + ' Administrator';
+
+                        // Set Avatar Initial
+                        if (user.full_name) {
+                            const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                            document.getElementById('profile-avatar-large').textContent = initials;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading profile:', error);
+                }
+            }
+
+            async function handleProfileUpdate() {
+                const submitBtn = document.querySelector('#profile-form button[type="submit"]');
+                const originalText = submitBtn.textContent;
+
+                // Field values
+                const fullName = document.getElementById('profile-full-name').value.trim();
+                const email = document.getElementById('profile-email').value.trim();
+
+                // Security values
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                // 1. Basic Field Validations
+                if (fullName.length < 3) {
+                    showToast('Full name must be at least 3 characters long.', 'error');
+                    return;
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showToast('Please enter a valid email address.', 'error');
+                    return;
+                }
+
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+
+                    // 2. Profile Update
+                    const profileResponse = await fetch('../../backend/api/admin/update-profile.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ full_name: fullName, email })
+                    });
+                    const profileResult = await profileResponse.json();
+
+                    if (!profileResult.success) {
+                        throw new Error(profileResult.message);
+                    }
+
+                    // 3. Optional Password Update
+                    if (currentPassword || newPassword || confirmPassword) {
+                        if (!currentPassword || !newPassword || !confirmPassword) {
+                            throw new Error('To change your password, please fill in all security fields.');
+                        }
+                        if (newPassword.length < 8) {
+                            throw new Error('New password must be at least 8 characters long.');
+                        }
+                        if (newPassword !== confirmPassword) {
+                            throw new Error('New passwords do not match.');
+                        }
+
+                        const passResponse = await fetch('../../backend/api/admin/update-password.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                current_password: currentPassword,
+                                new_password: newPassword,
+                                confirm_password: confirmPassword
+                            })
+                        });
+                        const passResult = await passResponse.json();
+                        if (!passResult.success) {
+                            throw new Error('Profile updated, but password change failed: ' + passResult.message);
+                        }
+                        // Reset pass fields on success
+                        document.getElementById('current-password').value = '';
+                        document.getElementById('new-password').value = '';
+                        document.getElementById('confirm-password').value = '';
+                    }
+
+                    showToast('All changes saved successfully!');
+                    loadAdminProfile(); // Refresh displays
+
+                } catch (error) {
+                    console.error('Update error:', error);
+                    showToast(error.message || 'An error occurred while saving.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            }
+
+            async function updateSalesChart(period) {
+                await loadAdminStats(period);
+            }
+
+            async function logout() {
+                try {
+                    await fetch('../../backend/api/auth/logout.php');
+                    window.location.href = '../auth/login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    showToast('Failed to logout', 'error');
+                }
+            }
+
+            window.onload = function () {
+                loadAdminStats();
+                // Default view is overview, so we don't need to call switchView('overview') necessarily 
+                // unless we want to enforce UI state, but loadAdminStats populates the default view.
+            };
+        </script>
+        <div id="toast-container" class="toast-container"></div>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 </body>
 
 </html>

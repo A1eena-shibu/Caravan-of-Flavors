@@ -179,10 +179,17 @@
             <div
                 style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
                 <div>
+<<<<<<< HEAD
                     <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Customer
                         Satisfaction</h3>
                     <div id="rating-distribution" style="display: flex; flex-direction: column; gap: 12px;">
                         <p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>
+=======
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Top Loyal
+                        Customers</h3>
+                    <div id="top-customers-list" style="display: flex; flex-direction: column; gap: 16px;">
+                        <p style="color: #a8a29e; font-size: 12px;">No customer data available.</p>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     </div>
                 </div>
 
@@ -326,6 +333,7 @@
                         statusDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No status data.</p>';
                     }
 
+<<<<<<< HEAD
                     // 4. Rating Distribution
                     const ratingDist = document.getElementById('rating-distribution');
                     if (result.rating_distribution) {
@@ -352,6 +360,27 @@
                         });
                     } else {
                         ratingDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>';
+=======
+                    // 4. Top Customers (Replaced Rating Dist)
+                    const topCustList = document.getElementById('top-customers-list');
+                    if (result.top_customers && result.top_customers.length > 0) {
+                        topCustList.innerHTML = '';
+                        result.top_customers.forEach(qty => {
+                            topCustList.innerHTML += `
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f4; padding-bottom: 8px;">
+                                    <div>
+                                        <p style="font-size: 13px; font-weight: 700; color: #1c1917;">${qty.full_name}</p>
+                                        <p style="font-size: 11px; color: #a8a29e;">${qty.order_count} orders</p>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <p style="font-size: 13px; font-weight: 700; color: #FF7E21;">$${parseFloat(qty.total_spent).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        topCustList.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No customer data yet.</p>';
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     }
 
                     // 5. Growth Target Logic

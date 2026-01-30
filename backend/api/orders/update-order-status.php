@@ -52,7 +52,13 @@ try {
     if ($new_status === 'confirmed' && $current_status === 'pending')
         $allowed = true; // Accept
     if ($new_status === 'cancelled' && $current_status === 'pending')
+<<<<<<< HEAD
         $allowed = true; // Reject
+=======
+        $allowed = true; // Cancel
+    if ($new_status === 'rejected' && $current_status === 'pending')
+        $allowed = true; // Reject (New)
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     if ($new_status === 'shipped' && ($current_status === 'confirmed' || $current_status === 'processing'))
         $allowed = true; // Shipped
     if ($new_status === 'delivered' && $current_status === 'shipped')
@@ -63,7 +69,11 @@ try {
     }
 
     // Update status and timestamp
+<<<<<<< HEAD
     if ($new_status === 'cancelled' && isset($data['reason'])) {
+=======
+    if (($new_status === 'cancelled' || $new_status === 'rejected') && isset($data['reason'])) {
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         $reason = $data['reason'];
         $updateStmt = $pdo->prepare("UPDATE orders SET status = ?, rejection_reason = ?, rejected_at = NOW() WHERE id = ?");
         $result = $updateStmt->execute([$new_status, $reason, $order_id]);
@@ -76,6 +86,11 @@ try {
             $sql .= ", shipped_at = NOW()";
         if ($new_status === 'delivered')
             $sql .= ", delivered_at = NOW()";
+<<<<<<< HEAD
+=======
+        if ($new_status === 'rejected')
+            $sql .= ", rejected_at = NOW()"; // Fallback if no reason provided
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
         $sql .= " WHERE id = ?";
         $updateStmt = $pdo->prepare($sql);
@@ -83,6 +98,18 @@ try {
     }
 
     if ($result) {
+<<<<<<< HEAD
+=======
+        // --- Log to Order Tracking ---
+        $comment = "Order status updated to $new_status";
+        if (isset($reason))
+            $comment .= ". Reason: $reason";
+
+        $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment) VALUES (?, ?, ?)");
+        $trackStmt->execute([$order_id, $new_status, $comment]);
+        // -----------------------------
+
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         echo json_encode(['success' => true, 'message' => "Order status updated to $new_status."]);
     } else {
         throw new Exception("Failed to update order status.");

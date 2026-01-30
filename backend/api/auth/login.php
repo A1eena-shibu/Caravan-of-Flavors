@@ -46,7 +46,11 @@ try {
     }
 
     if (isset($user['is_active']) && !$user['is_active']) {
+<<<<<<< HEAD
         throw new Exception('Your account is inactive. Please contact support.');
+=======
+        throw new Exception('User is blocked by admin. Contact admin for enquire');
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     }
 
     // Start session

@@ -60,7 +60,11 @@ CREATE TABLE orders (
     quantity DECIMAL(10, 2) NOT NULL,
     unit_price DECIMAL(10, 2) NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
+<<<<<<< HEAD
     status ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+=======
+    status ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'rejected') DEFAULT 'pending',
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     delivery_address TEXT NOT NULL,
     payment_method VARCHAR(50),
     payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
@@ -77,7 +81,12 @@ CREATE TABLE orders (
     FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_customer (customer_id),
     INDEX idx_farmer (farmer_id),
+<<<<<<< HEAD
     INDEX idx_status (status)
+=======
+    INDEX idx_status (status),
+    INDEX idx_order_date (order_date)
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 ) ENGINE=InnoDB;
 
 -- Inventory table (for tracking stock)

@@ -282,7 +282,11 @@
             else if (filter === 'shipped') filtered = allOrders.filter(o => o.status === 'shipped');
             else if (filter === 'delivered') filtered = allOrders.filter(o => o.status === 'delivered');
             else if (filter === 'cancelled') filtered = allOrders.filter(o => o.status === 'cancelled' && (o.rejection_reason && o.rejection_reason.includes('Cancelled by Customer')));
+<<<<<<< HEAD
             else if (filter === 'rejected') filtered = allOrders.filter(o => o.status === 'cancelled' && (!o.rejection_reason || !o.rejection_reason.includes('Cancelled by Customer')));
+=======
+            else if (filter === 'rejected') filtered = allOrders.filter(o => o.status === 'rejected' || (o.status === 'cancelled' && (!o.rejection_reason || !o.rejection_reason.includes('Cancelled by Customer'))));
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
             renderOrders(filtered);
         }
@@ -319,7 +323,11 @@
 
                             <div class="px-8 flex flex-col items-center justify-center min-w-[150px]">
                                     <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Total Paid</p>
+<<<<<<< HEAD
                                     <p class="text-2xl font-bold text-primary font-mono">${order.status === 'cancelled' ? formatCurrency(0) : formatCurrency(order.total_price)}</p>
+=======
+                                    <p class="text-2xl font-bold text-primary font-mono">$${(order.status === 'cancelled' || order.status === 'rejected') ? '0.00' : parseFloat(order.total_price).toFixed(2)}</p>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                             </div>
 
                             <div class="flex gap-2">
@@ -342,8 +350,14 @@
         function getButtonsHtml(order, orderJson) {
             const isPaid = order.payment_status === 'paid';
             const isCancelled = order.status === 'cancelled';
+<<<<<<< HEAD
 
             if (isCancelled) {
+=======
+            const isRejected = order.status === 'rejected';
+
+            if (isCancelled || isRejected) {
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 return `<button onclick="openTrackModal('${orderJson}')" class="px-6 py-3 bg-white border border-stone-200 text-stone-600 font-bold text-xs rounded-xl hover:bg-stone-50 transition-all uppercase tracking-widest w-full">Track</button>`;
             }
 
@@ -400,7 +414,12 @@
                 processing: 'bg-orange-50 text-orange-600',
                 shipped: 'bg-primary/10 text-primary',
                 delivered: 'bg-green-50 text-green-600',
+<<<<<<< HEAD
                 cancelled: 'bg-red-50 text-red-600'
+=======
+                cancelled: 'bg-red-50 text-red-600',
+                rejected: 'bg-red-50 text-red-600'
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             };
 
             let displayStatus = status.toUpperCase();
@@ -412,6 +431,10 @@
                     displayStatus = 'REJECTED';
                 }
             }
+<<<<<<< HEAD
+=======
+            if (status === 'rejected') displayStatus = 'REJECTED';
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
             return `<span class="px-3 py-1 rounded-full text-[9px] font-bold tracking-[0.2em] inline-block mb-1 ${styles[status] || styles.pending}">${displayStatus}</span>`;
         }
@@ -437,6 +460,7 @@
                 { id: 'delivered', label: 'Delivered', date: formatDate(order.delivered_at), active: order.status === 'delivered' }
             ];
 
+<<<<<<< HEAD
             if (order.status === 'cancelled') {
                 if (order.rejection_reason && order.rejection_reason.includes('Cancelled by Customer')) {
                     steps[1].label = 'Cancelled';
@@ -453,10 +477,26 @@
                 } else {
                     document.getElementById('rejection-title').innerText = 'ORDER REJECTED';
                 }
+=======
+            if (order.status === 'cancelled' || order.status === 'rejected') {
+                if (order.status === 'cancelled' && order.rejection_reason && order.rejection_reason.includes('Cancelled by Customer')) {
+                    steps[1].label = 'Cancelled';
+                    document.getElementById('rejection-title').innerText = 'ORDER CANCELLED';
+                } else {
+                    steps[1].label = 'Rejected';
+                    document.getElementById('rejection-title').innerText = 'ORDER REJECTED';
+                }
+
+                steps[1].date = formatDate(order.rejected_at || order.updated_at); // Fallback to updated_at for legacy
+                steps[1].active = false; // It stopped here
+                rejectBox.classList.remove('hidden');
+                document.getElementById('track-rejection-reason').innerText = order.rejection_reason || "No reason provided.";
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             }
 
             timeline.innerHTML = steps.map((step, index) => `
                 <div class="relative">
+<<<<<<< HEAD
                     <div class="absolute -left-[41px] top-0 w-5 h-5 rounded-full border-2 ${step.active ? 'bg-primary border-primary' : (order.status === 'cancelled' && index === 1 ? 'bg-red-500 border-red-500' : 'bg-white border-stone-200')} flex items-center justify-center z-10">
                         ${step.active ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
                         ${order.status === 'cancelled' && index === 1 ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
@@ -464,6 +504,15 @@
                     <div>
                         <h4 class="text-sm font-bold ${step.active || (order.status === 'cancelled' && index === 1) ? 'text-stone-900' : 'text-stone-400'} uppercase tracking-wider">${step.label}</h4>
                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">${step.active ? step.date : ''}</p>
+=======
+                    <div class="absolute -left-[41px] top-0 w-5 h-5 rounded-full border-2 ${step.active ? 'bg-primary border-primary' : ((order.status === 'cancelled' || order.status === 'rejected') && index === 1 ? 'bg-red-500 border-red-500' : 'bg-white border-stone-200')} flex items-center justify-center z-10">
+                        ${step.active ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
+                        ${(order.status === 'cancelled' || order.status === 'rejected') && index === 1 ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : ''}
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold ${step.active || ((order.status === 'cancelled' || order.status === 'rejected') && index === 1) ? 'text-stone-900' : 'text-stone-400'} uppercase tracking-wider">${step.label}</h4>
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">${step.active || step.label === 'Rejected' || step.label === 'Cancelled' ? step.date : ''}</p>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     </div>
                 </div>
             `).join('');

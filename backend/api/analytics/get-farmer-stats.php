@@ -37,10 +37,17 @@ try {
     $stmt->execute([$farmer_id]);
     $totalCustomers = $stmt->fetchColumn() ?: 0;
 
+<<<<<<< HEAD
     // 4. Avg Rating
     $stmt = $pdo->prepare("SELECT AVG(r.rating) FROM reviews r JOIN products p ON r.product_id = p.id WHERE p.farmer_id = ?");
     $stmt->execute([$farmer_id]);
     $avgRating = round($stmt->fetchColumn() ?: 0, 1);
+=======
+    // 4. Total Products (Replaced Avg Rating)
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE farmer_id = ?");
+    $stmt->execute([$farmer_id]);
+    $totalProducts = $stmt->fetchColumn() ?: 0;
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
     // 5. Recent Activity (Last 5 orders)
     $stmt = $pdo->prepare("
@@ -179,7 +186,11 @@ try {
             'revenue' => (float) $totalRevenue,
             'active_orders' => (int) $activeOrders,
             'customers' => (int) $totalCustomers,
+<<<<<<< HEAD
             'rating' => (float) $avgRating
+=======
+            'total_products' => (int) $totalProducts
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         ],
         'recent_activity' => $recentActivity,
         'weekly_performance' => $weeklyStats,

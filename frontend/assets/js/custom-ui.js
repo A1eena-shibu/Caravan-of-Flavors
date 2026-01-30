@@ -137,6 +137,7 @@ const CustomUI = {
     }
 };
 
+<<<<<<< HEAD
 const CurrencyHelper = {
     exchangeRates: {
         'INR': 83.25,
@@ -203,3 +204,8 @@ window.getCurrencySymbol = () => {
 };
 window.convertPrice = (usdPrice) => CurrencyHelper.convert(usdPrice);
 window.getUserCurrency = () => CurrencyHelper.userCurrency;
+=======
+// Expose global helpers
+window.showToast = (msg, type) => CustomUI.showToast(msg, type);
+window.showConfirm = (msg) => CustomUI.showConfirm(msg);
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30

@@ -49,7 +49,15 @@ try {
     $updateStmt = $pdo->prepare("UPDATE products SET quantity = quantity - ? WHERE id = ?");
     $updateStmt->execute([$quantity, $product_id]);
 
+<<<<<<< HEAD
     // 4. Create Notification for Farmer
+=======
+    // 4a. Log to Order Tracking
+    $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment) VALUES (?, 'pending', 'Order placed by customer')");
+    $trackStmt->execute([$order_id]);
+
+    // 4b. Create Notification for Farmer
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     $notifStmt = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'New Order Received!', ?, 'order')");
     $notifStmt->execute([$product['farmer_id'], "You have a new order for {$quantity}kg of {$product['product_name']}. Total: \${$total_price}"]);
 

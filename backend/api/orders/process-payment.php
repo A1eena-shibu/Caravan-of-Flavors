@@ -98,6 +98,25 @@ try {
     $stmt = $pdo->prepare("UPDATE orders SET payment_status = 'paid', delivery_address = ?, payment_method = ?, notes = CONCAT(IFNULL(notes, ''), ?) WHERE id IN ($placeholders)");
     $stmt->execute($params);
 
+<<<<<<< HEAD
+=======
+    // --- Log 'paid' status to order_tracking for Activity Feed ---
+    if ($stmt->rowCount() > 0) {
+        $trackingValues = [];
+        $trackingParams = [];
+        foreach ($ids_array as $oid) {
+            $trackingValues[] = "(?, 'paid', 'Payment Received')";
+            $trackingParams[] = $oid;
+        }
+        if (!empty($trackingValues)) {
+            $sqlTracking = "INSERT INTO order_tracking (order_id, status, comment) VALUES " . implode(", ", $trackingValues);
+            $stmtTracking = $pdo->prepare($sqlTracking);
+            $stmtTracking->execute($trackingParams);
+        }
+    }
+    // -------------------------------------------------------------
+
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     if ($stmt->rowCount() > 0) {
         echo json_encode(['success' => true, 'message' => 'Payment processed successfully']);
     } else {

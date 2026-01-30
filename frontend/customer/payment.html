@@ -9,7 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+<<<<<<< HEAD
     <script src="../assets/js/custom-ui.js?v=1.4"></script>
+=======
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script> <!-- Sandbox ID -->
     <script>
@@ -181,7 +184,11 @@
                         if (result.order.customer_name) customerName = result.order.customer_name;
                         if (result.order.customer_email) customerEmail = result.order.customer_email;
 
+<<<<<<< HEAD
                         document.getElementById('amount-display').innerText = formatCurrency(amount);
+=======
+                        document.getElementById('amount-display').innerText = `$${amount.toFixed(2)}`;
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
                         if (result.order.payment_status === 'paid') {
                             showToast("This order is already paid.", "success");
@@ -433,8 +440,13 @@
 
                 var options = {
                     "key": "rzp_test_1DP5mmOlF5G5ag", // Generic Test Key
+<<<<<<< HEAD
                     "amount": Math.round(convertPrice(amount) * 100), // Amount in local currency subunits
                     "currency": getUserCurrency(),
+=======
+                    "amount": amount * 100, // Amount in paise
+                    "currency": "INR", // Changed to INR for better test key compatibility
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     "name": "Caravan of Flavours",
                     "description": orderIds ? "Payment for Multiple Orders" : "Payment for Order #" + legacyOrderId,
                     "image": "../assets/images/logo.png",
@@ -480,10 +492,14 @@
 
                         return actions.order.create({
                             purchase_units: [{
+<<<<<<< HEAD
                                 amount: {
                                     value: convertPrice(amount).toFixed(2),
                                     currency_code: getUserCurrency()
                                 }
+=======
+                                amount: { value: amount }
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                             }]
                         });
                     },

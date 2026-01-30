@@ -309,7 +309,11 @@
                             </div>
                         </td>
                         <td class="px-8 py-6 text-center">
+<<<<<<< HEAD
                             <span class="text-sm font-bold text-stone-900 font-mono">${formatCurrency(order.total_price)}</span>
+=======
+                            <span class="text-sm font-bold text-stone-900 font-mono">$${parseFloat(order.total_price).toFixed(2)}</span>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                         </td>
                         <td class="px-8 py-6 text-center">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}">
@@ -338,7 +342,11 @@
                 renderTable(allOrders.filter(o => o.status === 'cancelled' && (o.rejection_reason && o.rejection_reason.includes('Cancelled by Customer'))));
             }
             else if (status === 'rejected') {
+<<<<<<< HEAD
                 renderTable(allOrders.filter(o => o.status === 'cancelled' && (!o.rejection_reason || !o.rejection_reason.includes('Cancelled by Customer'))));
+=======
+                renderTable(allOrders.filter(o => o.status === 'rejected' || (o.status === 'cancelled' && (!o.rejection_reason || !o.rejection_reason.includes('Cancelled by Customer')))));
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             }
             else renderTable(allOrders.filter(o => o.status === status));
         }
@@ -346,11 +354,20 @@
         function getStatusBadge(status, reason) {
             const styles = {
                 pending: 'bg-stone-100 text-stone-500',
+<<<<<<< HEAD
                 confirmed: 'bg-green-50 text-green-600',
                 processing: 'bg-orange-50 text-orange-600',
                 shipped: 'bg-primary/10 text-primary',
                 delivered: 'bg-green-50 text-green-600',
                 cancelled: 'bg-red-50 text-red-600'
+=======
+                confirmed: 'bg-green-100 text-green-700',
+                processing: 'bg-orange-50 text-orange-600',
+                shipped: 'bg-primary/10 text-primary',
+                delivered: 'bg-green-50 text-green-600',
+                cancelled: 'bg-red-50 text-red-600',
+                rejected: 'bg-red-50 text-red-600'
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             };
 
             let displayStatus = status.toUpperCase();
@@ -362,6 +379,10 @@
                     displayStatus = 'REJECTED';
                 }
             }
+<<<<<<< HEAD
+=======
+            if (status === 'rejected') displayStatus = 'REJECTED';
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
             return `<span class="px-3 py-1 rounded-full text-[9px] font-bold tracking-widest ${styles[status] || styles.pending}">${displayStatus}</span>`;
         }
@@ -373,7 +394,15 @@
                     <button onclick="openRejectModal('${order.id}')" class="bg-stone-50 text-red-600 hover:bg-red-50 action-btn uppercase text-[10px]">REJECT</button>
                 `;
             } else if (order.status === 'confirmed') {
+<<<<<<< HEAD
                 return `<button onclick="updateStatus('${order.id}', 'shipped')" class="bg-primary hover:bg-primary-hover text-white action-btn uppercase text-[10px]">SHIP NOW</button>`;
+=======
+                if (order.payment_status === 'paid') {
+                    return `<button onclick="updateStatus('${order.id}', 'shipped')" class="bg-primary hover:bg-primary-hover text-white action-btn uppercase text-[10px]">SHIP NOW</button>`;
+                } else {
+                    return `<button disabled class="bg-stone-200 text-stone-400 cursor-not-allowed action-btn uppercase text-[10px]" title="Wait for Payment">SHIP NOW</button>`;
+                }
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             }
             return '<span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">PROCESSED</span>';
         }
@@ -402,11 +431,19 @@
             }
 
             closeRejectModal();
+<<<<<<< HEAD
             await updateStatus(orderId, 'cancelled', reason);
         }
 
         async function updateStatus(orderId, status, rejectionReason = null) {
             if (status !== 'cancelled' && !await showConfirm(`Are you sure you want to mark this order as ${status === 'confirmed' ? 'ACCEPTED' : status.toUpperCase()}?`)) return;
+=======
+            await updateStatus(orderId, 'rejected', reason);
+        }
+
+        async function updateStatus(orderId, status, rejectionReason = null) {
+            if (status !== 'cancelled' && status !== 'rejected' && !await showConfirm(`Are you sure you want to mark this order as ${status === 'confirmed' ? 'ACCEPTED' : status.toUpperCase()}?`)) return;
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
             try {
                 const response = await fetch('../../backend/api/orders/update-order-status.php', {
@@ -421,7 +458,11 @@
                 const result = await response.json();
                 if (result.success) {
                     loadOrders();
+<<<<<<< HEAD
                     showToast(`Order status updated to ${status === 'confirmed' ? 'ACCEPTED' : status === 'cancelled' ? 'REJECTED' : status}.`, 'success');
+=======
+                    showToast(`Order status updated to ${status === 'confirmed' ? 'ACCEPTED' : status.toUpperCase()}.`, 'success');
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 } else {
                     showToast(result.message || 'Update failed', 'error');
                 }

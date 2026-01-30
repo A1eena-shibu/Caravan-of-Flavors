@@ -181,12 +181,21 @@
                         <div class="flex justify-between items-center mb-3">
                             <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest">Enter
                                 Bid Amount</label>
+<<<<<<< HEAD
                             <span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded"
                                 id="currency-code-display">USD</span>
                         </div>
                         <div class="relative">
                             <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-stone-300"
                                 id="bid-currency-symbol">$</span>
+=======
+                            <span
+                                class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">USD</span>
+                        </div>
+                        <div class="relative">
+                            <span
+                                class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-stone-300">$</span>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                             <input type="number" step="0.01" name="bid_amount" id="bid-amount-input" required
                                 class="w-full pl-12 pr-6 py-6 bg-stone-50 border border-stone-200 rounded-3xl focus:outline-none focus:border-primary focus:bg-white transition-all text-2xl font-bold text-stone-900">
                         </div>
@@ -248,7 +257,11 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1 leading-none">High Bid</p>
+<<<<<<< HEAD
                                              <p class="text-xl font-bold text-stone-900 font-mono italic">${formatCurrency(auction.current_bid)}</p>
+=======
+                                            <p class="text-xl font-bold text-stone-900 font-mono italic">$${parseFloat(auction.current_bid).toFixed(2)}</p>
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                                         </div>
                                     </div>
                                     
@@ -321,6 +334,7 @@
             document.getElementById('modal-auction-id').value = auction.id;
             document.getElementById('modal-product-name').innerText = auction.product_name;
             document.getElementById('modal-farmer-name').innerText = `Harvested by ${auction.farmer_name}`;
+<<<<<<< HEAD
             document.getElementById('modal-current-bid').innerText = formatCurrency(auction.current_bid);
             document.getElementById('modal-time-left').dataset.expire = auction.end_time;
             document.getElementById('modal-time-left').innerText = calculateTimeLeft(auction.end_time);
@@ -332,6 +346,16 @@
             const minBidLocal = convertPrice(minBidUsd).toFixed(2);
             bidInput.min = minBidLocal;
             bidInput.value = minBidLocal;
+=======
+            document.getElementById('modal-current-bid').innerText = `$${parseFloat(auction.current_bid).toFixed(2)}`;
+            document.getElementById('modal-time-left').dataset.expire = auction.end_time;
+            document.getElementById('modal-time-left').innerText = calculateTimeLeft(auction.end_time);
+
+            const bidInput = document.getElementById('bid-amount-input');
+            const minBid = (parseFloat(auction.current_bid) + 1).toFixed(2);
+            bidInput.min = minBid;
+            bidInput.value = minBid;
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
             const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
             document.getElementById('modal-image').src = imgSrc;
@@ -355,12 +379,15 @@
             btn.disabled = true;
             btn.innerText = "AUTHENTICATING SECURE BID...";
 
+<<<<<<< HEAD
             // Convert bid back to USD for backend
             const bidInLocal = parseFloat(data.bid_amount);
             const rate = CurrencyHelper.exchangeRates[getUserCurrency()] || 1.0;
             const bidInUsd = bidInLocal / rate;
             data.bid_amount = bidInUsd;
 
+=======
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             try {
                 const response = await fetch('../../backend/api/auctions/place-bid.php', {
                     method: 'POST',

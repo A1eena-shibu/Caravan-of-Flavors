@@ -23,8 +23,13 @@ if (session_status() === PHP_SESSION_NONE) {
 try {
     $pdo = getDBConnection();
 
+<<<<<<< HEAD
     // Fetch users with basic info
     $stmt = $pdo->prepare("SELECT id, full_name, email, role, is_active, is_verified, created_at FROM users ORDER BY created_at DESC");
+=======
+    // Fetch users with extended info for detail view
+    $stmt = $pdo->prepare("SELECT id, full_name, email, role, phone, address, is_active, is_verified, created_at FROM users WHERE role != 'admin' ORDER BY created_at DESC");
+>>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
