@@ -78,11 +78,14 @@ try {
     $pdo = getDBConnection();
 
     $stmt = $pdo->prepare("
-        INSERT INTO products (farmer_id, product_name, category, description, price, quantity, unit, image_url, quality_status, is_available) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'approved', 1)
+        INSERT INTO products (farmer_id, product_name, category, description, price, base_currency, farmer_country, quantity, unit, image_url, quality_status, is_available) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', 1)
     ");
 
-    if ($stmt->execute([$farmer_id, $product_name, $category, $description, $price, $quantity, $unit, $image_url])) {
+    $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
+    $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
+
+    if ($stmt->execute([$farmer_id, $product_name, $category, $description, $price, $base_currency, $farmer_country, $quantity, $unit, $image_url])) {
         echo json_encode(['success' => true, 'message' => 'Product added successfully!']);
     } else {
         throw new Exception('Failed to save product to database.');

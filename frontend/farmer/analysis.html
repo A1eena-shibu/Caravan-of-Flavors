@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/main.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -206,11 +207,44 @@
                             style="width: 0%; height: 100%; background: linear-gradient(90deg, #FF7E21 0%, #ff9d52 100%); border-radius: 6px; transition: width 1s ease-in-out;">
                         </div>
                     </div>
-                    <p style="font-size: 11px; color: #1c1917;">Targeting $2,500 monthly revenue</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <p style="font-size: 11px; color: #1c1917;">Targeting <span id="target-display"
+                                style="font-weight: 700; color: #1c1917;">$500.00</span> monthly revenue</p>
+                        <button onclick="openTargetModal()"
+                            style="font-size: 10px; color: #FF7E21; font-weight: 700; background: transparent; border: none; cursor: pointer; text-transform: uppercase;">Edit</button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Target Edit Modal -->
+    <div id="targetModal" onclick="if(event.target === this) closeTargetModal();"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-sm relative shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 class="text-xl font-bold text-stone-900 mb-2">Set Revenue Target</h3>
+            <p class="text-sm text-stone-500 mb-6">Enter your monthly revenue goal in your local currency.</p>
+
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Monthly Target
+                    (<span class="currency-code">USD</span>)</label>
+                <div class="flex items-center bg-stone-50 border border-stone-200 rounded-xl px-4 py-3">
+                    <span class="currency-symbol text-stone-400 font-bold mr-2">$</span>
+                    <input id="new-target-input" type="number"
+                        class="w-full bg-transparent border-none outline-none font-bold text-stone-900 text-lg"
+                        placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeTargetModal()"
+                    class="flex-1 py-3 rounded-xl font-bold text-stone-500 hover:bg-stone-100 transition-colors">Cancel</button>
+                <button onclick="saveTarget()"
+                    class="flex-1 bg-primary hover:bg-primary-hover text-white py-3 rounded-xl font-bold shadow-lg transition-all">Save
+                    Target</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         async function logout() {
@@ -220,7 +254,10 @@
             } catch (error) { console.error('Logout error:', error); }
         }
 
-        window.onload = loadAnalysis;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadAnalysis();
+        };
 
         async function loadAnalysis() {
             try {
@@ -262,7 +299,7 @@
                             bar.onmouseover = () => {
                                 bar.style.opacity = '1';
                                 bar.style.transform = 'scaleY(1.05)';
-                                tooltip.innerText = `$${parseFloat(w.weekly_total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                tooltip.innerText = formatPrice(w.weekly_total);
                                 tooltip.classList.add('visible');
                             };
 
@@ -301,7 +338,7 @@
                                 <div>
                                     <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 8px;">
                                         <span>${product.product_name}</span>
-                                        <span style="color: #FF7E21;">$${parseFloat(product.revenue).toLocaleString()}</span>
+                                        <span style="color: #FF7E21;">${formatPrice(product.revenue)}</span>
                                     </div>
                                     <div style="width: 100%; height: 8px; background: #f5f5f4; border-radius: 4px; overflow: hidden;">
                                         <div style="width: ${width}%; height: 100%; background: #FF7E21; border-radius: 4px;"></div>
@@ -373,7 +410,7 @@
                                         <p style="font-size: 11px; color: #a8a29e;">${qty.order_count} orders</p>
                                     </div>
                                     <div style="text-align: right;">
-                                        <p style="font-size: 13px; font-weight: 700; color: #FF7E21;">$${parseFloat(qty.total_spent).toLocaleString()}</p>
+                                        <p style="font-size: 13px; font-weight: 700; color: #FF7E21;">${formatPrice(qty.total_spent)}</p>
                                     </div>
                                 </div>
                             `;
@@ -384,15 +421,87 @@
                     }
 
                     // 5. Growth Target Logic
-                    const monthlyTarget = 2500;
                     const revenue = result.stats.revenue;
-                    const progress = Math.min(Math.round((revenue / monthlyTarget) * 100), 100);
+                    // Backend returns target in base USD (e.g. 500)
+                    const baseTarget = parseFloat(result.stats.target) || 500;
 
+                    // Format for display (converts to local user currency)
+                    document.getElementById('target-display').innerText = window.CurrencyManager.format(baseTarget);
+
+                    // Calculate progress
+                    const progress = Math.min(Math.round((revenue / baseTarget) * 100), 100);
                     document.getElementById('target-progress').style.width = `${progress}%`;
                     document.getElementById('target-percentage').innerText = `${progress}%`;
                 }
             } catch (error) {
                 console.error('Data error:', error);
+            }
+        }
+
+        function openTargetModal() {
+            document.getElementById('targetModal').classList.remove('hidden');
+            // Show current target converted to local value for editing
+            const rate = window.CurrencyManager.settings.rate || 1;
+            // Get raw USD value from backend (we can fetch again or store in a global var, 
+            // but simplest is to grab from the stored stats if available, or parse. 
+            // Lets just use 2500 default if not found for now, or better: fetch triggers loadAnalysis which stores it)
+            // For simplicity, we assume the user knows their target. 
+            // To be precise:
+            // We need the base USD target. Let's store it on the element data attribute for easy access.
+            const baseTarget = parseFloat(document.getElementById('target-display').dataset.baseTarget) || 500;
+
+            // BUT simpler: Reset input to empty or 0 to let them type fresh.
+            document.getElementById('new-target-input').value = '';
+
+            // Update modal symbols
+            document.querySelector('#targetModal .currency-symbol').innerText = window.CurrencyManager.settings.symbol;
+            document.querySelector('#targetModal .currency-code').innerText = window.CurrencyManager.settings.code;
+        }
+
+        function closeTargetModal() {
+            document.getElementById('targetModal').classList.add('hidden');
+        }
+
+        async function saveTarget() {
+            const inputVal = parseFloat(document.getElementById('new-target-input').value);
+            const saveBtn = document.querySelector('#targetModal button[onclick="saveTarget()"]');
+
+            if (!inputVal || inputVal <= 0) {
+                alert('Please enter a valid target amount.');
+                return;
+            }
+
+            // Show loading state
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = 'Saving...';
+            saveBtn.disabled = true;
+
+            // Convert local input BACK to USD for storage
+            const rate = window.CurrencyManager.settings.rate || 1;
+            const targetInUsd = inputVal / rate;
+
+            try {
+                const response = await fetch('../../backend/api/analytics/update-target.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: targetInUsd })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    closeTargetModal();
+                    await loadAnalysis(); // Reload to see changes
+                    // Optional: Show a toast? For now, the update is visible immediately.
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('Failed to save target. Please check your connection.');
+            } finally {
+                // Restore button
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
             }
         }
 

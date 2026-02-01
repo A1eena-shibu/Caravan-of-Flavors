@@ -18,6 +18,10 @@ if (session_status() === PHP_SESSION_NONE) {
 $data = json_decode(file_get_contents('php://input'), true);
 $accessToken = $data['access_token'] ?? '';
 $role = $data['role'] ?? null;
+// Extra registration details
+$country = $data['country'] ?? null;
+$currency_code = $data['currency_code'] ?? null;
+$currency_symbol = $data['currency_symbol'] ?? null;
 
 if (empty($accessToken)) {
     http_response_code(400);
@@ -64,7 +68,10 @@ try {
             // Found by email, link google_id
             $updateStmt = $pdo->prepare("UPDATE users SET google_id = ?, full_name = ?, profile_image = ? WHERE id = ?");
             $updateStmt->execute([$googleId, $fullName, $profileImage, $existingUserByEmail['id']]);
-            $user = ['id' => $existingUserByEmail['id'], 'role' => $existingUserByEmail['role']];
+            // Re-fetch full user data to ensure we have country/currency if set
+            $stmt = $pdo->prepare("SELECT id, role, country, currency_code, currency_symbol FROM users WHERE id = ?");
+            $stmt->execute([$existingUserByEmail['id']]);
+            $user = $stmt->fetch();
         }
     }
 
@@ -87,10 +94,10 @@ try {
         }
 
         // New user with role - perform registration
-        $insertStmt = $pdo->prepare("INSERT INTO users (email, full_name, role, google_id, profile_image, is_verified) VALUES (?, ?, ?, ?, ?, TRUE)");
-        $insertStmt->execute([$email, $fullName, $normalizedRole, $googleId, $profileImage]);
+        $insertStmt = $pdo->prepare("INSERT INTO users (email, full_name, role, google_id, profile_image, country, currency_code, currency_symbol, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE)");
+        $insertStmt->execute([$email, $fullName, $normalizedRole, $googleId, $profileImage, $country, $currency_code, $currency_symbol]);
         $userId = $pdo->lastInsertId();
-        $user = ['id' => $userId, 'role' => $normalizedRole];
+        $user = ['id' => $userId, 'role' => $normalizedRole, 'country' => $country, 'currency_code' => $currency_code, 'currency_symbol' => $currency_symbol];
     } else {
         // Existing user - update their info
         $updateStmt = $pdo->prepare("UPDATE users SET full_name = ?, profile_image = ? WHERE id = ?");
@@ -104,6 +111,13 @@ try {
     $_SESSION['user_email'] = $email;
     $_SESSION['user_name'] = $fullName;
     $_SESSION['user_role'] = $finalRole;
+    // Store country/currency in session if available (either from new reg or existing user)
+    if (!empty($user['country']))
+        $_SESSION['user_country'] = $user['country'];
+    if (!empty($user['currency_code']))
+        $_SESSION['user_currency_code'] = $user['currency_code'];
+    if (!empty($user['currency_symbol']))
+        $_SESSION['user_currency_symbol'] = $user['currency_symbol'];
 
     echo json_encode([
         'success' => true,

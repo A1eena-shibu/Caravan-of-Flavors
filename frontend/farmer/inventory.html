@@ -202,6 +202,7 @@
                     </div>
                     <div class="space-y-2">
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Price (Base
                             USD / kg)</label>
                         <div class="relative">
@@ -222,9 +223,14 @@
                         </script>
 =======
                         <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Price (USD /
+=======
+                        <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Price (<span
+                                class="currency-code"></span> /
+>>>>>>> 967968b (added currency updation)
                             kg)</label>
                         <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">$</span>
+                            <span
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 currency-symbol">$</span>
                             <input type="number" step="0.01" name="price" placeholder="25.00"
                                 onkeydown="return ['e', 'E', '+', '-'].includes(event.key) ? false : true"
                                 class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-8 pr-4 py-3 text-sm focus:border-primary outline-none transition-all">
@@ -337,21 +343,39 @@
             }
         }
 
-        window.onload = loadProducts;
-
-        window.onload = loadProducts;
+        window.onload = () => {
+            // Initialize currency in background - don't await!
+            // It will trigger auto-refresh when done.
+            CurrencyManager.init();
+            // Load content immediately
+            loadProducts();
+        };
 
         let allProducts = [];
         let currentPage = 1;
         const itemsPerPage = 10;
 
         async function loadProducts() {
+            const tableBody = document.getElementById('product-table-body');
             try {
+                // Ensure table is showing loading state if called again
+                if (!tableBody.querySelector('.animate-spin')) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="padding: 60px; text-align: center;">
+                                <div class="flex flex-col items-center gap-3">
+                                    <img src="https://api.iconify.design/lucide:loader-2.svg" class="w-8 h-8 animate-spin text-primary">
+                                    <p class="text-sm font-medium text-stone-500">Syncing inventory...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
                 const response = await fetch('../../backend/api/products/get-farmer-products.php');
                 const result = await response.json();
 
-                if (result.success && result.data.length > 0) {
-                    allProducts = result.data;
+                if (result.success && result.data && result.data.length > 0) {
                     allProducts = result.data;
                     renderProducts();
                 } else {
@@ -359,15 +383,29 @@
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="padding: 60px; text-align: center;">
+                            <div class="flex flex-col items-center gap-4">
+                                <img src="https://api.iconify.design/lucide:alert-circle.svg?color=%23ef4444" class="w-12 h-12 opacity-40">
+                                <div class="text-center">
+                                    <p class="font-bold text-stone-900">Connection Failed</p>
+                                    <p class="text-xs text-stone-500 mt-1">Unable to reach the inventory server</p>
+                                </div>
+                                <button onclick="loadProducts()" class="bg-primary text-white px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg shadow-primary/20 mt-2">RETRY SYNC</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }
         }
-
 
         function renderProducts() {
             const tableBody = document.getElementById('product-table-body');
             tableBody.innerHTML = '';
 
             const totalItems = allProducts.length;
+            const symbol = CurrencyManager.getSymbol();
 
             if (totalItems === 0) {
                 renderEmptyInventory();
@@ -383,7 +421,7 @@
             currentProducts.forEach(product => {
                 const imageUrl = product.image_url ? `../../${product.image_url}` : 'https://placehold.co/400x400/1c1917/FF7E21?text=Spice';
                 const row = `
-                    <tr style="border-bottom: 1px solid #f5f5f4; hover: background: #fafaf9; transition: all 0.2s;">
+                    <tr style="border-bottom: 1px solid #f5f5f4; hover: background: #fafaf9; transition: all 0.2s;" class="hover:bg-stone-50 group">
                         <td style="padding: 16px 24px;">
                             <div style="display: flex; align-items: center; gap: 14px;">
                                 <div style="width: 44px; height: 44px; border-radius: 10px; overflow: hidden; background: #f5f5f4; border: 1px solid #e7e5e4;">
@@ -405,10 +443,16 @@
                         </td>
                         <td style="padding: 16px 24px; font-size: 14px; font-weight: 700; color: #1c1917;">
 <<<<<<< HEAD
+<<<<<<< HEAD
                             ${formatCurrency(product.price)}
 =======
                             $${parseFloat(product.price).toFixed(2)}
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                            <div style="font-weight: 700; color: #1c1917; font-size: 14px;">
+                                ${CurrencyManager.format(product.price)}
+                            </div>
+>>>>>>> 967968b (added currency updation)
                         </td>
                         <td style="padding: 16px 24px;">
                             <div style="display: flex; gap: 8px;">
@@ -492,7 +536,14 @@
             const form = document.getElementById('add-product-form');
             form.product_id.value = product.id;
             form.product_name.value = product.product_name;
-            form.price.value = product.price;
+
+            // Convert Price for Display
+            const rate = (window.CurrencyManager && window.CurrencyManager.settings && window.CurrencyManager.settings.rate) ? window.CurrencyManager.settings.rate : 1;
+            // Use parseFloat logic similar to main.js to strip trailing zeros
+            // toFixed(2) ensures precision first, parseFloat strips if integers
+            const convertedPrice = parseFloat((parseFloat(product.price) * rate).toFixed(2));
+            form.price.value = convertedPrice;
+
             form.quantity.value = product.quantity;
             form.description.value = product.description;
             // form.category.value = product.category || 'Whole Spices'; // Removed
@@ -600,6 +651,12 @@
                 return;
             }
 
+            // Reverse Convert Price (Native -> USD)
+            const rate = (window.CurrencyManager && window.CurrencyManager.settings && window.CurrencyManager.settings.rate) ? window.CurrencyManager.settings.rate : 1;
+            // Use 6 decimal places for precision storage
+            const usdPrice = (parseFloat(price) / rate).toFixed(6);
+            formData.set('price', usdPrice);
+
             const btn = form.querySelector('button[type="submit"]');
             const apiUrl = productId ? '../../backend/api/products/update-product.php' : '../../backend/api/products/add-product.php';
 
@@ -627,6 +684,7 @@
             }
         }
     </script>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

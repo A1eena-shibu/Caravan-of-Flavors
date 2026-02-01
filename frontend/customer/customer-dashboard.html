@@ -36,6 +36,9 @@
     <aside
         style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 967968b (added currency updation)
         <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
             <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
             <div style="display: flex; flex-direction: column;">
@@ -45,6 +48,7 @@
                 <small
                     style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
                     Flavours</small>
+<<<<<<< HEAD
 =======
         <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 12px;">
             <img src="../assets/images/logo.png" alt="Logo" style="height: 36px; width: auto; object-fit: contain;">
@@ -53,6 +57,8 @@
                 <span
                     style="font-size: 11px; color: #a8a29e; font-weight: 600; text-transform: uppercase;">Flavor</span>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+>>>>>>> 967968b (added currency updation)
             </div>
         </div>
 
@@ -165,10 +171,14 @@
                                         <div style="font-size: 11px; color: #1c1917; display: flex; align-items: center; gap: 6px;">
                                             <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="12">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                             Total: ${formatCurrency(order.total_price)}
 =======
                                             Total: $${parseFloat(order.total_price).toFixed(2)}
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                            Total: ${formatPrice(order.total_price)}
+>>>>>>> 967968b (added currency updation)
                                         </div>
                                     </div>
                                 `;
@@ -187,10 +197,14 @@
                                     <td style="padding: 16px; font-size: 13px;">${tx.product_name} x${tx.quantity}</td>
                                     <td style="padding: 16px; font-size: 13px;"><span style="text-transform: capitalize; padding: 2px 8px; border-radius: 10px; background: ${tx.status === 'delivered' ? '#dcfce7' : '#fff7ed'}; color: ${tx.status === 'delivered' ? '#166534' : '#c2410c'}; font-weight: 700; font-size: 11px;">${tx.status}</span></td>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     <td style="padding: 16px; font-weight: 700; font-size: 14px;">${formatCurrency(tx.total_price)}</td>
 =======
                                     <td style="padding: 16px; font-weight: 700; font-size: 14px;">$${parseFloat(tx.total_price).toFixed(2)}</td>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                    <td style="padding: 16px; font-weight: 700; font-size: 14px;">${formatPrice(tx.total_price)}</td>
+>>>>>>> 967968b (added currency updation)
                                 </tr>
                             `).join('');
                         } else {
@@ -208,7 +222,10 @@
                 }
             }
 
-            window.onload = loadDashboard;
+            window.onload = async () => {
+                await CurrencyManager.init();
+                loadDashboard();
+            };
         </script>
     </aside>
 
@@ -353,6 +370,7 @@
         </div>
         <!-- Removed New Bulk Order Button -->
     </main>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

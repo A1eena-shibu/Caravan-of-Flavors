@@ -4,6 +4,12 @@ header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json");
 
 require_once '../../config/database.php';
+require_once '../services/CurrencyService.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $pdo = getDBConnection();
 
 
@@ -18,6 +24,25 @@ try {
     ");
     $stmt->execute();
     $auctions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $targetCurrency = $_SESSION['user_currency_code'] ?? 'USD';
+    $targetSymbol = $_SESSION['user_currency_symbol'] ?? '$';
+
+    foreach ($auctions as &$auction) {
+        $baseStartingPrice = (float) $auction['starting_price'];
+        $baseCurrentBid = (float) $auction['current_bid'];
+        $baseCurrency = $auction['base_currency'];
+
+        $convStarting = CurrencyService::convert($baseStartingPrice, $baseCurrency, $targetCurrency);
+        $convCurrent = CurrencyService::convert($baseCurrentBid, $baseCurrency, $targetCurrency);
+
+        $auction['display_starting_price'] = $convStarting;
+        $auction['display_current_bid'] = $convCurrent;
+        $auction['display_currency_code'] = $targetCurrency;
+        $auction['display_currency_symbol'] = $targetSymbol;
+        $auction['formatted_starting_price'] = CurrencyService::formatPrice($convStarting, $targetSymbol, $targetCurrency);
+        $auction['formatted_current_bid'] = CurrencyService::formatPrice($convCurrent, $targetSymbol, $targetCurrency);
+    }
 
     echo json_encode(['success' => true, 'auctions' => $auctions]);
 } catch (PDOException $e) {

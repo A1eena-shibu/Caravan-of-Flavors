@@ -166,7 +166,7 @@
                     <div class="flex-1">
                         <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-1">Current High Bid
                         </p>
-                        <p id="modal-current-bid" class="text-3xl font-bold text-stone-900">$0.00</p>
+                        <p id="modal-current-bid" class="text-3xl font-bold text-stone-900">0.00</p>
                     </div>
                     <div class="h-10 w-[1px] bg-stone-200 mx-6"></div>
                     <div class="flex-1 text-right">
@@ -190,12 +190,16 @@
                                 id="bid-currency-symbol">$</span>
 =======
                             <span
-                                class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">USD</span>
+                                class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded currency-code">USD</span>
                         </div>
                         <div class="relative">
                             <span
+<<<<<<< HEAD
                                 class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-stone-300">$</span>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-stone-300 currency-symbol">$</span>
+>>>>>>> 967968b (added currency updation)
                             <input type="number" step="0.01" name="bid_amount" id="bid-amount-input" required
                                 class="w-full pl-12 pr-6 py-6 bg-stone-50 border border-stone-200 rounded-3xl focus:outline-none focus:border-primary focus:bg-white transition-all text-2xl font-bold text-stone-900">
                         </div>
@@ -258,10 +262,14 @@
                                         <div class="text-right">
                                             <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1 leading-none">High Bid</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                              <p class="text-xl font-bold text-stone-900 font-mono italic">${formatCurrency(auction.current_bid)}</p>
 =======
                                             <p class="text-xl font-bold text-stone-900 font-mono italic">$${parseFloat(auction.current_bid).toFixed(2)}</p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                            <p class="text-xl font-bold text-stone-900 font-mono italic">${formatPrice(auction.current_bid)}</p>
+>>>>>>> 967968b (added currency updation)
                                         </div>
                                     </div>
                                     
@@ -335,6 +343,7 @@
             document.getElementById('modal-product-name').innerText = auction.product_name;
             document.getElementById('modal-farmer-name').innerText = `Harvested by ${auction.farmer_name}`;
 <<<<<<< HEAD
+<<<<<<< HEAD
             document.getElementById('modal-current-bid').innerText = formatCurrency(auction.current_bid);
             document.getElementById('modal-time-left').dataset.expire = auction.end_time;
             document.getElementById('modal-time-left').innerText = calculateTimeLeft(auction.end_time);
@@ -348,6 +357,9 @@
             bidInput.value = minBidLocal;
 =======
             document.getElementById('modal-current-bid').innerText = `$${parseFloat(auction.current_bid).toFixed(2)}`;
+=======
+            document.getElementById('modal-current-bid').innerText = formatPrice(auction.current_bid);
+>>>>>>> 967968b (added currency updation)
             document.getElementById('modal-time-left').dataset.expire = auction.end_time;
             document.getElementById('modal-time-left').innerText = calculateTimeLeft(auction.end_time);
 
@@ -412,8 +424,12 @@
             }
         }
 
-        window.onload = loadAuctions;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadAuctions();
+        };
     </script>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

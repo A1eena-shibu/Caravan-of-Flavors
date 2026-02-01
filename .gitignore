@@ -22,9 +22,3 @@ Thumbs.db
 .vscode/
 .idea/
 .gemini/
-
-# --- Local Scripts (Machine-specific paths) ---
-start.bat
-backend/scripts/launch_silent.vbs
-backend/scripts/startup.vbs
-backend/scripts/monitor_session.ps1

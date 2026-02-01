@@ -57,8 +57,11 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, description, starting_price, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
-    $stmt->execute([$farmer_id, $product_name, $description, $starting_price, $starting_price, $quantity, $unit, $start_time, $end_time, $image_url]);
+    $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
+    $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
+
+    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, description, starting_price, base_currency, farmer_country, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+    $stmt->execute([$farmer_id, $product_name, $description, $starting_price, $base_currency, $farmer_country, $starting_price, $quantity, $unit, $start_time, $end_time, $image_url]);
 
     echo json_encode(['success' => true, 'message' => 'Auction created successfully', 'auction_id' => $pdo->lastInsertId()]);
 } catch (PDOException $e) {

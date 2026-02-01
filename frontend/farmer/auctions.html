@@ -247,9 +247,13 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Starting
-                            Price ($)</label>
-                        <input type="number" step="0.01" name="starting_price" required placeholder="250.00"
-                            class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold font-mono">
+                            Price (<span class="currency-code">USD</span>)</label>
+                        <div class="relative">
+                            <span
+                                class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-stone-300 currency-symbol">$</span>
+                            <input type="number" step="0.01" name="starting_price" required placeholder="250.00"
+                                class="w-full pl-12 pr-6 py-6 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold font-mono">
+                        </div>
                     </div>
                 </div>
 
@@ -353,8 +357,8 @@
             document.getElementById('detailTitle').innerText = auction.product_name;
             document.getElementById('detailSubtitle').innerText = `${auction.quantity}${auction.unit} • #AUC-${auction.id}`;
             document.getElementById('detailDesc').innerText = auction.description || 'No detailed description available for this harvest.';
-            document.getElementById('detailFloorPrice').innerText = `$${parseFloat(auction.starting_price).toFixed(2)}`;
-            document.getElementById('detailCurrentBid').innerText = `$${parseFloat(auction.current_bid).toFixed(2)}`;
+            document.getElementById('detailFloorPrice').innerText = formatPrice(auction.starting_price);
+            document.getElementById('detailCurrentBid').innerText = formatPrice(auction.current_bid);
             document.getElementById('detailTimeline').querySelector('span').innerText = `Closing on ${new Date(auction.end_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
 
             const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
@@ -493,11 +497,11 @@
                                     <div class="grid grid-cols-2 gap-4 mb-6">
                                         <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100">
                                             <p class="text-[9px] font-bold text-stone-400 uppercase tracking-tighter mb-1">Floor Price</p>
-                                            <p class="text-sm font-bold text-stone-800">$${parseFloat(auction.starting_price).toFixed(2)}</p>
+                                            <p class="text-sm font-bold text-stone-800">${formatPrice(auction.starting_price)}</p>
                                         </div>
                                         <div class="bg-primary/5 p-3 rounded-2xl border border-primary/10">
                                             <p class="text-[9px] font-bold text-primary/60 uppercase tracking-tighter mb-1">Current Bid</p>
-                                            <p class="text-sm font-bold text-primary">$${parseFloat(auction.current_bid).toFixed(2)}</p>
+                                            <p class="text-sm font-bold text-primary">${formatPrice(auction.current_bid)}</p>
                                         </div>
                                     </div>
 
@@ -529,8 +533,12 @@
             }
         }
 
-        window.onload = loadAuctions;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadAuctions();
+        };
     </script>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

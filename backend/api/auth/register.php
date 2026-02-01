@@ -25,7 +25,7 @@ try {
     }
 
     // 1. Basic Presence Validation
-    $required = ['email', 'password', 'full_name', 'role'];
+    $required = ['email', 'password', 'full_name', 'role', 'country', 'currency_code', 'currency_symbol'];
     foreach ($required as $field) {
         if (empty($data[$field])) {
             throw new Exception(ucfirst(str_replace('_', ' ', $field)) . ' is required');
@@ -63,6 +63,10 @@ try {
         throw new Exception('Password cannot contain spaces');
     }
 
+    $country = trim($data['country']);
+    $currency_code = trim($data['currency_code']);
+    $currency_symbol = trim($data['currency_symbol']);
+
     $pdo = getDBConnection();
 
     // 6. Check for duplicate email
@@ -77,11 +81,11 @@ try {
 
     // 8. Insert User
     $stmt = $pdo->prepare("
-        INSERT INTO users (email, password, full_name, role, is_verified) 
-        VALUES (?, ?, ?, ?, FALSE)
+        INSERT INTO users (email, password, full_name, country, currency_code, currency_symbol, role, is_verified) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)
     ");
 
-    if (!$stmt->execute([$email, $password_hash, $full_name, $role])) {
+    if (!$stmt->execute([$email, $password_hash, $full_name, $country, $currency_code, $currency_symbol, $role])) {
         throw new Exception('System error during registration. Please try again later.');
     }
 
@@ -105,6 +109,9 @@ try {
     $_SESSION['user_email'] = $user['email'];
     $_SESSION['user_role'] = $user['role'];
     $_SESSION['user_name'] = $user['full_name'];
+    $_SESSION['user_country'] = $country;
+    $_SESSION['user_currency_code'] = $currency_code;
+    $_SESSION['user_currency_symbol'] = $currency_symbol;
 
     http_response_code(201);
     echo json_encode([

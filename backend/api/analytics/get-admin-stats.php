@@ -339,10 +339,8 @@ try {
     $stmt->execute();
     $topFarmers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 11. Pending Verifications
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE role = 'farmer' AND is_verified = 0");
-    $stmt->execute();
-    $pendingVerifications = $stmt->fetchColumn() ?: 0;
+    // 11. Pending Verifications (Removed as per requirements)
+    $pendingVerifications = 0;
 
     // 12. Recent Registrations
 <<<<<<< HEAD

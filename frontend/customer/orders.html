@@ -324,10 +324,14 @@
                             <div class="px-8 flex flex-col items-center justify-center min-w-[150px]">
                                     <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Total Paid</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     <p class="text-2xl font-bold text-primary font-mono">${order.status === 'cancelled' ? formatCurrency(0) : formatCurrency(order.total_price)}</p>
 =======
                                     <p class="text-2xl font-bold text-primary font-mono">$${(order.status === 'cancelled' || order.status === 'rejected') ? '0.00' : parseFloat(order.total_price).toFixed(2)}</p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                    <p class="text-2xl font-bold text-primary font-mono">${(order.status === 'cancelled' || order.status === 'rejected') ? formatPrice(0) : formatPrice(order.total_price)}</p>
+>>>>>>> 967968b (added currency updation)
                             </div>
 
                             <div class="flex gap-2">
@@ -587,7 +591,10 @@
             }
         }
 
-        window.onload = loadOrders;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadOrders();
+        };
 
         async function cancelOrder(orderId) {
             const confirmed = await window.showConfirm("Are you sure you want to cancel this order?");
@@ -614,6 +621,7 @@
         }
     </script>
 
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

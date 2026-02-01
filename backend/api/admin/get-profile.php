@@ -22,7 +22,7 @@ try {
     $userId = $_SESSION['user_id'];
 
     $stmt = $pdo->prepare("
-        SELECT id, email, full_name, phone, address, profile_image, created_at, role
+        SELECT id, email, full_name, phone, address, profile_image, country, currency_code, currency_symbol, created_at, role
         FROM users 
         WHERE id = ? AND role = 'admin'
     ");

@@ -25,7 +25,13 @@ try {
     // 1. Total Revenue
     $stmt = $pdo->prepare("SELECT SUM(total_price) as total FROM orders WHERE farmer_id = ? AND status != 'cancelled' AND payment_status = 'paid'");
     $stmt->execute([$farmer_id]);
-    $totalRevenue = $stmt->fetchColumn() ?: 0;
+    $resultRevenue = $stmt->fetchColumn();
+    $totalRevenue = $resultRevenue ? $resultRevenue : 0;
+
+    // 1b. Revenue Target
+    $stmt = $pdo->prepare("SELECT revenue_target FROM users WHERE id = ?");
+    $stmt->execute([$farmer_id]);
+    $revenueTarget = $stmt->fetchColumn() ?: 500.00;
 
     // 2. Active Orders
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE farmer_id = ? AND status IN ('pending', 'confirmed', 'processing', 'shipped')");
@@ -184,6 +190,7 @@ try {
         'success' => true,
         'stats' => [
             'revenue' => (float) $totalRevenue,
+            'target' => (float) $revenueTarget,
             'active_orders' => (int) $activeOrders,
             'customers' => (int) $totalCustomers,
 <<<<<<< HEAD

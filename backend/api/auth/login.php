@@ -36,7 +36,7 @@ try {
     $pdo = getDBConnection();
 
     // Fetch user including password hash and role
-    $stmt = $pdo->prepare("SELECT id, email, password, full_name, role, is_active FROM users WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, email, password, full_name, country, currency_code, currency_symbol, role, is_active FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
@@ -79,6 +79,9 @@ try {
     $_SESSION['user_email'] = $user['email'];
     $_SESSION['user_role'] = $user['role'];
     $_SESSION['user_name'] = $user['full_name'];
+    $_SESSION['user_country'] = $user['country'];
+    $_SESSION['user_currency_code'] = $user['currency_code'];
+    $_SESSION['user_currency_symbol'] = $user['currency_symbol'];
     $_SESSION['remember_me'] = !empty($data['keep_logged']);
 
     echo json_encode([

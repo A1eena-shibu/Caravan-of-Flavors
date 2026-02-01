@@ -10,13 +10,17 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255), -- NULL for Google Sign-In users
     full_name VARCHAR(255) NOT NULL,
-    role ENUM('farmer', 'customer', 'admin') NOT NULL DEFAULT 'customer',
+    country VARCHAR(100),
+    currency_code VARCHAR(10),
+    currency_symbol VARCHAR(10),
+    role ENUM('farmer', 'customer', 'admin', 'delivery_agent') NOT NULL DEFAULT 'customer',
     phone VARCHAR(20),
     address TEXT,
     google_id VARCHAR(255) UNIQUE, -- For Google OAuth Integration
     profile_image VARCHAR(500),
     is_verified BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
+    revenue_target DECIMAL(12, 6) DEFAULT 500.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
@@ -30,7 +34,9 @@ CREATE TABLE products (
     product_name VARCHAR(255) NOT NULL,
     category VARCHAR(100) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    price DECIMAL(12, 6) NOT NULL,
+    base_currency VARCHAR(10) DEFAULT 'USD',
+    farmer_country VARCHAR(100),
     quantity DECIMAL(10, 2) NOT NULL,
     unit VARCHAR(20) DEFAULT 'kg',
     grade VARCHAR(50), -- e.g., 'A', 'B', 'Premium'
@@ -175,17 +181,9 @@ CREATE TABLE inventory_logs (
 ) ENGINE=InnoDB;
 
 -- Insert default admin user
-INSERT INTO users (email, password, full_name, role, is_verified, is_active) 
-VALUES ('admin@caravan.com', '$argon2id$v=19$m=65536,t=4,p=1$NE14V3o1WFpZWHhzM0hoeg$Hlu3RJendjqJbiZhdLXBvqM6E53Zd8VjMcC7JxKruLE', 'System Admin', 'admin', TRUE, TRUE);
+INSERT INTO users (email, password, full_name, country, currency_code, currency_symbol, role, is_verified, is_active) 
+VALUES ('admin@gmail.com', '$argon2id$v=19$m=65536,t=4,p=1$NE14V3o1WFpZWHhzM0hoeg$Hlu3RJendjqJbiZhdLXBvqM6E53Zd8VjMcC7JxKruLE', 'System Admin', 'India', 'INR', '₹', 'admin', TRUE, TRUE);
 -- Default password is: admin 
-
--- Default Farmer (Pass: 12345678)
-INSERT INTO users (email, password, full_name, role, is_verified, is_active) 
-VALUES ('farmer@gmail.com', '$2y$10$i/VpPfx5RKooEDszoBbbo.iuB6y3cMn.vJsr/przKLAYAn2gCs6.2', 'Default Farmer', 'farmer', TRUE, TRUE);
-
--- Default Customer (Pass: 12345678)
-INSERT INTO users (email, password, full_name, role, is_verified, is_active) 
-VALUES ('customer@gmail.com', '$2y$10$i/VpPfx5RKooEDszoBbbo.iuB6y3cMn.vJsr/przKLAYAn2gCs6.2', 'Default Customer', 'customer', TRUE, TRUE);
 
 -- Auctions table
 CREATE TABLE auctions (
@@ -194,6 +192,8 @@ CREATE TABLE auctions (
     product_name VARCHAR(255) NOT NULL,
     description TEXT,
     starting_price DECIMAL(10, 2) NOT NULL,
+    base_currency VARCHAR(10) DEFAULT 'USD',
+    farmer_country VARCHAR(100),
     current_bid DECIMAL(10, 2) DEFAULT 0.00,
     quantity DECIMAL(10, 2) NOT NULL DEFAULT 1.00,
     unit VARCHAR(20) DEFAULT 'kg',

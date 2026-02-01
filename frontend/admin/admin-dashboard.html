@@ -30,9 +30,15 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="../assets/css/country-selector.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/country-selector.js"></script>
+>>>>>>> 967968b (added currency updation)
     <style>
         .toast-container {
             position: fixed;
@@ -161,8 +167,16 @@
                 Manage Users
             </a>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <a href="#"
 =======
+=======
+            <a href="#" onclick="switchView('delivery')" id="nav-delivery"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:truck.svg?color=%2394a3b8" width="18" alt="">
+                Delivery
+            </a>
+>>>>>>> 967968b (added currency updation)
             <a href="#" onclick="switchView('transactions')" id="nav-transactions"
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
@@ -272,7 +286,12 @@
                         <span style="color: #22c55e; font-size: 12px; font-weight: 700;">Global</span>
                     </div>
                     <div style="font-size: 14px; color: #64748b; font-weight: 500;">Total Revenue</div>
-                    <div id="total-revenue" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                        <span class="currency-symbol"
+                            style="font-size: 20px; color: #1e293b; font-weight: 700; opacity: 0.3;">$</span>
+                        <div id="total-revenue"
+                            style="font-size: 32px; font-weight: 700; color: #1e293b; line-height: 1;">--</div>
+                    </div>
                 </div>
                 <div
                     style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
@@ -398,6 +417,59 @@
         <!-- Manage Users Section (Hidden by Default) -->
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         <div id="manage-users-view" style="display: none;">
+            <!-- User Stats Section -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
+                <!-- Total Users -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://api.iconify.design/lucide:users.svg?color=%233b82f6" width="24">
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 600;">Total Users</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-users">0</div>
+                    </div>
+                </div>
+                <!-- Customers -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: #fdf4ff; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://api.iconify.design/lucide:user.svg?color=%23c026d3" width="24">
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 600;">Customers</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-customers">0
+                        </div>
+                    </div>
+                </div>
+                <!-- Farmers -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://api.iconify.design/lucide:sprout.svg?color=%2310b981" width="24">
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 600;">Farmers</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-farmers">0</div>
+                    </div>
+                </div>
+                <!-- Delivery Agents -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: #fff7ed; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://api.iconify.design/lucide:truck.svg?color=%23ea580c" width="24">
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 600;">Delivery Agents</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-agents">0</div>
+                    </div>
+                </div>
+            </div>
+
             <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">User Management</h2>
@@ -436,6 +508,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
@@ -604,6 +677,40 @@
                             result.top_farmers.forEach(farmer => {
                                 topFarmersList.innerHTML += `
 =======
+=======
+        <!-- Delivery Section (Hidden by Default) -->
+        <div id="delivery-view" style="display: none;">
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 700;">Delivery Management</h2>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="openAddAgentModal()"
+                            style="padding: 8px 16px; background: #ff7e21; color: white; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; font-size: 13px;">Add
+                            Delivery Agent</button>
+                    </div>
+                </div>
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 15%;">Order ID</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 25%;">Customer</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 30%;">Address</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 15%;">Driver</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b; width: 15%;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="delivery-table-body">
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td colspan="5" style="padding: 40px; text-align: center;">
+                                <div style="color: #94a3b8; font-size: 13px;">No active deliveries found</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+>>>>>>> 967968b (added currency updation)
         <!-- Transactions View -->
         <div id="transactions-view" style="display: none;">
             <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
@@ -763,6 +870,7 @@
                             Personal Information
                         </h3>
 
+                        <!-- Row 1: Full Name & Account Type -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
                             <div>
                                 <label
@@ -780,50 +888,132 @@
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 24px;">
-                            <label
-                                style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Email
-                                Address</label>
-                            <input type="email" id="profile-email" required
-                                style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                        <!-- Row 2: Email & Phone -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Email
+                                    Address</label>
+                                <input type="email" id="profile-email" required
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Phone
+                                    Number</label>
+                                <input type="tel" id="profile-phone" placeholder="Phone" maxlength="16"
+                                    oninput="validatePhoneInput(this)"
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                <p class="text-[10px] text-stone-400 mt-1">Format: +1234567890</p>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Country & Address -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    Country & Currency
+                                </label>
+                                <button type="button" onclick="openCountrySelectorForProfile()" id="admin-country-btn"
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                                    <span id="admin-country-display">Select Country</span>
+                                    <img src="https://api.iconify.design/lucide:chevron-down.svg?color=%2394a3b8"
+                                        width="18">
+                                </button>
+                                <input type="hidden" id="profile-country">
+                                <input type="hidden" id="profile-currency-code">
+                                <input type="hidden" id="profile-currency-symbol">
+                            </div>
+                            <div>
+                                <label
+                                    style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Address</label>
+                                <input type="text" id="profile-address" placeholder="Enter Address"
+                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                            </div>
                         </div>
 
                         <!-- Security Section -->
                         <div
                             style="border-top: 1px solid #f1f5f9; padding-top: 32px; margin-top: 32px; margin-bottom: 32px;">
                             <h3
-                                style="font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+                                style="font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
                                 <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2310b981"
                                     width="18">
                                 Security & Password
                             </h3>
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 24px;">Leave password fields blank
+                                to keep your current password unchanged.</p>
 
                             <div style="margin-bottom: 24px;">
                                 <label
                                     style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Current
                                     Password</label>
-                                <input type="password" id="current-password"
-                                    placeholder="Verify with current password to save changes"
-                                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
-                                <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Required only if you are
-                                    changing your password.</p>
+                                <div style="position: relative;">
+                                    <input type="password" id="current-password" placeholder="Enter current password"
+                                        style="width: 100%; padding: 12px 16px; padding-right: 45px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none; transition: border-color 0.2s;"
+                                        onfocus="this.style.borderColor='#ff7e21'"
+                                        onblur="this.style.borderColor='#e2e8f0'">
+                                    <button type="button" onclick="togglePasswordVisibility('current-password')"
+                                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; padding: 4px;">
+                                        <img src="https://api.iconify.design/lucide:eye.svg?color=%2394a3b8" width="18"
+                                            id="current-password-icon">
+                                    </button>
+                                </div>
+                                <p
+                                    style="font-size: 11px; color: #64748b; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                                    <img src="https://api.iconify.design/lucide:info.svg?color=%2364748b" width="12">
+                                    <span>Required only when changing your password</span>
+                                </p>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 16px;">
                                 <div>
                                     <label
                                         style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">New
                                         Password</label>
-                                    <input type="password" id="new-password" placeholder="Min. 8 characters"
-                                        style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                    <div style="position: relative;">
+                                        <input type="password" id="new-password" placeholder="Min. 8 characters"
+                                            style="width: 100%; padding: 12px 16px; padding-right: 45px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none; transition: border-color 0.2s;"
+                                            onfocus="this.style.borderColor='#ff7e21'"
+                                            onblur="this.style.borderColor='#e2e8f0'">
+                                        <button type="button" onclick="togglePasswordVisibility('new-password')"
+                                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; padding: 4px;">
+                                            <img src="https://api.iconify.design/lucide:eye.svg?color=%2394a3b8"
+                                                width="18" id="new-password-icon">
+                                        </button>
+                                    </div>
                                 </div>
                                 <div>
                                     <label
                                         style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Confirm
                                         New Password</label>
-                                    <input type="password" id="confirm-password" placeholder="Repeat new password"
-                                        style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
+                                    <div style="position: relative;">
+                                        <input type="password" id="confirm-password" placeholder="Repeat new password"
+                                            oninput="checkPasswordMatch()"
+                                            style="width: 100%; padding: 12px 16px; padding-right: 45px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none; transition: border-color 0.2s;"
+                                            onfocus="this.style.borderColor='#ff7e21'"
+                                            onblur="this.style.borderColor='#e2e8f0'">
+                                        <button type="button" onclick="togglePasswordVisibility('confirm-password')"
+                                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; padding: 4px;">
+                                            <img src="https://api.iconify.design/lucide:eye.svg?color=%2394a3b8"
+                                                width="18" id="confirm-password-icon">
+                                        </button>
+                                    </div>
                                 </div>
+                            </div>
+
+
+
+                            <!-- Password Match Indicator -->
+                            <div id="password-match-container" style="display: none;">
+                                <p id="password-match-text"
+                                    style="font-size: 12px; margin: 0; display: flex; align-items: center; gap: 6px;">
+                                    <img id="password-match-icon"
+                                        src="https://api.iconify.design/lucide:x-circle.svg?color=%23ef4444" width="14">
+                                    <span id="password-match-message"
+                                        style="color: #ef4444; font-weight: 600;">Passwords do not match</span>
+                                </p>
                             </div>
                         </div>
 
@@ -878,9 +1068,16 @@
                         </div>
                     </div>
 
-                    <div class="p-4 bg-stone-50 rounded-xl">
-                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Address</p>
-                        <p class="text-sm font-semibold text-stone-700" id="modal-user-address">--</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-stone-50 rounded-xl">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Address</p>
+                            <p class="text-sm font-semibold text-stone-700" id="modal-user-address">--</p>
+                        </div>
+                        <div class="p-4 bg-stone-50 rounded-xl">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
+                                Country/Currency</p>
+                            <p class="text-sm font-semibold text-stone-700" id="modal-user-country-currency">--</p>
+                        </div>
                     </div>
 
                     <div class="p-4 bg-stone-50 rounded-xl flex justify-between items-center">
@@ -897,6 +1094,96 @@
         </div>
 
 
+
+        <!-- Add Delivery Agent Modal -->
+        <div id="add-agent-modal" style="display: none;"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-stone-900">Add Delivery Agent</h3>
+                    <button onclick="closeAddAgentModal()"
+                        class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200">
+                        <img src="https://api.iconify.design/lucide:x.svg?color=%231c1917" width="18">
+                    </button>
+                </div>
+                <form id="add-agent-form" onsubmit="event.preventDefault(); submitAgentForm();">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Full
+                                Name</label>
+                            <input type="text" id="agent-name" required placeholder="Full Name"
+                                class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Email</label>
+                                <input type="email" id="agent-email" required placeholder="Email"
+                                    class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Phone</label>
+                                <input type="tel" id="agent-phone" required maxlength="16" placeholder="Phone"
+                                    oninput="validatePhoneInput(this)"
+                                    class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium">
+                                <p class="text-[10px] text-stone-400 mt-1">Format: +1234567890</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Password</label>
+                                <input type="password" id="agent-password" required minlength="8" placeholder="Password"
+                                    class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Confirm
+                                    Password</label>
+                                <input type="password" id="agent-confirm-password" required minlength="8"
+                                    placeholder="Confirm Password"
+                                    class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Country
+                                & Currency</label>
+                            <button type="button" onclick="openCountrySelectorForAgent()"
+                                class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 text-left font-medium flex justify-between items-center hover:border-orange-500 focus:outline-none transition-colors">
+                                <span id="agent-country-display" class="text-stone-400">Select Country</span>
+                                <img src="https://api.iconify.design/lucide:chevron-down.svg?color=%2394a3b8"
+                                    width="18">
+                            </button>
+                            <input type="hidden" id="agent-country">
+                            <input type="hidden" id="agent-currency-code">
+                            <input type="hidden" id="agent-currency-symbol">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Address</label>
+                            <textarea id="agent-address" rows="2" placeholder="Address"
+                                class="w-full px-4 py-2 rounded-xl border border-stone-200 bg-stone-50 focus:border-orange-500 focus:outline-none font-medium"></textarea>
+                        </div>
+                        <div id="agent-form-error"
+                            class="hidden p-3 bg-red-50 text-red-500 text-xs font-bold rounded-lg flex items-center gap-2">
+                            <img src="https://api.iconify.design/lucide:alert-circle.svg?color=%23ef4444" width="14">
+                            <span id="agent-form-error-msg">Error message</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-8">
+                        <button type="button" onclick="closeAddAgentModal()"
+                            class="px-5 py-2.5 rounded-xl bg-stone-100 text-stone-600 font-bold text-sm hover:bg-stone-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 rounded-xl bg-orange-500 text-white font-bold text-sm hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/20">
+                            Create Agent
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- Confirmation Modal -->
         <div id="confirmation-modal" style="display: none;"
@@ -937,6 +1224,7 @@
                 const views = {
                     overview: document.getElementById('dashboard-overview'),
                     users: document.getElementById('manage-users-view'),
+                    delivery: document.getElementById('delivery-view'),
                     transactions: document.getElementById('transactions-view'),
                     exports: document.getElementById('exports-view'),
                     activity: document.getElementById('activity-view'),
@@ -948,6 +1236,7 @@
                 const navs = {
                     overview: document.getElementById('nav-overview'),
                     users: document.getElementById('nav-users'),
+                    delivery: document.getElementById('nav-delivery'),
                     transactions: document.getElementById('nav-transactions'),
                     exports: document.getElementById('nav-exports'),
                     activity: document.getElementById('nav-activity'),
@@ -982,6 +1271,7 @@
 
                 // Load Data
                 if (viewName === 'users') loadUsers();
+                if (viewName === 'delivery') loadDeliveryOrders();
                 if (viewName === 'transactions') loadTransactions();
                 if (viewName === 'exports') loadExports();
                 if (viewName === 'activity') loadActivityLogs();
@@ -1052,7 +1342,7 @@
                                 </td>
                                 <td style="padding: 16px; font-size: 13px; color: #57534e;">${order.customer_name}</td>
                                 <td style="padding: 16px; font-size: 13px; color: #57534e;">${order.farmer_name}</td>
-                                <td style="padding: 16px; font-weight: 700;">$${parseFloat(order.total_price).toFixed(2)}</td>
+                                <td style="padding: 16px; font-weight: 700;">${formatPrice(order.total_price)}</td>
                                 <td style="padding: 16px;">
                                     <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${displayStatus}</span>
                                 </td>
@@ -1140,11 +1430,15 @@
                                 <td style="padding: 16px; font-size: 13px; color: #64748b;">${date}</td>
                                 <td style="padding: 16px;">
                                     <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
-                                    <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role}</div>
+                                    <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role.replace(/_/g, ' ')}</div>
                                 </td>
                                 <td style="padding: 16px;">
-                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action}</div>
-                                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${log.details}</div>
+                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/_/g, ' ')}</div>
+                                    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                        ${log.details.replace(/@\s*(\d+(\.\d+)?)\s*\//, (match, price) => {
+                                return `@ ${formatPrice(price)}/`;
+                            })}
+                                    </div>
                                 </td>
                                 <td style="padding: 16px;">
                                     <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${typeColor}">${log.type}</span>
@@ -1163,6 +1457,18 @@
 
             let globalUsers = [];
 
+            function updateUserStats(users) {
+                const total = users.length;
+                const customers = users.filter(u => u.role === 'customer').length;
+                const farmers = users.filter(u => u.role === 'farmer').length;
+                const agents = users.filter(u => u.role === 'delivery_agent').length;
+
+                document.getElementById('stat-total-users').textContent = total;
+                document.getElementById('stat-total-customers').textContent = customers;
+                document.getElementById('stat-total-farmers').textContent = farmers;
+                document.getElementById('stat-total-agents').textContent = agents;
+            }
+
             async function loadUsers() {
                 const tbody = document.getElementById('users-table-body');
                 tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center;">Loading users...</td></tr>';
@@ -1174,12 +1480,237 @@
                     if (result.success) {
                         globalUsers = result.users;
                         renderUsers(globalUsers);
+                        updateUserStats(globalUsers);
                     } else {
                         tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
                     }
                 } catch (error) {
                     console.error("Error loading users:", error);
                     tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
+                }
+            }
+
+            function validatePhoneInput(input) {
+                // 1. Remove invalid characters (only allow 0-9 and +)
+                let value = input.value.replace(/[^0-9+]/g, '');
+
+                // 2. Ensure + is only at the start
+                value = value.replace(/(?!^)\+/g, '');
+
+                // 3. Count digits and enforce max 15 digits
+                const digits = value.replace(/[^0-9]/g, '');
+                if (digits.length > 15) {
+                    // Truncate to keep only first 15 digits (preserving + if present)
+                    // If it starts with +, max length is 16. If not, max length is 15.
+                    const maxLen = value.startsWith('+') ? 16 : 15;
+                    value = value.slice(0, maxLen);
+                }
+
+                input.value = value;
+            }
+
+            function openCountrySelectorForProfile() {
+                CountrySelector.onSelectCallback = (country) => {
+                    document.getElementById('profile-country').value = country.name;
+                    document.getElementById('profile-currency-code').value = country.currency_code;
+                    document.getElementById('profile-currency-symbol').value = country.currency_symbol;
+                    document.getElementById('admin-country-display').innerHTML = `${country.name} (${country.currency_symbol} ${country.currency_code})`;
+                };
+                CountrySelector.show();
+            }
+
+            function openCountrySelectorForAgent() {
+                CountrySelector.onSelectCallback = (country) => {
+                    document.getElementById('agent-country').value = country.name;
+                    document.getElementById('agent-currency-code').value = country.currency_code;
+                    document.getElementById('agent-currency-symbol').value = country.currency_symbol;
+
+                    const display = document.getElementById('agent-country-display');
+                    display.textContent = `${country.name} (${country.currency_symbol} ${country.currency_code})`;
+                    display.classList.remove('text-stone-400');
+                    display.classList.add('text-stone-900');
+                };
+                CountrySelector.show();
+            }
+
+            function openAddAgentModal() {
+                document.getElementById('add-agent-modal').style.display = 'flex';
+                document.getElementById('add-agent-form').reset();
+                document.getElementById('agent-form-error').classList.add('hidden');
+
+                // Reset Country Display
+                const display = document.getElementById('agent-country-display');
+                display.textContent = 'Select Country';
+                display.classList.add('text-stone-400');
+                display.classList.remove('text-stone-900');
+                document.getElementById('agent-country').value = '';
+                document.getElementById('agent-currency-code').value = '';
+                document.getElementById('agent-currency-symbol').value = '';
+            }
+
+            function closeAddAgentModal() {
+                document.getElementById('add-agent-modal').style.display = 'none';
+            }
+
+            async function submitAgentForm() {
+                const name = document.getElementById('agent-name').value;
+                const email = document.getElementById('agent-email').value;
+                const phone = document.getElementById('agent-phone').value;
+                const password = document.getElementById('agent-password').value;
+                const confirmPassword = document.getElementById('agent-confirm-password').value;
+                const address = document.getElementById('agent-address').value;
+
+                const country = document.getElementById('agent-country').value;
+                const currency_code = document.getElementById('agent-currency-code').value;
+                const currency_symbol = document.getElementById('agent-currency-symbol').value;
+
+                const errorDiv = document.getElementById('agent-form-error');
+                const errorMsg = document.getElementById('agent-form-error-msg');
+
+                // Reset Error State
+                errorDiv.classList.add('hidden');
+                errorMsg.textContent = '';
+
+                // 1. Required Fields Check
+                if (!name.trim()) {
+                    errorMsg.textContent = "Full Name is required";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                if (!email.trim()) {
+                    errorMsg.textContent = "Email is required";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                if (!phone.trim()) {
+                    errorMsg.textContent = "Phone number is required";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                if (!country) {
+                    errorMsg.textContent = "Please select a country";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                if (!address.trim()) {
+                    errorMsg.textContent = "Address is required";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                // 2. Email Validation (Strict)
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                if (!emailRegex.test(email)) {
+                    errorMsg.textContent = "Please enter a valid email address";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                // 3. Phone Validation (Strict: + optional at start, digits only)
+                const phoneRegex = /^\+?[0-9]{10,15}$/;
+                if (!phoneRegex.test(phone)) {
+                    errorMsg.textContent = "Phone format invalid. Allowed: + at start, 10-15 digits.";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                // 4. Password Validation
+                if (password.length < 8) {
+                    errorMsg.textContent = "Password must be at least 8 characters";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    errorMsg.textContent = "Passwords do not match";
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('../../backend/api/admin/create-delivery-agent.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name,
+                            email,
+                            phone,
+                            password,
+                            address,
+                            country,
+                            currency_code,
+                            currency_symbol
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('Delivery Agent created successfully!', 'success');
+                        closeAddAgentModal();
+                        // Reload user list to show the new agent
+                        if (document.getElementById('manage-users-view').style.display !== 'none') {
+                            loadUsers();
+                        } else {
+                            // If we are not in users view, we might want to switch to it, or just reload data for next time
+                            loadUsers();
+                        }
+                    } else {
+                        errorMsg.textContent = result.message || "Failed to create agent";
+                        errorDiv.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error creating agent:', error);
+                    errorMsg.textContent = "Connection error. Please try again.";
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+
+            async function loadDeliveryOrders() {
+                const tbody = document.getElementById('delivery-table-body');
+                tbody.innerHTML = '<tr><td colspan="5" style="padding:40px; text-align:center;"><img src="https://api.iconify.design/lucide:loader-2.svg" class="w-8 h-8 animate-spin mx-auto text-orange-500"><p class="text-stone-400 text-sm mt-2">Loading deliveries...</p></td></tr>';
+
+                try {
+                    const response = await fetch('../../backend/api/admin/get-delivery-orders.php');
+                    const result = await response.json();
+
+                    if (result.success) {
+                        const orders = result.data;
+                        if (orders.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="5" style="padding:40px; text-align:center;"><p class="text-stone-400 text-sm">No active deliveries found.</p></td></tr>';
+                            return;
+                        }
+
+                        tbody.innerHTML = '';
+                        orders.forEach(order => {
+                            let statusColor = 'bg-stone-100 text-stone-600';
+                            if (order.status === 'shipped') statusColor = 'bg-blue-100 text-blue-700';
+                            if (order.status === 'delivered') statusColor = 'bg-green-100 text-green-700';
+
+                            tbody.innerHTML += `
+                                <tr style="border-bottom: 1px solid #f1f5f9; hover:bg-stone-50;">
+                                    <td style="padding: 16px; font-size: 14px; font-weight: 600; color: #1e293b;">#${order.id}</td>
+                                    <td style="padding: 16px;">
+                                        <div style="font-size: 14px; font-weight: 600; color: #1e293b;">${order.customer_name}</div>
+                                        <div style="font-size: 12px; color: #64748b;">${order.customer_phone || 'No Phone'}</div>
+                                    </td>
+                                    <td style="padding: 16px; font-size: 13px; color: #64748b; max-width: 250px;">${order.delivery_address}</td>
+                                    <td style="padding: 16px;">
+                                        <span class="text-xs font-bold text-stone-400 italic">Unassigned</span>
+                                    </td>
+                                    <td style="padding: 16px;">
+                                        <span class="px-2 py-1 rounded-md text-xs font-bold uppercase ${statusColor}">${order.status}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="5" style="padding:40px; text-align:center; color:red;">Error: ${result.message}</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error('Error loading deliveries:', error);
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:40px; text-align:center; color:red;">Connection Failed</td></tr>';
                 }
             }
 
@@ -1201,20 +1732,35 @@
                 }
 
                 users.forEach(user => {
-                    const roleColor = user.role === 'farmer' ? '#22c55e' : (user.role === 'admin' ? '#ff0000' : '#3b82f6');
+                    let roleColor = '#3b82f6';
+                    if (user.role === 'farmer') roleColor = '#22c55e';
+                    else if (user.role === 'admin') roleColor = '#ff0000';
+                    else if (user.role === 'delivery_agent') roleColor = '#f97316'; // Orange
+
                     const isActive = user.is_active == 1;
 
                     // safely stringify the user object for the View button
                     const userString = JSON.stringify(user).replace(/"/g, '&quot;');
 
+                    const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    const profileImageUrl = user.profile_image ? `../../${user.profile_image}` : null;
+
                     tbody.innerHTML += `
                         <tr style="border-bottom: 1px solid #f8fafc; hover:background:#f1f5f9;">
-                            <td style="padding: 16px; text-align: center;">
-                                <div style="font-weight:600;">${user.full_name}</div>
-                                <div style="font-size:12px; color:#64748b;">${user.email}</div>
+                            <td style="padding: 16px;">
+                                <div style="display: flex; align-items: center; gap: 12px; width: 240px; margin: 0 auto;">
+                                    ${profileImageUrl ?
+                            `<img src="${profileImageUrl}" alt="${user.full_name}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #e2e8f0;">` :
+                            `<div style="width: 40px; height: 40px; background: ${roleColor}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">${initials}</div>`
+                        }
+                                    <div>
+                                        <div style="font-weight:600;">${user.full_name}</div>
+                                        <div style="font-size:12px; color:#64748b;">${user.email}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td style="padding: 16px; text-align: center;">
-                                <span style="color:${roleColor}; font-weight:600; text-transform:uppercase; font-size:12px;">${user.role}</span>
+                                <span style="color:${roleColor}; font-weight:600; text-transform:uppercase; font-size:12px;">${user.role.replace('_', ' ')}</span>
                             </td>
                             <td style="padding: 16px; color:#64748b; font-size:13px; text-align: center;">${new Date(user.created_at).toLocaleDateString()}</td>
                             <td style="padding: 16px;">
@@ -1231,6 +1777,8 @@
                     `;
                 });
             }
+
+
 
             function closeConfirmModal() {
                 document.getElementById('confirmation-modal').style.display = 'none';
@@ -1298,18 +1846,21 @@
                 document.getElementById('modal-user-email').textContent = user.email;
                 document.getElementById('modal-user-phone').textContent = user.phone || 'N/A';
                 document.getElementById('modal-user-address').textContent = user.address || 'N/A';
-                document.getElementById('modal-user-role').textContent = user.role.toUpperCase();
+                document.getElementById('modal-user-role').textContent = user.role.replace(/_/g, ' ').toUpperCase();
                 document.getElementById('modal-user-joined').textContent = new Date(user.created_at).toLocaleString();
+
+                // Set Country/Currency
+                const userLangCountry = user.country || 'N/A';
+                const userCurrency = user.currency_code ? `${user.currency_code}` : '';
+                document.getElementById('modal-user-country-currency').textContent = userCurrency ? `${userLangCountry} (${userCurrency})` : userLangCountry;
 
                 document.getElementById('modal-user-avatar').textContent = user.full_name.charAt(0);
 
                 // Re-use logic for status badge in modal
                 const isVerified = user.is_verified == 1;
-                const isActive = user.is_active == 1;
                 let badge = '';
-                if (!isActive) badge = '<span class="px-2 py-1 bg-red-100 text-red-600 rounded-md text-xs font-bold">BLOCKED</span>';
-                else if (isVerified) badge = '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-md text-xs font-bold">VERIFIED ACCOUNT</span>';
-                else badge = '<span class="px-2 py-1 bg-yellow-100 text-yellow-600 rounded-md text-xs font-bold">VERIFICATION PENDING</span>';
+                if (user.is_active == 0) badge = '<span class="px-2 py-1 bg-red-100 text-red-600 rounded-md text-xs font-bold">BLOCKED</span>';
+                else badge = '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-md text-xs font-bold">VERIFIED ACCOUNT</span>';
 
                 document.getElementById('modal-user-status').innerHTML = badge;
 
@@ -1331,7 +1882,7 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="p-3 bg-green-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Earnings</p>
-                                    <p class="text-lg font-bold text-green-700">$${parseFloat(data.total_earnings).toLocaleString()}</p>
+                                    <p class="text-lg font-bold text-green-700">${formatPrice(data.total_earnings)}</p>
                                 </div>
                                 <div class="p-3 bg-orange-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Products Listed</p>
@@ -1345,7 +1896,7 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="p-3 bg-blue-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Spent</p>
-                                    <p class="text-lg font-bold text-blue-700">$${parseFloat(data.total_spending).toLocaleString()}</p>
+                                    <p class="text-lg font-bold text-blue-700">${formatPrice(data.total_spending)}</p>
                                 </div>
                                 <div class="p-3 bg-purple-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Orders</p>
@@ -1376,7 +1927,7 @@
                                     <td class="p-2 text-xs text-stone-600">${new Date(item.order_date).toLocaleDateString()}</td>
                                     <td class="p-2 text-xs font-semibold text-stone-700">${user.role === 'farmer' ? item.customer_name : item.farmer_name}</td>
                                     <td class="p-2 text-xs text-stone-600">${item.product_name}</td>
-                                    <td class="p-2 text-xs font-bold text-stone-900">$${parseFloat(item.total_price).toFixed(2)}</td>
+                                    <td class="p-2 text-xs font-bold text-stone-900">${formatPrice(item.total_price)}</td>
                                 </tr>
                             `;
                             });
@@ -1459,8 +2010,11 @@
 
                         if (totalUsersEl) totalUsersEl.innerText = (stats.total_users || 0).toLocaleString();
                         if (totalRevenueEl) {
-                            const rev = parseFloat(stats.revenue || 0);
-                            totalRevenueEl.innerText = '$' + (isNaN(rev) ? '0' : rev.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+                            // Use CurrencyManager for globally consistent formatting/conversion
+                            totalRevenueEl.innerText = CurrencyManager.format(stats.revenue || 0);
+                            // Also hide the separate currency symbol span since format() includes it
+                            const symbolParams = totalRevenueEl.parentElement.querySelector('.currency-symbol');
+                            if (symbolParams) symbolParams.style.display = 'none';
                         }
                         if (activeOrdersEl) activeOrdersEl.innerText = (stats.active_orders || 0).toLocaleString();
                         if (pendingApprovalsEl) pendingApprovalsEl.innerText = (stats.pending_approvals || 0).toLocaleString();
@@ -1479,6 +2033,7 @@
                                         </div>
                                         <div style="flex: 1;">
                                             <div style="font-size: 13px; font-weight: 700; color: white;">${farmer.full_name}</div>
+<<<<<<< HEAD
 <<<<<<< HEAD
                                             <div style="font-size: 11px; color: #64748b;">${formatCurrency(farmer.total_sales)} Sales</div>
                                         </div>
@@ -1502,6 +2057,9 @@
                                 recentRegList.innerHTML += `
 =======
                                             <div style="font-size: 11px; color: #64748b;">$${parseFloat(farmer.total_sales).toLocaleString()} Sales</div>
+=======
+                                            <div style="font-size: 11px; color: #64748b;">${formatPrice(farmer.total_sales)} Sales</div>
+>>>>>>> 967968b (added currency updation)
                                         </div>
                                     </div>
                                 `;
@@ -1525,7 +2083,7 @@
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <div style="width: 6px; height: 6px; border-radius: 50%; background: ${roleColor};"></div>
-                                            <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">${user.full_name}</span>
+                                            <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">${user.full_name} <span style="color: #64748b; font-size: 10px; margin-left: 4px;">${user.role.replace(/_/g, ' ').toUpperCase()}</span></span>
                                         </div>
                                         <span style="font-size: 10px; color: #64748b;">${timeAgo}</span>
                                     </div>
@@ -1651,11 +2209,15 @@
                                         <td style="padding: 16px; font-size: 13px; color: #64748b;">${date}</td>
                                         <td style="padding: 16px;">
                                             <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
-                                            <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role}</div>
+                                            <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role.replace(/_/g, ' ')}</div>
                                         </td>
                                         <td style="padding: 16px;">
-                                            <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action}</div>
-                                            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${log.details}</div>
+                                            <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/_/g, ' ')}</div>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                                                ${log.details.replace(/@\s*(\d+(\.\d+)?)\s*\//, (match, price) => {
+                                        return `@ ${formatPrice(price)}/`;
+                                    })}
+                                            </div>
                                         </td>
                                         <td style="padding: 16px;">
                                             <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${typeColor}">${log.type}</span>
@@ -1692,8 +2254,8 @@
                     data: {
                         labels: labels.length > 0 ? labels : ['No Data'],
                         datasets: [{
-                            label: 'Revenue ($)',
-                            data: data.length > 0 ? data : [0],
+                            label: 'Revenue (' + CurrencyManager.getSymbol() + ')',
+                            data: data.length > 0 ? data.map(val => val * (CurrencyManager.settings?.rate || 1)) : [0],
                             borderColor: '#ff7e21',
                             backgroundColor: 'rgba(255, 126, 33, 0.1)',
                             fill: true,
@@ -1703,7 +2265,12 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: { display: false }
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => 'Revenue: ' + CurrencyManager.getSymbol() + context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                                }
+                            }
                         },
                         scales: {
                             y: {
@@ -1711,9 +2278,10 @@
                                 grid: { color: '#f1f5f9' },
                                 ticks: {
                                     callback: function (value) {
-                                        if (value >= 1000000) return '$' + (value / 1000000).toFixed(1) + 'M';
-                                        if (value >= 1000) return '$' + (value / 1000).toFixed(0) + 'k';
-                                        return '$' + value;
+                                        const symbol = CurrencyManager.getSymbol();
+                                        if (value >= 1000000) return symbol + (value / 1000000).toFixed(1) + 'M';
+                                        if (value >= 1000) return symbol + (value / 1000).toFixed(0) + 'k';
+                                        return symbol + value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
                                     }
                                 }
                             },
@@ -1815,9 +2383,27 @@
                     type: 'bar',
                     data: {
                         labels: data.farmer_leaderboard.map(i => i.farmer_name),
-                        datasets: [{ label: 'Revenue ($)', data: data.farmer_leaderboard.map(i => i.total_revenue), backgroundColor: '#ff7e21', borderRadius: 8 }]
+                        datasets: [{
+                            label: 'Revenue',
+                            data: data.farmer_leaderboard.map(i => i.total_revenue * (CurrencyManager.settings?.rate || 1)),
+                            backgroundColor: '#ff7e21',
+                            borderRadius: 8
+                        }]
                     },
-                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => 'Revenue: ' + CurrencyManager.getSymbol() + context.parsed.x.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                                }
+                            }
+                        },
+                        scales: { x: { ticks: { callback: v => CurrencyManager.getSymbol() + v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) } } }
+                    }
                 });
 
                 // 4. Revenue Trend
@@ -1831,13 +2417,35 @@
                     type: 'line',
                     data: {
                         labels: dates.map(d => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })),
-                        datasets: [{ label: 'Revenue ($)', data: revenueData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }]
+                        datasets: [{
+                            label: 'Revenue',
+                            data: revenueData.map(val => val * (CurrencyManager.settings?.rate || 1)),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v } }, x: { ticks: { autoSkip: true, maxRotation: 0 } } }
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => 'Revenue: ' + CurrencyManager.getSymbol() + context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: v => CurrencyManager.getSymbol() + v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+                                }
+                            },
+                            x: { ticks: { autoSkip: true, maxRotation: 0 } }
+                        }
                     }
                 });
             }
@@ -1861,9 +2469,58 @@
                             const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
                             document.getElementById('profile-avatar-large').textContent = initials;
                         }
+
+                        // Set Country/Currency inputs
+                        if (user.country) {
+                            document.getElementById('profile-country').value = user.country;
+                            document.getElementById('profile-currency-code').value = user.currency_code;
+                            document.getElementById('profile-currency-symbol').value = user.currency_symbol;
+                            document.getElementById('admin-country-display').innerHTML = `${user.country} (${user.currency_symbol} ${user.currency_code})`;
+                        }
                     }
                 } catch (error) {
                     console.error('Error loading profile:', error);
+                }
+            }
+
+            // Password Helper Functions
+            function togglePasswordVisibility(fieldId) {
+                const field = document.getElementById(fieldId);
+                const icon = document.getElementById(fieldId + '-icon');
+
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    icon.src = 'https://api.iconify.design/lucide:eye-off.svg?color=%2394a3b8';
+                } else {
+                    field.type = 'password';
+                    icon.src = 'https://api.iconify.design/lucide:eye.svg?color=%2394a3b8';
+                }
+            }
+
+
+
+            function checkPasswordMatch() {
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const container = document.getElementById('password-match-container');
+                const icon = document.getElementById('password-match-icon');
+                const message = document.getElementById('password-match-message');
+
+                if (!confirmPassword) {
+                    container.style.display = 'none';
+                    return;
+                }
+
+                container.style.display = 'block';
+
+                if (newPassword === confirmPassword) {
+                    icon.src = 'https://api.iconify.design/lucide:check-circle.svg?color=%2322c55e';
+                    message.textContent = 'Passwords match';
+                    message.style.color = '#22c55e';
+                } else {
+                    icon.src = 'https://api.iconify.design/lucide:x-circle.svg?color=%23ef4444';
+                    message.textContent = 'Passwords do not match';
+                    message.style.color = '#ef4444';
                 }
             }
 
@@ -1874,6 +2531,9 @@
                 // Field values
                 const fullName = document.getElementById('profile-full-name').value.trim();
                 const email = document.getElementById('profile-email').value.trim();
+                const country = document.getElementById('profile-country').value;
+                const currencyCode = document.getElementById('profile-currency-code').value;
+                const currencySymbol = document.getElementById('profile-currency-symbol').value;
 
                 // Security values
                 const currentPassword = document.getElementById('current-password').value;
@@ -1899,7 +2559,13 @@
                     const profileResponse = await fetch('../../backend/api/admin/update-profile.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ full_name: fullName, email })
+                        body: JSON.stringify({
+                            full_name: fullName,
+                            email,
+                            country,
+                            currency_code: currencyCode,
+                            currency_symbol: currencySymbol
+                        })
                     });
                     const profileResult = await profileResponse.json();
 
@@ -1936,10 +2602,18 @@
                         document.getElementById('current-password').value = '';
                         document.getElementById('new-password').value = '';
                         document.getElementById('confirm-password').value = '';
-                    }
+                        // Hide indicators
+                        document.getElementById('password-match-container').style.display = 'none';
 
-                    showToast('All changes saved successfully!');
+                        showToast('Profile and password updated successfully!', 'success');
+                    } else {
+                        showToast('Profile updated successfully!', 'success');
+                    }
                     loadAdminProfile(); // Refresh displays
+
+                    // FORCE REFRESH CURRENCY SETTINGS & UI
+                    await CurrencyManager.fetchSettings();
+                    CurrencyManager.refreshUI();
 
                 } catch (error) {
                     console.error('Update error:', error);
@@ -1965,9 +2639,42 @@
             }
 
             window.onload = function () {
-                loadAdminStats();
-                // Default view is overview, so we don't need to call switchView('overview') necessarily 
-                // unless we want to enforce UI state, but loadAdminStats populates the default view.
+                // Init Country Selector
+                CountrySelector.init((country) => {
+                    document.getElementById('profile-country').value = country.name;
+                    document.getElementById('profile-currency-code').value = country.currency_code;
+                    document.getElementById('profile-currency-symbol').value = country.currency_symbol;
+                    document.getElementById('admin-country-display').innerHTML = `${country.name} (${country.currency_symbol} ${country.currency_code})`;
+                });
+
+                // Init currency in background - FORCE DEFAULT TO INR IF NOT SET
+                if (!CurrencyManager.settings.code) {
+                    CurrencyManager.settings = {
+                        code: 'INR',
+                        symbol: '₹',
+                        rate: 1
+                    };
+                    localStorage.setItem('currency_settings', JSON.stringify(CurrencyManager.settings));
+                }
+
+                // If it was already set but we want to ensure Admin sees their profile currency (or INR if none)
+                // We rely on CurrencyManager.init() which fetches session if available.
+                // But specifically for the requirement: "make every currency as automatically to be as rupees"
+                // Check if session has currency, if not, force INR.
+                // Since this is JS, we can't directly check session here easily without an API.
+                // However, CurrencyManager.init usually syncs with session. 
+                // Let's add an explicit override if it's currently USD (default) and we want INR default.
+
+                CurrencyManager.init().then(() => {
+                    // Refetch profile to check actual user preference from DB (which init might have missed if session expired)
+                    // Actually, loadAdminStats calls APIs that might use session currency.
+
+                    // Force UI update
+                    const currencySymbolElements = document.querySelectorAll('.currency-symbol');
+                    currencySymbolElements.forEach(el => el.textContent = CurrencyManager.getSymbol());
+
+                    loadAdminStats();
+                });
             };
         </script>
         <div id="toast-container" class="toast-container"></div>

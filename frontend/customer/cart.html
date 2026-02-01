@@ -265,10 +265,14 @@
                                         <div class="text-right">
                                             <!-- CLEAN PRICE DISPLAY: NO FAKE OFFERS -->
 <<<<<<< HEAD
+<<<<<<< HEAD
                                             <p class="text-xl font-bold text-stone-900">${formatCurrency(item.price)}</p>
 =======
                                             <p class="text-xl font-bold text-stone-900">$${parseFloat(item.price).toFixed(2)}</p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                            <p class="text-xl font-bold text-stone-900">${formatPrice(item.price)}</p>
+>>>>>>> 967968b (added currency updation)
                                         </div>
                                     </div>
 
@@ -321,12 +325,17 @@
                     `;
                     document.getElementById('checkout-btn').disabled = true;
 <<<<<<< HEAD
+<<<<<<< HEAD
                     document.getElementById('price-subtotal').innerText = formatCurrency(0);
                     document.getElementById('price-total').innerText = formatCurrency(0);
 =======
                     document.getElementById('price-subtotal').innerText = "$0.00";
                     document.getElementById('price-total').innerText = "$0.00";
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                    document.getElementById('price-subtotal').innerText = formatPrice(0);
+                    document.getElementById('price-total').innerText = formatPrice(0);
+>>>>>>> 967968b (added currency updation)
                 }
             } catch (error) { console.error(error); }
         }
@@ -350,14 +359,19 @@
                     unitTotal += parseFloat(item.price);
                     count++;
 <<<<<<< HEAD
+<<<<<<< HEAD
                     nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`;
 =======
                     nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">$${(item.price * item.quantity).toFixed(2)}</span></div>`;
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">${formatPrice(item.price * item.quantity)}</span></div>`;
+>>>>>>> 967968b (added currency updation)
                 }
             });
 
             document.getElementById('price-count-label').innerText = `Price (${count} items)`;
+<<<<<<< HEAD
 <<<<<<< HEAD
             document.getElementById('price-subtotal').innerText = formatCurrency(unitTotal);
             document.getElementById('price-total').innerText = formatCurrency(subtotal);
@@ -365,6 +379,10 @@
             document.getElementById('price-subtotal').innerText = `$${unitTotal.toFixed(2)}`;
             document.getElementById('price-total').innerText = `$${subtotal.toFixed(2)}`;
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+            document.getElementById('price-subtotal').innerText = formatPrice(unitTotal);
+            document.getElementById('price-total').innerText = formatPrice(subtotal);
+>>>>>>> 967968b (added currency updation)
 
             const summaryListEl = document.getElementById('summary-items-list');
             if (summaryListEl) {
@@ -489,16 +507,20 @@
             });
 
             const itemsStr = itemDetails.join(', ');
-            const totalStr = subtotal.toFixed(2);
+            const totalStr = formatPrice(subtotal);
 
             // Truncate if too long
             const displayItems = itemsStr.length > 60 ? itemsStr.substring(0, 60) + '...' : itemsStr;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             const msg = `Confirm purchase of ${displayItems} for ${formatCurrency(subtotal)}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
 =======
             const msg = `Confirm purchase of ${displayItems} for $${totalStr}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+            const msg = `Confirm purchase of ${displayItems} for ${totalStr}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
+>>>>>>> 967968b (added currency updation)
 
             showModal('Confirm Action', msg);
         }
@@ -558,8 +580,12 @@
             }
         }
 
-        window.onload = loadCart;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadCart();
+        };
     </script>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

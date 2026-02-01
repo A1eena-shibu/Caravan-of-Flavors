@@ -199,12 +199,18 @@
                             </p>
                             <div class="flex items-baseline gap-1">
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 <p class="text-4xl font-bold text-stone-900 leading-none" id="modal-price-display">$0.00
                                 </p>
 =======
                                 <p class="text-4xl font-bold text-stone-900 leading-none">$<span
                                         id="modal-price">0.00</span></p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                <p class="text-4xl font-bold text-stone-900 leading-none"><span
+                                        class="currency-symbol text-2xl mr-1">$</span><span id="modal-price">0.00</span>
+                                </p>
+>>>>>>> 967968b (added currency updation)
                                 <span class="text-lg text-stone-400 font-medium">/kg</span>
                             </div>
                         </div>
@@ -243,12 +249,17 @@
                                 class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Estimated
                                 Total</label>
 <<<<<<< HEAD
+<<<<<<< HEAD
                             <div class="py-4 text-2xl font-bold text-primary font-mono" id="order-total-display">$0.00
                             </div>
 =======
                             <div class="py-4 text-2xl font-bold text-primary font-mono">$<span
                                     id="order-total">0.00</span></div>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                            <div class="py-4 text-2xl font-bold text-primary font-mono"><span
+                                    class="currency-symbol mr-1">$</span><span id="order-total">0.00</span></div>
+>>>>>>> 967968b (added currency updation)
                         </div>
                     </div>
                     <div class="flex gap-4 pt-4">
@@ -298,10 +309,14 @@
                                      <div class="absolute bottom-6 right-6 flex flex-col items-end">
                                           <p class="text-[9px] font-bold text-white/70 uppercase tracking-widest mb-1 leading-none">Starting from</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                            <p class="text-2xl font-bold text-white leading-none">${formatCurrency(product.price)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
 =======
                                           <p class="text-2xl font-bold text-white leading-none">$${parseFloat(product.price).toFixed(2)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                          <p class="text-2xl font-bold text-white leading-none">${window.CurrencyManager.format(product.price)}<small class="text-xs font-semibold ml-0.5">/${product.unit || 'kg'}</small></p>
+>>>>>>> 967968b (added currency updation)
                                      </div>
                                 </div>
                                 <div class="p-10">
@@ -340,11 +355,23 @@
             document.getElementById('modal-farmer').innerText = `Harvested by ${selectedProduct.farmer_name}`;
             document.getElementById('modal-desc').innerText = selectedProduct.description || 'Premium quality spice harvested with traditional methods and care for sustainable agriculture.';
 <<<<<<< HEAD
+<<<<<<< HEAD
             document.getElementById('modal-price-display').innerText = formatCurrency(selectedProduct.price);
 =======
             document.getElementById('modal-price').innerText = parseFloat(selectedProduct.price).toFixed(2);
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+
+            // Client-side Price Format
+            const rate = window.CurrencyManager.settings.rate || 1;
+            const convertedPrice = parseFloat(selectedProduct.price) * rate;
+            document.getElementById('modal-price').innerText = convertedPrice.toLocaleString(undefined, { minimumFractionDigits: 2 });
+>>>>>>> 967968b (added currency updation)
             document.getElementById('modal-stock').innerText = `${selectedProduct.quantity}${selectedProduct.unit}`;
+
+            // Update modal currency symbol
+            const modalSymbol = document.querySelector('#productModal .currency-symbol');
+            if (modalSymbol) modalSymbol.textContent = window.CurrencyManager.settings.symbol;
 
             const imgSrc = selectedProduct.image_url ? '../../' + selectedProduct.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
             document.getElementById('modal-image').src = imgSrc;
@@ -387,8 +414,9 @@
 =======
         function updateOrderTotal() {
             const qty = parseFloat(document.getElementById('order-qty').value) || 0;
-            const price = parseFloat(selectedProduct.price);
-            document.getElementById('order-total').innerText = (qty * price).toFixed(2);
+            const rate = window.CurrencyManager.settings.rate || 1;
+            const price = parseFloat(selectedProduct.price) * rate;
+            document.getElementById('order-total').innerText = (qty * price).toLocaleString(undefined, { minimumFractionDigits: 2 });
         }
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
@@ -431,10 +459,18 @@
             const originalText = btn.innerText;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for ${formatCurrency(qty * selectedProduct.price)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
 =======
             if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for $${(qty * selectedProduct.price).toFixed(2)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+            const rate = window.CurrencyManager.settings.rate || 1;
+            const price = parseFloat(selectedProduct.price) * rate;
+            const symbol = window.CurrencyManager.settings.symbol;
+
+            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for ${symbol}${(qty * price).toLocaleString(undefined, { minimumFractionDigits: 2 })}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
+>>>>>>> 967968b (added currency updation)
 
             btn.disabled = true;
             btn.innerText = "AUTHENTICATING ORDER...";
@@ -465,8 +501,14 @@
                 btn.innerText = originalText;
             }
         }
-
-        window.onload = loadCatalog;
+    </script>
+    <script src="../assets/js/main.js"></script>
+    <script>
+        // Ensure currency data is updated after main.js loads it
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.CurrencyManager.init();
+            loadCatalog();
+        });
     </script>
 </body>
 

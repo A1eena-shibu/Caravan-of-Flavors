@@ -253,8 +253,9 @@ body {
 .ticker-content {
     display: flex;
     gap: 48px;
-    animation: ticker 40s linear infinite;
+    animation: ticker 85s linear infinite;
     white-space: nowrap;
+    width: max-content;
 }
 
 @keyframes ticker {
@@ -796,40 +797,47 @@ body {
     padding: 6px 16px;
     border-radius: 6px;
     font-size: 12px;
-/* Global Loader */
-#global-loader {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
 
-#global-loader.visible {
-    opacity: 1;
-    pointer-events: all;
-}
+    /* Global Loader */
+    #global-loader {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
 
-.spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid rgba(255, 126, 33, 0.2);
-    border-top: 4px solid #FF7E21;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    box-shadow: 0 0 15px rgba(255, 126, 33, 0.2);
-}
+    #global-loader.visible {
+        opacity: 1;
+        pointer-events: all;
+    }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(255, 126, 33, 0.2);
+        border-top: 4px solid #FF7E21;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        box-shadow: 0 0 15px rgba(255, 126, 33, 0.2);
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
     color: var(--text-muted);
     cursor: pointer;
 }

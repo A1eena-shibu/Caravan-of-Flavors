@@ -28,8 +28,12 @@ try {
     $stmt = $pdo->prepare("SELECT id, full_name, email, role, is_active, is_verified, created_at FROM users ORDER BY created_at DESC");
 =======
     // Fetch users with extended info for detail view
+<<<<<<< HEAD
     $stmt = $pdo->prepare("SELECT id, full_name, email, role, phone, address, is_active, is_verified, created_at FROM users WHERE role != 'admin' ORDER BY created_at DESC");
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+    $stmt = $pdo->prepare("SELECT id, full_name, email, role, phone, address, is_active, is_verified, created_at, country, currency_code FROM users WHERE role != 'admin' ORDER BY created_at DESC");
+>>>>>>> 967968b (added currency updation)
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

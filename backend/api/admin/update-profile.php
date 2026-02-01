@@ -32,6 +32,9 @@ try {
     $email = trim($data['email'] ?? '');
     $phone = trim($data['phone'] ?? '');
     $address = trim($data['address'] ?? '');
+    $country = trim($data['country'] ?? '');
+    $currency_code = trim($data['currency_code'] ?? '');
+    $currency_symbol = trim($data['currency_symbol'] ?? '');
 
     if (empty($fullName) || empty($email)) {
         throw new Exception('Full name and email are required');
@@ -46,12 +49,19 @@ try {
 
     $stmt = $pdo->prepare("
         UPDATE users 
-        SET full_name = ?, email = ?, phone = ?, address = ? 
+        SET full_name = ?, email = ?, phone = ?, address = ?, country = ?, currency_code = ?, currency_symbol = ?
         WHERE id = ? AND role = 'admin'
     ");
-    $result = $stmt->execute([$fullName, $email, $phone, $address, $userId]);
+    $result = $stmt->execute([$fullName, $email, $phone, $address, $country, $currency_code, $currency_symbol, $userId]);
 
     if ($result) {
+        // Update Session Immediately
+        $_SESSION['user_country'] = $country;
+        $_SESSION['user_currency_code'] = $currency_code;
+        $_SESSION['user_currency_symbol'] = $currency_symbol;
+        $_SESSION['user_name'] = $fullName;
+        $_SESSION['user_email'] = $email;
+
         echo json_encode(['success' => true, 'message' => 'Profile updated successfully']);
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to update profile']);

@@ -310,10 +310,14 @@
                         </td>
                         <td class="px-8 py-6 text-center">
 <<<<<<< HEAD
+<<<<<<< HEAD
                             <span class="text-sm font-bold text-stone-900 font-mono">${formatCurrency(order.total_price)}</span>
 =======
                             <span class="text-sm font-bold text-stone-900 font-mono">$${parseFloat(order.total_price).toFixed(2)}</span>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                            <span class="text-sm font-bold text-stone-900 font-mono">${formatPrice(order.total_price)}</span>
+>>>>>>> 967968b (added currency updation)
                         </td>
                         <td class="px-8 py-6 text-center">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}">
@@ -472,8 +476,12 @@
             }
         }
 
-        window.onload = loadOrders;
+        window.onload = async () => {
+            await CurrencyManager.init();
+            loadOrders();
+        };
     </script>
+    <script src="../assets/js/main.js"></script>
 </body>
 
 </html>

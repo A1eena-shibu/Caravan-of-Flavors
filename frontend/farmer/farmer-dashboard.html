@@ -119,11 +119,16 @@
                 style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 24px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
                     <div style="background: rgba(255, 126, 33, 0.1); padding: 10px; border-radius: 12px;">
-                        <img src="https://api.iconify.design/lucide:dollar-sign.svg?color=%23FF7E21" width="20" alt="">
+                        <img src="https://api.iconify.design/lucide:banknote.svg?color=%23FF7E21" width="20" alt="">
                     </div>
                     <span style="font-size: 13px; font-weight: 700; color: #1c1917;">TOTAL REVENUE</span>
                 </div>
-                <div id="stat-revenue" style="font-size: 28px; font-weight: 700; color: #1c1917;">$0.00</div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                    <span class="currency-symbol"
+                        style="font-size: 20px; color: #1c1917; font-weight: 700; opacity: 0.4;">$</span>
+                    <div id="stat-revenue" style="font-size: 32px; font-weight: 700; color: #1c1917; line-height: 1;">
+                        0.00</div>
+                </div>
                 <div
                     style="margin-top: 8px; font-size: 12px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 4px;">
                     <img src="https://api.iconify.design/lucide:trending-up.svg?color=%2310b981" width="14" alt="">
@@ -234,15 +239,20 @@
             }
         }
 
-        window.onload = loadStats;
+        window.onload = () => {
+            CurrencyManager.init();
+            loadStats();
+        };
 
         async function loadStats() {
+            // CurrencyManager.init() is called in onload and runs in bg
             try {
                 const response = await fetch('../../backend/api/analytics/get-farmer-stats.php');
                 const result = await response.json();
 
                 if (result.success) {
                     // Update Stats Cards
+<<<<<<< HEAD
 <<<<<<< HEAD
                     document.getElementById('stat-revenue').textContent = formatCurrency(result.stats.revenue);
                     document.getElementById('stat-orders').textContent = result.stats.active_orders;
@@ -268,6 +278,11 @@
                     }
 =======
                     document.getElementById('stat-revenue').textContent = `$${result.stats.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+=======
+                    const rate = CurrencyManager.settings ? CurrencyManager.settings.rate : 1;
+                    const convertedRevenue = parseFloat(result.stats.revenue) * rate;
+                    document.getElementById('stat-revenue').textContent = convertedRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+>>>>>>> 967968b (added currency updation)
                     document.getElementById('stat-orders').textContent = result.stats.active_orders;
                     document.getElementById('stat-customers').textContent = result.stats.customers;
 
@@ -296,10 +311,14 @@
                                     <div style="overflow: hidden;">
                                         <p style="font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${activity.product_name} • ${activity.customer_name}</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${formatCurrency(activity.total_price)}</p>
 =======
                                         <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • $${activity.total_price}</p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                        <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${formatPrice(activity.total_price)}</p>
+>>>>>>> 967968b (added currency updation)
                                     </div>
                                 </div>`;
                         });
@@ -319,10 +338,14 @@
                                     <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 8px;">
                                         <span style="color: #1c1917;">${p.product_name}</span>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         <span style="color: #FF7E21;">${formatCurrency(p.revenue)}</span>
 =======
                                         <span style="color: #FF7E21;">$${parseFloat(p.revenue).toFixed(0)}</span>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                        <span style="color: #FF7E21;">${formatPrice(p.revenue)}</span>
+>>>>>>> 967968b (added currency updation)
                                     </div>
                                     <div style="width: 100%; height: 6px; background: #f5f5f4; border-radius: 3px; overflow: hidden;">
                                         <div style="width: ${width}%; height: 100%; background: #FF7E21; border-radius: 3px;"></div>
@@ -364,10 +387,14 @@
                                     <div style="text-align: right;">
                                         <p style="font-size: 12px; font-weight: 700; color: ${badgeColor};">${badgeText}</p>
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${formatCurrency(a.current_bid)}</p>
 =======
                                         <p style="font-size: 11px; font-weight: 700; color: #1c1917;">$${parseFloat(a.current_bid).toFixed(2)}</p>
 >>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+=======
+                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${formatPrice(a.current_bid)}</p>
+>>>>>>> 967968b (added currency updation)
                                     </div>
                                 </div>`;
                         });

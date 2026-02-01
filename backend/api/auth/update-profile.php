@@ -40,19 +40,40 @@ try {
     $updateFields = ["full_name = ?"];
     $params = [$full_name];
 
+    // Allow updating phone even if empty (clearing it)
     $phone = $_POST['phone'] ?? '';
+    // Basic format validation only if NOT empty
+    // if (!empty($phone) && !preg_match('/^\+?[0-9]{8,15}$/', $phone)) { throw new Exception('Invalid phone number format.'); }
+
+    $updateFields[] = "phone = ?";
+    $params[] = $phone;
+
+    // Allow updating address even if empty
     $address = $_POST['address'] ?? '';
+    $updateFields[] = "address = ?";
+    $params[] = $address;
 
-    if (!empty($phone)) {
-        // Basic phone validation (optional, can be stricter)
-        // if (!preg_match('/^\+?[0-9]{8,15}$/', $phone)) { throw new Exception('Invalid phone number format.'); }
-        $updateFields[] = "phone = ?";
-        $params[] = $phone;
-    }
+    $country = $_POST['country'] ?? '';
+    // Dynamic currency handling
+    $currency_code = $_POST['currency_code'] ?? '';
+    $currency_symbol = $_POST['currency_symbol'] ?? '';
 
-    if (!empty($address)) {
-        $updateFields[] = "address = ?";
-        $params[] = $address;
+    if (!empty($country)) {
+        $updateFields[] = "country = ?";
+        $params[] = $country;
+
+        // Only update currency if provided
+        if (!empty($currency_code) && !empty($currency_symbol)) {
+            $updateFields[] = "currency_code = ?";
+            $params[] = $currency_code;
+            $updateFields[] = "currency_symbol = ?";
+            $params[] = $currency_symbol;
+
+            $_SESSION['user_currency_code'] = $currency_code;
+            $_SESSION['user_currency_symbol'] = $currency_symbol;
+        }
+
+        $_SESSION['user_country'] = $country;
     }
 
     if (!$isGoogleUser) {

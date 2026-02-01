@@ -12,7 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/country-selector.css">
     <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/country-selector.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -172,53 +175,110 @@
                                 style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">Phone
                                 Number</label>
                             <input type="tel" name="phone" id="input-phone" placeholder="+1234567890" maxlength="16"
-                                oninput="this.value = this.value.replace(/[^0-9+]/g, '').replace(/(\..*)\./g, '$1');"
+                                oninput="validatePhoneInput(this)"
                                 class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all">
                             <p class="text-[10px] text-stone-400">Format: <strong>+</strong> followed by <strong>8-15
                                     digits</strong></p>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <label
-                                style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">Delivery
-                                Address</label>
-                            <textarea name="address" id="input-address" rows="1"
-                                placeholder="Country, State, District, City, House Name/No"
-                                class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all resize-none"></textarea>
+                                style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">Address</label>
+                            <input type="text" name="address" id="input-address" placeholder="Enter the Address"
+                                class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all">
                         </div>
                     </div>
 
-                    <!-- Password Section (Hidden for Google Users) -->
-                    <div id="password-section" style="display: none; flex-direction: column; gap: 8px;">
-                        <label style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">New
-                            Password (Optional)</label>
-                        <input type="password" name="password" id="input-password"
-                            placeholder="Min. 8 characters to change"
-                            class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all">
-                        <p style="font-size: 11px; color: #a8a29e;">Leave blank to keep your current password.</p>
-                    </div>
+                    <!-- Added Country Selector -->
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label
+                                style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">Country
+                                / Currency</label>
+                            <button type="button" onclick="CountrySelector.show()"
+                                class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none hover:border-primary transition-all text-left flex justify-between items-center group">
+                                <span id="display-country"
+                                    class="text-stone-600 group-hover:text-stone-900 transition-colors">Select
+                                    Country</span>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="text-stone-400 text-[10px] font-bold uppercase tracking-wider currency-code">USD</span>
+                                    <img src="https://api.iconify.design/lucide:chevron-down.svg?color=%23a8a29e"
+                                        class="w-4 h-4 opacity-50" alt="">
+                                </div>
+                            </button>
+                            <input type="hidden" name="country" id="input-country">
+                            <input type="hidden" name="currency_code" id="input-currency-code">
+                            <input type="hidden" name="currency_symbol" id="input-currency-symbol">
+                        </div>
 
-                    <div
-                        style="padding-top: 24px; margin-top: 24px; border-top: 1px solid #e7e5e4; display: flex; justify-content: space-between; align-items: center;">
-                        <button type="submit" id="save-btn"
-                            style="background: #FF7E21; color: white; padding: 14px 32px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(255,126,33,0.3);"
-                            onmouseover="this.style.background='#E66D1A'" onmouseout="this.style.background='#FF7E21'">
-                            Save Changes
-                        </button>
+                        <!-- Password Section (Hidden for Google Users) -->
+                        <div id="password-section" style="display: none; flex-direction: column; gap: 8px;">
+                            <label
+                                style="font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">New
+                                Password (Optional)</label>
+                            <div style="position: relative;">
+                                <input type="password" name="password" id="input-password"
+                                    placeholder="Min. 8 characters to change"
+                                    class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-3 text-sm outline-none focus:border-primary transition-all pr-12">
+                                <button type="button" onclick="togglePasswordVisibility('input-password')"
+                                    style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; padding: 4px;">
+                                    <img src="https://api.iconify.design/lucide:eye.svg?color=%2394a3b8" width="18"
+                                        id="input-password-icon">
+                                </button>
+                            </div>
+                            <p style="font-size: 11px; color: #a8a29e;">Leave blank to keep your current password.</p>
+                        </div>
 
-                        <button type="button" onclick="confirmDelete()"
-                            style="background: none; border: none; color: #ff0000; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;"
-                            onmouseover="this.style.textDecoration='underline'"
-                            onmouseout="this.style.textDecoration='none'">
-                            <img src="https://api.iconify.design/lucide:trash-2.svg?color=%23ff0000" width="16" alt="">
-                            Delete Account
-                        </button>
-                    </div>
+                        <div
+                            style="padding-top: 24px; margin-top: 24px; border-top: 1px solid #e7e5e4; display: flex; justify-content: space-between; align-items: center;">
+                            <button type="submit" id="save-btn"
+                                style="background: #FF7E21; color: white; padding: 14px 32px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(255,126,33,0.3);"
+                                onmouseover="this.style.background='#E66D1A'"
+                                onmouseout="this.style.background='#FF7E21'">
+                                Save Changes
+                            </button>
+
+                            <button type="button" onclick="confirmDelete()"
+                                style="background: none; border: none; color: #ff0000; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;"
+                                onmouseover="this.style.textDecoration='underline'"
+                                onmouseout="this.style.textDecoration='none'">
+                                <img src="https://api.iconify.design/lucide:trash-2.svg?color=%23ff0000" width="16"
+                                    alt="">
+                                Delete Account
+                            </button>
+                        </div>
                 </form>
             </div>
         </div>
     </main>
 
     <script>
+        function validatePhoneInput(input) {
+            // 1. Remove invalid characters (only allow 0-9 and +)
+            let value = input.value.replace(/[^0-9+]/g, '');
+            // 2. Ensure + is only at the start
+            value = value.replace(/(?!^)\+/g, '');
+            // 3. Count digits and enforce max 15 digits
+            const digits = value.replace(/[^0-9]/g, '');
+            if (digits.length > 15) {
+                const maxLen = value.startsWith('+') ? 16 : 15;
+                value = value.slice(0, maxLen);
+            }
+            input.value = value;
+        }
+
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '-icon');
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.src = 'https://api.iconify.design/lucide:eye-off.svg?color=%2394a3b8';
+            } else {
+                field.type = 'password';
+                icon.src = 'https://api.iconify.design/lucide:eye.svg?color=%2394a3b8';
+            }
+        }
+
         async function logout() {
             try {
                 await fetch('../../backend/api/auth/logout.php');
@@ -241,7 +301,20 @@
                     document.getElementById('input-address').value = user.address || '';
                     document.getElementById('input-email').value = user.email;
                     document.getElementById('display-id').textContent = '#USR-' + user.id.toString().padStart(6, '0');
+                    document.getElementById('display-id').textContent = '#USR-' + user.id.toString().padStart(6, '0');
                     document.getElementById('display-role').textContent = user.role;
+
+                    // Populate Country/Currency
+                    if (user.country) {
+                        document.getElementById('input-country').value = user.country;
+                        document.getElementById('input-currency-code').value = user.currency_code;
+                        document.getElementById('input-currency-symbol').value = user.currency_symbol;
+                        document.getElementById('display-country').textContent = user.country;
+                        const currencyText = (user.currency_symbol && user.currency_code)
+                            ? `${user.currency_symbol} ${user.currency_code}`
+                            : (user.currency_code || 'USD');
+                        document.querySelectorAll('.currency-code').forEach(el => el.textContent = currencyText);
+                    }
 
                     // Conditional UI for Google vs Manual
                     const isGoogleUser = user.google_id !== null && user.google_id !== "";
@@ -282,9 +355,10 @@
             if (!name || name.length < 2) return "Please enter a valid name.";
             if (!/^[a-zA-Z\s'-]+$/.test(name)) return "Please enter a valid name.";
 
+            // Allow empty phone (just don't validate if empty)
             const phone = document.getElementById('input-phone').value;
-            if (phone && !/^\+[0-9]{8,15}$/.test(phone)) {
-                return "Invalid Phone Number. Use format: +1234567890";
+            if (phone && !/^\+?[0-9]{10,15}$/.test(phone)) {
+                return "Invalid Phone Number. Use format: +1234567890 (10-15 digits)";
             }
 
             if (!isGoogleUser) {
@@ -397,6 +471,41 @@
                 console.error('Delete error:', error);
             }
         }
+
+        // Initialize Country Selector
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initialize Selector with Callback
+            CountrySelector.init((country) => {
+                // Set hidden input value
+                document.getElementById('input-country').value = country.name;
+                document.getElementById('input-currency-code').value = country.currency_code;
+                document.getElementById('input-currency-symbol').value = country.currency_symbol;
+
+                // Update UI Display
+                document.getElementById('display-country').textContent = country.name;
+                // ... same as before ...
+                document.querySelectorAll('.currency-code').forEach(el => el.textContent = `${country.currency_symbol} ${country.currency_code}`);
+
+                // 2. Instant Currency Switch (Client-side preview)
+                if (window.CurrencyManager) {
+                    const updateSettings = async () => {
+                        if (Object.keys(CurrencyManager.rates).length === 0) {
+                            await CurrencyManager.fetchRates();
+                        }
+
+                        const rate = CurrencyManager.rates[country.currency_code] || 1;
+                        CurrencyManager.settings = {
+                            symbol: country.currency_symbol,
+                            code: country.currency_code,
+                            rate: rate
+                        };
+                        sessionStorage.setItem('user_currency_settings', JSON.stringify(CurrencyManager.settings));
+                        CurrencyManager.applyToStaticMarkers();
+                    };
+                    updateSettings();
+                }
+            });
+        });
     </script>
 </body>
 
