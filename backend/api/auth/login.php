@@ -46,34 +46,12 @@ try {
     }
 
     if (isset($user['is_active']) && !$user['is_active']) {
-<<<<<<< HEAD
-        throw new Exception('Your account is inactive. Please contact support.');
-=======
         throw new Exception('User is blocked by admin. Contact admin for enquire');
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     }
 
-    // Start session
-    if (session_status() === PHP_SESSION_NONE) {
-        if (!empty($data['keep_logged'])) {
-            // 30 days in seconds
-            $duration = 30 * 24 * 60 * 60;
-            // Set garbage collection max lifetime
-            ini_set('session.gc_maxlifetime', $duration);
-            // Set session cookie parameters
-            session_set_cookie_params([
-                'lifetime' => $duration,
-                'path' => '/',
-                'domain' => '', // Current domain
-                'secure' => isset($_SERVER['HTTPS']), // Secure only if HTTPS is on
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
-        }
-        session_start();
-        // Regenerate session ID to prevent fixation
-        session_regenerate_id(true);
-    }
+    require_once '../../config/session.php';
+
+    $pdo = getDBConnection();
 
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_email'] = $user['email'];
@@ -99,6 +77,8 @@ function getDashboardUrl($role)
 {
     if ($role === 'admin')
         return '../admin/admin-dashboard.html';
+    if ($role === 'delivery_agent')
+        return '../delivery/delivery-dashboard.html';
     return $role === 'farmer'
         ? '../farmer/farmer-dashboard.html'
         : '../customer/customer-dashboard.html';

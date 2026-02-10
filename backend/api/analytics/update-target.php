@@ -10,15 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once '../../config/session.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'farmer') {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+// Strict Farmer Check
+require_role('farmer');
 
 $data = json_decode(file_get_contents("php://input"));
 

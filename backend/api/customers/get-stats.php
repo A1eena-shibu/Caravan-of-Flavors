@@ -29,7 +29,7 @@ try {
 
     // 3. Active Orders List (For dashboard list)
     $stmtActiveList = $pdo->prepare("
-        SELECT o.*, p.product_name, p.image_url 
+        SELECT o.id, o.status, o.total_price, o.order_date, o.quantity, p.product_name, p.image_url 
         FROM orders o 
         JOIN products p ON o.product_id = p.id 
         WHERE o.customer_id = ? AND o.status NOT IN ('delivered', 'cancelled')
@@ -41,10 +41,10 @@ try {
 
     // 4. Transaction History (For table)
     $stmtHistory = $pdo->prepare("
-        SELECT o.*, p.product_name 
+        SELECT o.id, o.status, o.total_price, o.order_date, o.quantity, p.product_name 
         FROM orders o 
         JOIN products p ON o.product_id = p.id 
-        WHERE o.customer_id = ? 
+        WHERE o.customer_id = ?
         ORDER BY o.order_date DESC 
         LIMIT 5
     ");

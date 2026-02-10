@@ -16,20 +16,19 @@ const CustomUI = {
         // Add Modal Overlay
         const overlay = document.createElement('div');
         overlay.id = 'custom-modal-overlay';
-        // Verified: flex items-center justify-center centers the modal
         overlay.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] hidden flex items-center justify-center p-4 transition-opacity duration-200 opacity-0';
         overlay.innerHTML = `
-            <div class="bg-white border border-stone-200 rounded-[24px] p-8 max-w-md w-full shadow-2xl transform scale-95 transition-all duration-200" id="custom-modal-box">
-                <div class="mb-6 text-center">
-                    <div class="w-14 h-14 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-4 mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <div class="bg-white rounded-[32px] p-10 max-w-xl w-full shadow-2xl transform scale-95 transition-all duration-200 text-center" id="custom-modal-box">
+                <div class="mb-8">
+                    <div class="w-20 h-20 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-6 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-2" id="custom-modal-title">Confirm Action</h3>
-                    <p class="text-stone-500 text-sm leading-relaxed" id="custom-modal-message">Are you sure you want to proceed?</p>
+                    <h3 class="text-2xl font-bold text-stone-900 mb-3" id="custom-modal-title">Confirm Action</h3>
+                    <p class="text-stone-500 text-base leading-relaxed px-2" id="custom-modal-message">Are you sure you want to proceed?</p>
                 </div>
-                <div class="flex gap-3">
-                    <button id="custom-modal-cancel" class="flex-1 px-6 py-3 rounded-xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 transition-all">CANCEL</button>
-                    <button id="custom-modal-confirm" class="flex-1 bg-[#FF7E21] hover:bg-[#E66D1A] text-white py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-orange-500/20 transition-all">CONFIRM</button>
+                <div class="flex gap-4">
+                    <button id="custom-modal-cancel" class="flex-1 px-6 py-4 rounded-2xl border-2 border-stone-100 text-stone-500 font-bold text-sm hover:bg-stone-50 transition-all uppercase tracking-wider">CANCEL</button>
+                    <button id="custom-modal-confirm" class="flex-1 bg-gradient-to-r from-[#FF7E21] to-[#ff9142] hover:from-[#E66D1A] hover:to-[#ff7e21] text-white py-4 rounded-2xl font-bold text-sm shadow-[0_8px_20px_rgba(255,126,33,0.3)] hover:shadow-orange-500/40 transition-all uppercase tracking-wider">CONFIRM</button>
                 </div>
             </div>
         `;
@@ -93,15 +92,41 @@ const CustomUI = {
     },
 
     showConfirm(message) {
+        return this._showModal(message, 'Confirm Action', 'CONFIRM', 'CANCEL');
+    },
+
+    showAlert(message, title = 'Notification') {
+        return this._showModal(message, title, 'OK', null);
+    },
+
+    _modalTimeout: null,
+
+    _showModal(message, title, confirmText, cancelText) {
         this.init();
+        // Clear any pending cleanup timeout from a previous modal
+        if (this._modalTimeout) {
+            clearTimeout(this._modalTimeout);
+            this._modalTimeout = null;
+        }
+
         return new Promise((resolve) => {
             const overlay = document.getElementById('custom-modal-overlay');
             const box = document.getElementById('custom-modal-box');
+            const titleEl = document.getElementById('custom-modal-title');
             const msgEl = document.getElementById('custom-modal-message');
             const confirmBtn = document.getElementById('custom-modal-confirm');
             const cancelBtn = document.getElementById('custom-modal-cancel');
 
+            titleEl.textContent = title;
             msgEl.textContent = message;
+            confirmBtn.textContent = confirmText;
+
+            if (cancelText) {
+                cancelBtn.textContent = cancelText;
+                cancelBtn.classList.remove('hidden');
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
 
             overlay.classList.remove('hidden');
 
@@ -117,8 +142,9 @@ const CustomUI = {
                 overlay.classList.add('opacity-0');
                 box.classList.remove('scale-100');
                 box.classList.add('scale-95');
-                setTimeout(() => {
+                this._modalTimeout = setTimeout(() => {
                     overlay.classList.add('hidden');
+                    this._modalTimeout = null;
                 }, 200);
                 confirmBtn.onclick = null;
                 cancelBtn.onclick = null;
@@ -129,83 +155,17 @@ const CustomUI = {
                 resolve(true);
             };
 
-            cancelBtn.onclick = () => {
-                cleanup();
-                resolve(false);
-            };
+            if (cancelText) {
+                cancelBtn.onclick = () => {
+                    cleanup();
+                    resolve(false);
+                };
+            }
         });
     }
 };
 
-<<<<<<< HEAD
-const CurrencyHelper = {
-    exchangeRates: {
-        'INR': 83.25,
-        'EUR': 0.92,
-        'GBP': 0.79,
-        'AED': 3.67,
-        'USD': 1.0
-    },
-    
-    userCurrency: 'USD',
-    userLocale: undefined,
-    
-    init() {
-        try {
-            // Detect locale and currency
-            this.userLocale = navigator.language || 'en-US';
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            
-            if (timezone.includes('Calcutta') || timezone.includes('Kolkata') || this.userLocale.includes('IN')) {
-                this.userCurrency = 'INR';
-            } else if (this.userLocale.includes('GB')) {
-                this.userCurrency = 'GBP';
-            } else if (this.userLocale.includes('EU') || ['DE', 'FR', 'IT', 'ES'].some(c => this.userLocale.includes(c))) {
-                this.userCurrency = 'EUR';
-            } else if (timezone.includes('Dubai') || timezone.includes('Abu_Dhabi')) {
-                this.userCurrency = 'AED';
-            } else {
-                this.userCurrency = 'USD';
-            }
-        } catch (e) {
-            console.error('Currency detection failed:', e);
-            this.userCurrency = 'USD';
-        }
-    },
-
-    convert(usdPrice) {
-        const rate = this.exchangeRates[this.userCurrency] || 1.0;
-        return usdPrice * rate;
-    },
-
-    format(usdPrice) {
-        const converted = this.convert(usdPrice);
-        return new Intl.NumberFormat(this.userLocale, {
-            style: 'currency',
-            currency: this.userCurrency,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(converted);
-    }
-};
-
-// Initialize currency helper
-CurrencyHelper.init();
-
 // Expose global helpers
 window.showToast = (msg, type) => CustomUI.showToast(msg, type);
 window.showConfirm = (msg) => CustomUI.showConfirm(msg);
-window.formatCurrency = (usdPrice) => CurrencyHelper.format(usdPrice);
-window.getCurrencySymbol = () => {
-    return new Intl.NumberFormat(CurrencyHelper.userLocale, {
-        style: 'currency',
-        currency: CurrencyHelper.userCurrency,
-    }).format(0).replace(/[0-9.,]/g, '').trim();
-};
-window.convertPrice = (usdPrice) => CurrencyHelper.convert(usdPrice);
-window.getUserCurrency = () => CurrencyHelper.userCurrency;
-=======
-// Expose global helpers
-window.showToast = (msg, type) => CustomUI.showToast(msg, type);
-window.showConfirm = (msg) => CustomUI.showConfirm(msg);
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+window.showAlert = (msg, title) => CustomUI.showAlert(msg, title);

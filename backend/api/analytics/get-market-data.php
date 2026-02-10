@@ -10,9 +10,9 @@ try {
     $stmtTotal = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status != 'cancelled'");
     $totalOrders = $stmtTotal->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
 
-    // Pending Orders
-    $stmtPending = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status = 'pending'");
-    $pendingOrders = $stmtPending->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
+    // Shipped Orders
+    $stmtShipped = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status = 'shipped'");
+    $shippedOrders = $stmtShipped->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
 
     // Delivered Orders
     $stmtDelivered = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status = 'delivered'");
@@ -27,6 +27,7 @@ try {
         SELECT p.product_name, COUNT(o.id) as count
         FROM orders o
         JOIN products p ON o.product_id = p.id
+        WHERE o.status != 'cancelled'
         GROUP BY p.product_name
         ORDER BY count DESC
         LIMIT 5
@@ -38,7 +39,7 @@ try {
         'data' => [
             'cards' => [
                 'total' => $totalOrders,
-                'pending' => $pendingOrders,
+                'shipped' => $shippedOrders,
                 'delivered' => $deliveredOrders
             ],
             'charts' => [

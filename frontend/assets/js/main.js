@@ -1,5 +1,17 @@
-// Global Loader Logic
+// Global Utilities and Session Management
 (function () {
+    // Helper to detect project root (e.g., /Caravan of Flavours)
+    window.getProjectRoot = () => {
+        const path = window.location.pathname;
+        if (path.includes('/frontend/')) {
+            return path.substring(0, path.indexOf('/frontend/'));
+        }
+        return '';
+    };
+
+    const projectRoot = window.getProjectRoot();
+
+    // Inject Loader HTML
     // Inject Loader HTML
     const loaderHTML = `
     <div id="global-loader">
@@ -27,7 +39,7 @@
         if (loader) loader.classList.remove('visible');
     };
 
-    // Override fetch to handle loader
+    // Override fetch to handle loader and session validation
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
         const url = args[0] ? args[0].toString() : '';
@@ -38,6 +50,19 @@
 
         try {
             const response = await originalFetch(...args);
+
+            // Global Session Validation: If any API returns 401, redirect to login
+            if (response.status === 401 && !url.includes('auth/login.php')) {
+                const projectRoot = window.getProjectRoot();
+                const isProtected = window.location.pathname.includes('/customer/') ||
+                    window.location.pathname.includes('/farmer/') ||
+                    window.location.pathname.includes('/admin/');
+
+                if (isProtected) {
+                    window.location.href = projectRoot + '/frontend/auth/login.html';
+                }
+            }
+
             return response;
         } catch (error) {
             throw error;
@@ -45,6 +70,31 @@
             if (!isBackground) hideLoader();
         }
     };
+
+    // Global Session Check for protected pages
+    window.checkSession = async () => {
+        try {
+            const projectRoot = window.getProjectRoot();
+            // Find path to check-session.php relative to project root
+            let path = projectRoot + '/backend/api/auth/check-session.php';
+
+            if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('Caravan%20of%20Flavours/')) return; // Home skip
+
+            const response = await originalFetch(path);
+            const result = await response.json();
+            if (!result.logged_in) {
+                window.location.href = projectRoot + '/frontend/auth/login.html';
+            }
+        } catch (e) { console.error('Session check failed', e); }
+    };
+
+    // Handle Back Button and Cache: Force re-validation
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Page loaded from cache (e.g. back button)
+            if (window.checkSession) window.checkSession();
+        }
+    });
 })();
 
 // Global Currency Manager
@@ -73,6 +123,9 @@ const CurrencyManager = {
         if (cached) {
             try {
                 this.settings = JSON.parse(cached);
+                // Sanitize: Force USD to 1 even from cache
+                if (this.settings.code === 'USD') this.settings.rate = 1;
+
                 this.applyToStaticMarkers();
                 this.fetchSettings(); // Verify in background
                 this.fetchRates();    // Verify rates in background
@@ -90,24 +143,24 @@ const CurrencyManager = {
     },
 
     async fetchRates() {
-        // Smart Path Cascade for rates
+        const projectRoot = window.getProjectRoot();
         const paths = [
+            projectRoot + '/backend/api/currency/get-rates.php',
             '../../backend/api/currency/get-rates.php',
-            '../backend/api/currency/get-rates.php',
-            '/backend/api/currency/get-rates.php',
-            '../../../backend/api/currency/get-rates.php'
+            '../backend/api/currency/get-rates.php'
         ];
 
         for (const path of paths) {
             try {
-                const response = await fetch(path);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const response = await fetch(path, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success && result.rates) {
                         this.rates = result.rates;
                         sessionStorage.setItem('exchange_rates', JSON.stringify(this.rates));
-
-                        // If we already have settings, re-calculate rate in case it was 1
                         if (this.settings && this.settings.code) {
                             this.settings.rate = this.rates[this.settings.code] || 1;
                             sessionStorage.setItem('user_currency_settings', JSON.stringify(this.settings));
@@ -121,18 +174,14 @@ const CurrencyManager = {
     },
 
     async fetchSettings() {
-        // ... (fetch logic same until newSettings creation) ...
-        // We will assume backend already returns correct symbol/code.
-        // Rates are static here, but could be fetched.
         if (this.isFetching) return;
         this.isFetching = true;
 
-        // ... (path cascade) ...
+        const projectRoot = window.getProjectRoot();
         const paths = [
+            projectRoot + '/backend/api/auth/get-profile.php',
             '../../backend/api/auth/get-profile.php',
-            '../backend/api/auth/get-profile.php',
-            '/backend/api/auth/get-profile.php',
-            '../../../backend/api/auth/get-profile.php'
+            '../backend/api/auth/get-profile.php'
         ];
 
         for (const path of paths) {
@@ -152,7 +201,7 @@ const CurrencyManager = {
                             const newSettings = {
                                 symbol: result.data.currency_symbol || '$',
                                 code: code,
-                                rate: this.rates[code] || 1 // Set rate based on code
+                                rate: (code === 'USD') ? 1 : (this.rates[code] || 1) // Set rate based on code, force 1 for USD
                             };
 
                             this.settings = newSettings;
@@ -186,7 +235,7 @@ const CurrencyManager = {
         // If the 'amount' could be already converted, we might have issues, 
         // but typically raw data in frontend is what comes from DB (USD).
 
-        const rate = settings.rate || 1;
+        const rate = (settings.code === 'USD') ? 1 : (settings.rate || 1);
         num = num * rate;
 
         return settings.symbol + num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -217,7 +266,8 @@ const CurrencyManager = {
     refreshUI() {
         // List of update functions on various pages
         const refreshers = [
-            'loadStats',       // Dashboard
+            'loadDashboard',   // Dashboard
+            'loadStats',       // Dashboard legacy/etc
             'loadProducts',    // Inventory
             'loadOrders',      // Orders
             'loadCatalog',     // Customer Catalog
@@ -227,7 +277,8 @@ const CurrencyManager = {
             'renderProducts',  // Inventory secondary
             'renderOrders',    // Generic
             'loadTransactions', // Admin Transactions
-            'loadActivityLogs' // Admin Activity
+            'loadActivityLogs', // Admin Activity
+            'updatePaymentPrice' // Payment Page Update
         ];
 
         refreshers.forEach(fn => {
@@ -245,6 +296,15 @@ const CurrencyManager = {
 
 window.CurrencyManager = CurrencyManager;
 window.formatPrice = (amount) => CurrencyManager.format(amount);
+
+// Centralized status normalization helper
+window.normalizeStatus = (status) => {
+    if (!status) return 'ordered';
+    const s = String(status).trim().toLowerCase();
+    // Default problematic or empty statuses to 'ordered'
+    if (s === '' || s === 'unknown' || s === 'unknown status') return 'ordered';
+    return s;
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     // Start init immediately, but don't await/block

@@ -11,14 +11,10 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once '../../config/database.php';
 
-session_start();
+require_once '../../config/session.php';
 
-// 1. Check Authentication & Admin Role
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
-    exit;
-}
+// Strict Admin Check
+require_role('admin');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

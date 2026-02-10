@@ -6,15 +6,11 @@
 
 header('Content-Type: application/json');
 ob_start();
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once '../../config/session.php';
 require_once '../../config/database.php';
 
-// Admin Auth check (optional bypass for testing)
-if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_role']) && $_SESSION['user_role'] !== 'admin')) {
-    // For local testing, we skip exit;
-}
+// Strict Admin Check
+require_role('admin');
 
 try {
     $pdo = getDBConnection();
@@ -57,12 +53,12 @@ try {
     $stmt->execute();
     $revenueTrend = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4. Order Actions (For Funnel - counts status transitions)
+    // 4. Order Status Distribution
     $stmt = $pdo->prepare("
         SELECT status, COUNT(*) as count 
-        FROM order_tracking 
+        FROM orders 
         GROUP BY status
-        ORDER BY FIELD(status, 'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'rejected')
+        ORDER BY count DESC
     ");
     $stmt->execute();
     $orderStatus = $stmt->fetchAll(PDO::FETCH_ASSOC);

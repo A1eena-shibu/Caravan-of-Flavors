@@ -11,10 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
-<<<<<<< HEAD
-    <script src="assets/js/custom-ui.js?v=1.4"></script>
-=======
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -69,28 +65,6 @@
 
     <div class="ticker-bar">
         <div class="ticker-content">
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <div class="ticker-item"><span class="label">CLOVES (ZANZIBAR)</span> <span class="price"
-                    id="cloves-price">$9,100/MT</span>
-                <span class="change negative">- 0.8%</span>
-            </div>
-            <div class="ticker-item"><span class="label">TURMERIC (VIETNAM)</span> <span class="price"
-                    id="turmeric-price">$2,650/MT</span>
-                <span class="change positive">+ 1.2%</span>
-            </div>
-            <div class="ticker-item"><span class="label">BLACK PEPPER (BRAZIL)</span> <span class="price"
-                    id="pepper-price">$5,400/MT</span> <span class="change negative">- 1.5%</span></div>
-            <div class="ticker-item"><span class="label">CINNAMON (SRI LANKA)</span> <span class="price"
-                    id="cinnamon-price">$7,800/MT</span> <span class="change positive">+ 0.5%</span></div>
-            <script>
-                document.getElementById('cloves-price').innerText = formatCurrency(9100) + '/MT';
-                document.getElementById('turmeric-price').innerText = formatCurrency(2650) + '/MT';
-                document.getElementById('pepper-price').innerText = formatCurrency(5400) + '/MT';
-                document.getElementById('cinnamon-price').innerText = formatCurrency(7800) + '/MT';
-            </script>
-=======
-=======
             <!-- Set 1 -->
             <div class="ticker-item"><span class="label">CLOVES (ZANZIBAR)</span> <span class="price">$9,100/MT</span>
                 <span class="change negative">- 0.8%</span>
@@ -128,7 +102,6 @@
                     class="price">$7,800/MT</span> <span class="change positive">+ 0.5%</span></div>
 
             <!-- Set 4 -->
->>>>>>> 967968b (added currency updation)
             <div class="ticker-item"><span class="label">CLOVES (ZANZIBAR)</span> <span class="price">$9,100/MT</span>
                 <span class="change negative">- 0.8%</span>
             </div>
@@ -139,7 +112,6 @@
                     class="price">$5,400/MT</span> <span class="change negative">- 1.5%</span></div>
             <div class="ticker-item"><span class="label">CINNAMON (SRI LANKA)</span> <span
                     class="price">$7,800/MT</span> <span class="change positive">+ 0.5%</span></div>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         </div>
     </div>
 
@@ -153,9 +125,6 @@
                 <div class="product-card">
                     <div class="product-image">
                         <img src="assets/images/black_pepper_spice.png" alt="Black Pepper">
-                        <span class="badge badge-top"><img
-                                src="https://api.iconify.design/lucide:check-circle.svg?color=white" alt=""> ISO
-                            9001</span>
                     </div>
                     <div class="product-info">
                         <div class="brand-row">
@@ -174,7 +143,6 @@
                 <div class="product-card">
                     <div class="product-image">
                         <img src="assets/images/turmeric_spice.png" alt="Turmeric">
-                        <span class="badge badge-top hot">HOT SELLER</span>
                     </div>
                     <div class="product-info">
                         <div class="brand-row">
@@ -193,7 +161,7 @@
                 <div class="product-card">
                     <div class="product-image">
                         <img src="assets/images/cardamom_spice.png" alt="Cardamom">
-                        <span class="badge badge-top grade">GRADE A</span>
+                        <!-- Grade badge removed -->
                     </div>
                     <div class="product-info">
                         <div class="brand-row">
@@ -293,10 +261,8 @@
     <script>
         async function checkAuthAndRedirect(intent) {
             try {
-                // Adjust path to api from root/frontend/index.html
-                // index.html is in frontend/, api is in backend/api/
-                // path from index.html -> ../backend/api/auth/check-session.php
-                const response = await fetch('../backend/api/auth/check-session.php');
+                const projectRoot = window.getProjectRoot ? window.getProjectRoot() : '';
+                const response = await fetch(projectRoot + '/backend/api/auth/check-session.php');
                 const result = await response.json();
 
                 if (result.logged_in) {
@@ -312,16 +278,15 @@
                             window.location.href = 'customer/customer-dashboard.html';
                         }
                     } else {
-                        // Fallback (e.g. unknown role), go to login
-                        window.location.href = 'auth/login.html';
+                        window.location.href = projectRoot + '/frontend/auth/login.html';
                     }
                 } else {
-                    // Not logged in -> Go to Login
-                    window.location.href = 'auth/login.html';
+                    window.location.href = projectRoot + '/frontend/auth/login.html';
                 }
             } catch (error) {
                 console.error('Session check failed:', error);
-                window.location.href = 'auth/login.html';
+                const projectRoot = window.getProjectRoot ? window.getProjectRoot() : '';
+                window.location.href = projectRoot + '/frontend/auth/login.html';
             }
         }
     </script>

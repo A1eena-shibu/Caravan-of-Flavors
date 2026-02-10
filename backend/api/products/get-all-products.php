@@ -17,7 +17,7 @@ try {
         SELECT p.*, u.full_name as farmer_name
         FROM products p
         JOIN users u ON p.farmer_id = u.id
-        WHERE p.is_available = TRUE AND p.quality_status = 'approved'
+        WHERE p.is_available = TRUE
         ORDER BY p.created_at DESC
     ");
     $stmt->execute();

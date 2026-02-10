@@ -24,6 +24,7 @@
             }
         }
     </script>
+    <script src="../assets/js/main.js"></script>
 </head>
 
 <body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
@@ -135,13 +136,13 @@
                 <p class="mt-4 text-xs text-stone-500">All time orders.</p>
             </div>
 
-            <!-- Card 2: Pending Orders -->
+            <!-- Card 2: Shipped Orders -->
             <div class="bg-white p-8 rounded-[40px] border border-stone-200 shadow-sm relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-8 opacity-10"><img
-                        src="https://api.iconify.design/lucide:clock.svg?color=%23FF7E21" width="100"></div>
-                <p class="text-[11px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-4">Pending</p>
-                <h3 id="card-pending" class="text-4xl font-bold text-stone-900 mb-2">...</h3>
-                <p class="text-sm font-semibold text-orange-500 flex items-center gap-1">Awaiting Processing</p>
+                        src="https://api.iconify.design/lucide:truck.svg?color=%23FF7E21" width="100"></div>
+                <p class="text-[11px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-4">Shipped</p>
+                <h3 id="card-shipped" class="text-4xl font-bold text-stone-900 mb-2">...</h3>
+                <p class="text-sm font-semibold text-orange-500 flex items-center gap-1">In Transit</p>
             </div>
 
             <!-- Card 3: Delivered Orders -->
@@ -177,10 +178,29 @@
     <script>
         // -- 1. Pie Chart: Orders by Status --
         const pieCtx = document.getElementById('chartPie').getContext('2d');
+        const dotLegendConfig = {
+            onClick: (e) => e.stopPropagation(),
+            labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 20,
+                color: '#444',
+                font: { size: 12, weight: '600' }
+            }
+        };
         const pieChart = new Chart(pieCtx, {
             type: 'pie',
             data: { labels: [], datasets: [{ data: [], backgroundColor: ['#FF7E21', '#1C1917', '#78716C', '#D6D3D1', '#10b981'], borderSkipped: false }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        ...dotLegendConfig,
+                        position: 'bottom'
+                    }
+                }
+            }
         });
 
         // -- 2. Bar Chart: Top Products --
@@ -200,13 +220,27 @@
 
                     // Cards
                     document.getElementById('card-total').innerText = d.cards.total;
-                    document.getElementById('card-pending').innerText = d.cards.pending;
+                    document.getElementById('card-shipped').innerText = d.cards.shipped;
                     document.getElementById('card-delivered').innerText = d.cards.delivered;
 
                     // Chart 1: Status Pie
                     if (d.charts.status_distribution.length) {
-                        pieChart.data.labels = d.charts.status_distribution.map(s => s.status.charAt(0).toUpperCase() + s.status.slice(1));
-                        pieChart.data.datasets[0].data = d.charts.status_distribution.map(s => s.count);
+                        const statusMap = {
+                            'ordered': 'Ordered',
+                            'shipped': 'Shipped',
+                            'delivered': 'Delivered',
+                            'cancelled': 'Cancelled',
+                            'awaiting_payment': 'Awaiting Payment',
+                            'processing': 'Processing'
+                        };
+
+                        pieChart.data.labels = d.charts.status_distribution.map(s => {
+                            const rawStatus = s.status || s.STATUS;
+                            const statusKey = window.normalizeStatus(rawStatus);
+                            const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
+                            return `${displayStatus} (${s.count || s.COUNT || 0})`;
+                        });
+                        pieChart.data.datasets[0].data = d.charts.status_distribution.map(s => s.count || s.COUNT || 0);
                         pieChart.update();
                     }
 

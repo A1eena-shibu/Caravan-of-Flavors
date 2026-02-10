@@ -6,18 +6,11 @@
 
 header('Content-Type: application/json');
 
+require_once '../../config/session.php';
 require_once '../../config/database.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Check authorization
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'farmer') {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized. Farmer access required.']);
-    exit;
-}
+require_role('farmer');
 
 try {
     $farmer_id = $_SESSION['user_id'];
@@ -26,7 +19,13 @@ try {
     // Join with users (customer) and products
     $stmt = $pdo->prepare("
         SELECT 
-            o.*, 
+            o.id,
+            o.status,
+            o.total_price,
+            o.quantity,
+            p.unit,
+            o.order_date,
+            o.payment_status,
             u.full_name as customer_name, 
             u.email as customer_email,
             p.product_name,
@@ -41,7 +40,10 @@ try {
     $stmt->execute([$farmer_id]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'data' => $orders]);
+    // Debug logging (check server error logs)
+    error_log("Farmer Orders API: Farmer ID $farmer_id found " . count($orders) . " orders");
+
+    echo json_encode(['success' => true, 'data' => $orders, 'debug' => ['user_id' => $farmer_id, 'role' => $_SESSION['user_role'] ?? 'none']]);
 
 } catch (Exception $e) {
     http_response_code(500);

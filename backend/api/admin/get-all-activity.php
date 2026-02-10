@@ -20,10 +20,11 @@ try {
             u.full_name as user_name,
             u.role as user_role,
             CASE 
+                WHEN ot.status = 'ordered' THEN 'ordered an item'
                 WHEN ot.status = 'pending' THEN 'placed a new order'
                 WHEN ot.status = 'confirmed' THEN 'confirmed the order'
-                WHEN ot.status = 'paid' THEN 'paid for the order'
-                WHEN ot.status = 'processing' THEN 'is processing the order'
+                WHEN ot.status = 'paid' THEN 'payment confirmed'
+                WHEN ot.status = 'processing' THEN 'processing the order'
                 WHEN ot.status = 'shipped' THEN 'shipped the order'
                 WHEN ot.status = 'delivered' THEN 'delivered the order'
                 WHEN ot.status = 'cancelled' THEN 'cancelled the order'
@@ -81,6 +82,21 @@ try {
         FROM reviews r
         JOIN users u ON r.customer_id = u.id
         JOIN products p ON r.product_id = p.id)
+
+        UNION ALL
+
+        (SELECT 
+            'product' as type,
+            pt.updated_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'updated product details' as action,
+            CONCAT(p.product_name, ' (', p.quantity, ' ', p.unit, ') @ ', p.price, '/', p.unit) as details,
+            p.id as reference_id,
+            p.price as amount
+        FROM product_tracking pt
+        JOIN products p ON pt.product_id = p.id
+        JOIN users u ON p.farmer_id = u.id)
 
         ORDER BY timestamp DESC
         LIMIT 100

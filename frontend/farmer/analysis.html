@@ -180,17 +180,10 @@
             <div
                 style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
                 <div>
-<<<<<<< HEAD
-                    <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Customer
-                        Satisfaction</h3>
-                    <div id="rating-distribution" style="display: flex; flex-direction: column; gap: 12px;">
-                        <p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>
-=======
                     <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 20px;">Top Loyal
                         Customers</h3>
                     <div id="top-customers-list" style="display: flex; flex-direction: column; gap: 16px;">
                         <p style="color: #a8a29e; font-size: 12px;">No customer data available.</p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     </div>
                 </div>
 
@@ -370,34 +363,6 @@
                         statusDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No status data.</p>';
                     }
 
-<<<<<<< HEAD
-                    // 4. Rating Distribution
-                    const ratingDist = document.getElementById('rating-distribution');
-                    if (result.rating_distribution) {
-                        ratingDist.innerHTML = '';
-                        const total = result.rating_distribution.reduce((acc, curr) => acc + parseInt(curr.count), 0) || 1;
-
-                        // Map results to a fixed 5-star list
-                        const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-                        result.rating_distribution.forEach(r => distribution[r.rating] = r.count);
-
-                        [5, 4, 3, 2, 1].forEach(star => {
-                            const count = distribution[star];
-                            const percentage = Math.round((count / total) * 100);
-                            ratingDist.innerHTML += `
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div style="width: 45px; font-size: 12px; font-weight: 700; color: #1c1917; display: flex; align-items: center; gap: 4px;">
-                                        ${star} <img src="https://api.iconify.design/lucide:star.svg?color=%23eab308" width="12" alt="">
-                                    </div>
-                                    <div style="flex: 1; height: 8px; background: #f5f5f4; border-radius: 4px; overflow: hidden;">
-                                        <div style="width: ${percentage}%; height: 100%; background: #eab308; border-radius: 4px;"></div>
-                                    </div>
-                                    <span style="font-size: 11px; font-weight: 700; color: #1c1917; width: 30px; text-align: right;">${percentage}%</span>
-                                </div>`;
-                        });
-                    } else {
-                        ratingDist.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No reviews yet.</p>';
-=======
                     // 4. Top Customers (Replaced Rating Dist)
                     const topCustList = document.getElementById('top-customers-list');
                     if (result.top_customers && result.top_customers.length > 0) {
@@ -417,7 +382,6 @@
                         });
                     } else {
                         topCustList.innerHTML = '<p style="color: #a8a29e; font-size: 12px;">No customer data yet.</p>';
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                     }
 
                     // 5. Growth Target Logic

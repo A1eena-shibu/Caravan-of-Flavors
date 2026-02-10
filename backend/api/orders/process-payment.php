@@ -91,32 +91,36 @@ try {
     $placeholders = implode(',', array_fill(0, count($ids_array), '?'));
 
     // Update orders with payment status, method, delivery address, and append transaction ref to notes
-    // We need to construct parameters: address, method, note, then all IDs
+    // We need to construct parameters: address, method, transaction_note, then all IDs
+    // ONLY SET payment_status = 'paid'
+    $sqlPromise = "UPDATE orders SET payment_status = 'paid', delivery_address = ?, payment_method = ?, notes = CONCAT(IFNULL(notes, ''), ?) WHERE id IN ($placeholders)";
+
+    // Params: address, method, note, [ids...]
     $params = [$address, $payment_method, $transaction_note];
     $params = array_merge($params, $ids_array);
 
-    $stmt = $pdo->prepare("UPDATE orders SET payment_status = 'paid', delivery_address = ?, payment_method = ?, notes = CONCAT(IFNULL(notes, ''), ?) WHERE id IN ($placeholders)");
+    $stmt = $pdo->prepare($sqlPromise);
     $stmt->execute($params);
 
-<<<<<<< HEAD
-=======
     // --- Log 'paid' status to order_tracking for Activity Feed ---
     if ($stmt->rowCount() > 0) {
         $trackingValues = [];
         $trackingParams = [];
         foreach ($ids_array as $oid) {
+            // Log payment
             $trackingValues[] = "(?, 'paid', 'Payment Received')";
             $trackingParams[] = $oid;
         }
         if (!empty($trackingValues)) {
-            $sqlTracking = "INSERT INTO order_tracking (order_id, status, comment) VALUES " . implode(", ", $trackingValues);
+            // Need to flatten values string in SQL
+            $valueString = implode(", ", $trackingValues);
+            $sqlTracking = "INSERT INTO order_tracking (order_id, status, comment) VALUES $valueString";
             $stmtTracking = $pdo->prepare($sqlTracking);
             $stmtTracking->execute($trackingParams);
         }
     }
     // -------------------------------------------------------------
 
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     if ($stmt->rowCount() > 0) {
         echo json_encode(['success' => true, 'message' => 'Payment processed successfully']);
     } else {

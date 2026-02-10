@@ -18,7 +18,7 @@ try {
         $placeholders = implode(',', array_fill(0, count($ids_array), '?'));
 
         $stmt = $pdo->prepare("
-            SELECT o.id, o.total_price, o.payment_status, u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone
+            SELECT o.id, o.status, o.total_price, o.payment_status, o.currency_code, o.exchange_rate, u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone
             FROM orders o
             JOIN users u ON o.customer_id = u.id
             WHERE o.id IN ($placeholders)
@@ -43,8 +43,11 @@ try {
         // Construct composite order object
         $order = [
             'id' => implode(',', $order_ids_list), // Composite ID
+            'status' => $first_order['status'],
             'total_price' => $total_price,
             'payment_status' => $first_order['payment_status'], // Assuming all have same status initially
+            'currency_code' => $first_order['currency_code'] ?? 'USD',
+            'exchange_rate' => $first_order['exchange_rate'] ?? 1.0,
             'customer_name' => $first_order['customer_name'],
             'customer_email' => $first_order['customer_email'],
             'customer_phone' => $first_order['customer_phone']
@@ -52,7 +55,7 @@ try {
     } else {
         // Single order fallback
         $stmt = $pdo->prepare("
-            SELECT o.id, o.total_price, o.payment_status, u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone
+            SELECT o.id, o.status, o.total_price, o.payment_status, o.currency_code, o.exchange_rate, u.full_name as customer_name, u.email as customer_email, u.phone as customer_phone
             FROM orders o
             JOIN users u ON o.customer_id = u.id
             WHERE o.id = ?

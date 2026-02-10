@@ -29,7 +29,7 @@ try {
     $pdo->beginTransaction();
 
     // 1. Check stock
-    $stmt = $pdo->prepare("SELECT farmer_id, product_name, price, quantity FROM products WHERE id = ? FOR UPDATE");
+    $stmt = $pdo->prepare("SELECT farmer_id, product_name, price, quantity, unit FROM products WHERE id = ? FOR UPDATE");
     $stmt->execute([$product_id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -40,26 +40,26 @@ try {
 
     $total_price = $product['price'] * $quantity;
 
+    $currency_code = $data['currency_code'] ?? 'USD';
+    $exchange_rate = $data['exchange_rate'] ?? 1.0;
+
     // 2. Create Order
-    $orderStmt = $pdo->prepare("INSERT INTO orders (customer_id, product_id, farmer_id, quantity, unit_price, total_price, status, delivery_address, payment_status) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, 'pending')");
-    $orderStmt->execute([$customer_id, $product_id, $product['farmer_id'], $quantity, $product['price'], $total_price, $delivery_address]);
+    $orderStmt = $pdo->prepare("INSERT INTO orders (customer_id, product_id, farmer_id, quantity, unit_price, total_price, status, delivery_address, payment_status, currency_code, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, 'ordered', ?, 'pending', ?, ?)");
+    $orderStmt->execute([$customer_id, $product_id, $product['farmer_id'], $quantity, $product['price'], $total_price, $delivery_address, $currency_code, $exchange_rate]);
     $order_id = $pdo->lastInsertId();
 
     // 3. Update Product Stock
     $updateStmt = $pdo->prepare("UPDATE products SET quantity = quantity - ? WHERE id = ?");
     $updateStmt->execute([$quantity, $product_id]);
 
-<<<<<<< HEAD
-    // 4. Create Notification for Farmer
-=======
     // 4a. Log to Order Tracking
-    $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment) VALUES (?, 'pending', 'Order placed by customer')");
+    $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment) VALUES (?, 'ordered', 'Order placed, payment pending')");
     $trackStmt->execute([$order_id]);
 
     // 4b. Create Notification for Farmer
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+    $unit = $product['unit'] ?? 'kg';
     $notifStmt = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'New Order Received!', ?, 'order')");
-    $notifStmt->execute([$product['farmer_id'], "You have a new order for {$quantity}kg of {$product['product_name']}. Total: \${$total_price}"]);
+    $notifStmt->execute([$product['farmer_id'], "You have a new order for {$quantity}{$unit} of {$product['product_name']}. Total: \${$total_price}"]);
 
     $pdo->commit();
     echo json_encode(['success' => true, 'message' => 'Order placed successfully!', 'order_id' => $order_id]);

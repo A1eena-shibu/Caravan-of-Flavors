@@ -5,19 +5,11 @@
  */
 
 header('Content-Type: application/json');
-<<<<<<< HEAD
-require_once '../../config/database.php';
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-=======
 ob_start();
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once '../../config/database.php';
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
 // Check if user is logged in and is an admin
 // For now, if role check is not strictly implemented in session for 'admin', 
@@ -32,18 +24,10 @@ if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_role']) && $_SESSION[
     // exit;
 }
 
-<<<<<<< HEAD
-$pdo = getDBConnection();
-
-try {
-    // 1. Total Users Breakdown
-    $stmt = $pdo->prepare("SELECT role, COUNT(*) as count FROM users GROUP BY role");
-=======
 try {
     $pdo = getDBConnection();
     // 1. Total Users Breakdown
     $stmt = $pdo->prepare("SELECT role, COUNT(*) as count FROM users WHERE role != 'admin' GROUP BY role");
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     $stmt->execute();
     $userStats = $stmt->fetchAll(PDO::FETCH_KEY_PAIR); // ['customer' => 10, 'farmer' => 5]
 
@@ -57,45 +41,11 @@ try {
     $totalRevenue = $stmt->fetchColumn() ?: 0;
 
     // 3. Active Orders Count (Global)
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status IN ('pending', 'confirmed', 'processing', 'shipped')");
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status IN ('awaiting_payment', 'processing', 'shipped')");
     $stmt->execute();
     $activeOrders = $stmt->fetchColumn() ?: 0;
 
-    // 4. Pending Approvals (Pending Orders) - Using this as a proxy for "Approvals"
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE status = 'pending'");
-    $stmt->execute();
-    $pendingOrders = $stmt->fetchColumn() ?: 0;
-
     // 5. Recent System Activity (Global Orders mix)
-<<<<<<< HEAD
-    $stmt = $pdo->prepare("
-        SELECT o.id, u.full_name as user, 'Placed Order' as action, o.total_price, o.order_date as timestamp, o.status
-        FROM orders o
-        JOIN users u ON o.customer_id = u.id
-        ORDER BY o.order_date DESC
-        LIMIT 10
-    ");
-    $stmt->execute();
-    $recentActivity = $stmt->fetchAll();
-
-    // 6. Global Sales Performance (Monthly for last 12 months)
-    $stmt = $pdo->prepare("
-        SELECT 
-            DATE_FORMAT(order_date, '%Y-%m') as month_year,
-            SUM(total_price) as monthly_total
-        FROM orders 
-        WHERE order_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) AND status != 'cancelled' AND payment_status = 'paid'
-        GROUP BY month_year
-        ORDER BY month_year ASC
-    ");
-    $stmt->execute();
-    $rawMonthlyStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Process for chart (ensure all months are present or just return what we have)
-    // For simplicity, returning the raw data, frontend can pad zeros if needed.
-    $monthlyLabels = [];
-    $monthlyData = [];
-=======
     // 5. Recent System Activity (Global Orders & Products mix)
     // Sourcing from order_tracking to get EVERY status change, not just the current one.
     $stmt = $pdo->prepare("
@@ -105,10 +55,11 @@ try {
             u.full_name as user_name,
             u.role as user_role,
             CASE 
+                WHEN ot.status = 'ordered' THEN 'ordered an item'
                 WHEN ot.status = 'pending' THEN 'placed a new order'
                 WHEN ot.status = 'confirmed' THEN 'confirmed the order'
-                WHEN ot.status = 'paid' THEN 'paid for the order'
-                WHEN ot.status = 'processing' THEN 'is processing the order'
+                WHEN ot.status = 'paid' THEN 'payment confirmed'
+                WHEN ot.status = 'processing' THEN 'processing the order'
                 WHEN ot.status = 'shipped' THEN 'shipped the order'
                 WHEN ot.status = 'delivered' THEN 'delivered the order'
                 WHEN ot.status = 'cancelled' THEN 'cancelled the order'
@@ -167,6 +118,21 @@ try {
         JOIN users u ON r.customer_id = u.id
         JOIN products p ON r.product_id = p.id)
 
+        UNION ALL
+
+        (SELECT 
+            'product' as type,
+            pt.updated_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'updated product details' as action,
+            CONCAT(p.product_name, ' (', p.quantity, ' ', p.unit, ') @ ', p.price, '/', p.unit) as details,
+            p.id as reference_id,
+            p.price as amount
+        FROM product_tracking pt
+        JOIN products p ON pt.product_id = p.id
+        JOIN users u ON p.farmer_id = u.id)
+
         ORDER BY timestamp DESC
         LIMIT 4
     ");
@@ -205,24 +171,11 @@ try {
     // Process for chart: Fill in missing dates with 0
     $salesLabels = [];
     $salesData = [];
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     $currentMonthRevenue = 0;
     $lastMonthRevenue = 0;
     $currentMonthKey = date('Y-m');
     $lastMonthKey = date('Y-m', strtotime('-1 month'));
 
-<<<<<<< HEAD
-    foreach ($rawMonthlyStats as $stat) {
-        $monthlyLabels[] = date('M Y', strtotime($stat['month_year']));
-        $monthlyData[] = (float) $stat['monthly_total'];
-
-        if ($stat['month_year'] === $currentMonthKey) {
-            $currentMonthRevenue = (float) $stat['monthly_total'];
-        }
-        if ($stat['month_year'] === $lastMonthKey) {
-            $lastMonthRevenue = (float) $stat['monthly_total'];
-        }
-=======
     // Convert raw stats to map for easy lookup
     $salesDataMap = [];
     foreach ($rawSalesStats as $stat) {
@@ -261,7 +214,6 @@ try {
         // For now, growth is calculated based on the loop above, which works for 12_months period. 
         // If 30_days, growth might be 0 unless we fetch monthly data separately. 
         // As an optimization for "Huge Data", we won't double query.
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     }
 
     // Calculate Growth
@@ -269,11 +221,7 @@ try {
     if ($lastMonthRevenue > 0) {
         $growthPercentage = (($currentMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100;
     } elseif ($currentMonthRevenue > 0) {
-<<<<<<< HEAD
-        $growthPercentage = 100; // 100% growth if started from 0
-=======
         $growthPercentage = 100;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     }
 
     // 7. Top Selling Products Global
@@ -287,22 +235,13 @@ try {
         LIMIT 3
     ");
     $stmt->execute();
-<<<<<<< HEAD
-    $topProducts = $stmt->fetchAll();
-
-    // 8. Order Status Distribution Global
-    $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM orders GROUP BY status");
-    $stmt->execute();
-    $statusDist = $stmt->fetchAll();
-=======
     $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // 8. Order Status Distribution Global (Ensure all statuses show)
     $stmt = $pdo->prepare("
         SELECT s.status, COUNT(o.id) as count 
         FROM (
-            SELECT 'pending' as status 
-            UNION SELECT 'confirmed' 
+            SELECT 'awaiting_payment' as status 
             UNION SELECT 'processing' 
             UNION SELECT 'shipped' 
             UNION SELECT 'delivered' 
@@ -313,7 +252,6 @@ try {
     ");
     $stmt->execute();
     $statusDist = $stmt->fetchAll(PDO::FETCH_ASSOC);
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
     // 9. Inventory Status
     $stmt = $pdo->prepare("
@@ -343,12 +281,6 @@ try {
     $pendingVerifications = 0;
 
     // 12. Recent Registrations
-<<<<<<< HEAD
-    $stmt = $pdo->prepare("SELECT full_name, role, created_at FROM users ORDER BY created_at DESC LIMIT 3");
-    $stmt->execute();
-    $recentRegistrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-=======
     $stmt = $pdo->prepare("SELECT full_name, role, created_at FROM users WHERE role != 'admin' ORDER BY created_at DESC LIMIT 3");
     $stmt->execute();
     $recentRegistrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -358,7 +290,6 @@ try {
     $salesData = $salesData ?? [];
 
     ob_end_clean();
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     echo json_encode([
         'success' => true,
         'stats' => [
@@ -366,19 +297,12 @@ try {
             'total_customers' => $totalCustomers,
             'total_farmers' => $totalFarmers,
             'revenue' => (float) $totalRevenue,
-            'active_orders' => (int) $activeOrders,
-            'pending_approvals' => (int) $pendingOrders,
-            'pending_verifications' => (int) $pendingVerifications
+            'active_orders' => (int) $activeOrders
         ],
         'recent_activity' => $recentActivity,
         'sales_chart' => [
-<<<<<<< HEAD
-            'labels' => $monthlyLabels,
-            'data' => $monthlyData
-=======
             'labels' => $salesLabels,
             'data' => $salesData
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         ],
         'top_products' => $topProducts,
         'top_farmers' => $topFarmers,
@@ -388,15 +312,9 @@ try {
         'inventory' => $inventoryStats
     ]);
 
-<<<<<<< HEAD
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-=======
 } catch (Exception $e) {
     ob_clean();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 }
 ?>

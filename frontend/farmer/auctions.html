@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="../assets/js/custom-ui.js?v=1.5"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -197,18 +197,12 @@
                     <div class="col-span-full">
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Product
                             Name</label>
-                        <input type="text" name="product_name" required placeholder="e.g. Premium Grade-A Saffron"
+                        <input type="text" name="product_name" required placeholder="e.g. Premium Saffron"
                             class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Detailed
-                        Description</label>
-                    <textarea name="description" rows="3"
-                        placeholder="Harvest methods, quality notes, origin details..."
-                        class="w-full px-5 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:outline-none focus:border-primary focus:bg-white transition-all text-sm font-semibold"></textarea>
-                </div>
+                <!-- Description textarea removed -->
 
                 <div>
                     <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Product
@@ -301,11 +295,7 @@
             </div>
 
             <div class="p-8 space-y-8">
-                <div>
-                    <h4 class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-3">About this harvest
-                    </h4>
-                    <p id="detailDesc" class="text-stone-600 leading-relaxed"></p>
-                </div>
+                <!-- Description section removed -->
 
                 <div class="grid grid-cols-2 gap-6">
                     <div class="bg-stone-50 p-6 rounded-3xl border border-stone-100">
@@ -356,7 +346,7 @@
 
             document.getElementById('detailTitle').innerText = auction.product_name;
             document.getElementById('detailSubtitle').innerText = `${auction.quantity}${auction.unit} • #AUC-${auction.id}`;
-            document.getElementById('detailDesc').innerText = auction.description || 'No detailed description available for this harvest.';
+            // document.getElementById('detailDesc').innerText = auction.description || 'No detailed description available for this harvest.'; // Removed
             document.getElementById('detailFloorPrice').innerText = formatPrice(auction.starting_price);
             document.getElementById('detailCurrentBid').innerText = formatPrice(auction.current_bid);
             document.getElementById('detailTimeline').querySelector('span').innerText = `Closing on ${new Date(auction.end_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;

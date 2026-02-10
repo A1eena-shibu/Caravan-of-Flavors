@@ -6,34 +6,16 @@ require_once '../../config/database.php';
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once '../../config/session.php';
 
-// Simple Admin Check (matching get-admin-stats.php logic for now to avoid lockout)
-// In a real scenario, uncomment the strict check
-// if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-//     // For debugging, we are lenient. 
-//     // http_response_code(403);
-//     // echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-//     // exit;
-// }
+// Strict Admin Check
+require_role('admin');
 
 try {
     $pdo = getDBConnection();
 
-<<<<<<< HEAD
-    // Fetch users with basic info
-    $stmt = $pdo->prepare("SELECT id, full_name, email, role, is_active, is_verified, created_at FROM users ORDER BY created_at DESC");
-=======
     // Fetch users with extended info for detail view
-<<<<<<< HEAD
-    $stmt = $pdo->prepare("SELECT id, full_name, email, role, phone, address, is_active, is_verified, created_at FROM users WHERE role != 'admin' ORDER BY created_at DESC");
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
     $stmt = $pdo->prepare("SELECT id, full_name, email, role, phone, address, is_active, is_verified, created_at, country, currency_code FROM users WHERE role != 'admin' ORDER BY created_at DESC");
->>>>>>> 967968b (added currency updation)
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

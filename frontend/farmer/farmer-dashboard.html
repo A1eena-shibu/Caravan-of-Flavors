@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+    // Immediate Session Enforcement
+    (async () => {
+        const res = await fetch('../../backend/api/auth/check-session.php');
+        const data = await res.json();
+        if (!data.logged_in) window.location.href = '../auth/login.html';
+    })();
+</script>
 
 <head>
     <meta charset="UTF-8">
@@ -9,10 +17,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-<<<<<<< HEAD
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
-=======
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -141,10 +145,10 @@
                     <div style="background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 12px;">
                         <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%233b82f6" width="20" alt="">
                     </div>
-                    <span style="font-size: 13px; font-weight: 700; color: #1c1917;">ACTIVE ORDERS</span>
+                    <span style="font-size: 13px; font-weight: 700; color: #1c1917;">TOTAL ORDERS</span>
                 </div>
                 <div id="stat-orders" style="font-size: 28px; font-weight: 700; color: #1c1917;">0</div>
-                <div style="margin-top: 8px; font-size: 12px; color: #3b82f6; font-weight: 700;">Currently open
+                <div style="margin-top: 8px; font-size: 12px; color: #3b82f6; font-weight: 700;">All-time volume
                 </div>
             </div>
 
@@ -156,27 +160,11 @@
                     <span style="font-size: 13px; font-weight: 700; color: #1c1917;">CUSTOMERS</span>
                 </div>
                 <div id="stat-customers" style="font-size: 28px; font-weight: 700; color: #1c1917;">0</div>
-                <div style="margin-top: 8px; font-size: 12px; color: #1c1917;">Unique buyers</div>
+                <div style="margin-top: 8px; font-size: 12px; color: #10b981; font-weight: 700;">Unique buyers</div>
             </div>
 
             <div style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 24px;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-<<<<<<< HEAD
-                    <div style="background: rgba(234, 179, 8, 0.1); padding: 10px; border-radius: 12px;">
-                        <img src="https://api.iconify.design/lucide:star.svg?color=%23eab308" width="20" alt="">
-                    </div>
-                    <span style="font-size: 13px; font-weight: 700; color: #1c1917;">AVG RATING</span>
-                </div>
-                <div style="display: flex; align-items: baseline; gap: 8px;">
-                    <div id="stat-rating" style="font-size: 28px; font-weight: 700; color: #1c1917;">0.0</div>
-                    <div id="stat-rating-stars" class="flex gap-0.5 mb-1.5"
-                        style="display: flex; gap: 2px; margin-bottom: 4px;">
-                        <!-- Stars will be injected here -->
-                    </div>
-                </div>
-                <div style="margin-top: 8px; font-size: 12px; color: #eab308; font-weight: 700;">Customer satisfaction
-                </div>
-=======
                     <div style="background: rgba(168, 85, 247, 0.1); padding: 10px; border-radius: 12px;">
                         <img src="https://api.iconify.design/lucide:package.svg?color=%23a855f7" width="20" alt="">
                     </div>
@@ -184,7 +172,6 @@
                 </div>
                 <div id="stat-products" style="font-size: 28px; font-weight: 700; color: #1c1917;">0</div>
                 <div style="margin-top: 8px; font-size: 12px; color: #a855f7; font-weight: 700;">Listed for sale</div>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
             </div>
         </div>
 
@@ -252,42 +239,13 @@
 
                 if (result.success) {
                     // Update Stats Cards
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    document.getElementById('stat-revenue').textContent = formatCurrency(result.stats.revenue);
-                    document.getElementById('stat-orders').textContent = result.stats.active_orders;
-                    document.getElementById('stat-customers').textContent = result.stats.customers;
-
-                    const rating = result.stats.rating;
-                    document.getElementById('stat-rating').textContent = parseFloat(rating || 0).toFixed(1);
-
-                    const starsContainer = document.getElementById('stat-rating-stars');
-                    starsContainer.innerHTML = '';
-                    if (rating > 0) {
-                        for (let i = 1; i <= 5; i++) {
-                            const isHalf = rating >= i - 0.5 && rating < i;
-                            const isFull = rating >= i;
-                            let starType = 'lucide:star';
-                            let starColor = '#d6d3d1';
-
-                            if (isFull) { starColor = '#eab308'; }
-                            else if (isHalf) { starType = 'lucide:star-half'; starColor = '#eab308'; }
-
-                            starsContainer.innerHTML += `<img src="https://api.iconify.design/${starType}.svg?color=${encodeURIComponent(starColor)}" width="14">`;
-                        }
-                    }
-=======
-                    document.getElementById('stat-revenue').textContent = `$${result.stats.revenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-=======
                     const rate = CurrencyManager.settings ? CurrencyManager.settings.rate : 1;
                     const convertedRevenue = parseFloat(result.stats.revenue) * rate;
                     document.getElementById('stat-revenue').textContent = convertedRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
->>>>>>> 967968b (added currency updation)
                     document.getElementById('stat-orders').textContent = result.stats.active_orders;
                     document.getElementById('stat-customers').textContent = result.stats.customers;
 
                     document.getElementById('stat-products').textContent = result.stats.total_products;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
                     // Update Recent Activity
                     const list = document.getElementById('recent-activity-list');
@@ -295,12 +253,16 @@
                         list.innerHTML = '';
                         result.recent_activity.forEach(activity => {
                             const date = new Date(activity.order_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            const statusKey = window.normalizeStatus(activity.status || activity.STATUS);
                             let icon = 'https://api.iconify.design/lucide:shopping-bag.svg?color=%23FF7E21';
                             let bgColor = '#fff7ed';
 
-                            if (activity.status === 'delivered') {
+                            if (statusKey === 'delivered') {
                                 icon = 'https://api.iconify.design/lucide:check-circle.svg?color=%2310b981';
                                 bgColor = '#f0fdf4';
+                            } else if (statusKey === 'cancelled') {
+                                icon = 'https://api.iconify.design/lucide:alert-circle.svg?color=%23ef4444';
+                                bgColor = '#fef2f2';
                             }
 
                             list.innerHTML += `
@@ -310,15 +272,7 @@
                                     </div>
                                     <div style="overflow: hidden;">
                                         <p style="font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${activity.product_name} • ${activity.customer_name}</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                        <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${formatCurrency(activity.total_price)}</p>
-=======
-                                        <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • $${activity.total_price}</p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                         <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${formatPrice(activity.total_price)}</p>
->>>>>>> 967968b (added currency updation)
                                     </div>
                                 </div>`;
                         });
@@ -337,15 +291,7 @@
                                 <div>
                                     <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 8px;">
                                         <span style="color: #1c1917;">${p.product_name}</span>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                        <span style="color: #FF7E21;">${formatCurrency(p.revenue)}</span>
-=======
-                                        <span style="color: #FF7E21;">$${parseFloat(p.revenue).toFixed(0)}</span>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                         <span style="color: #FF7E21;">${formatPrice(p.revenue)}</span>
->>>>>>> 967968b (added currency updation)
                                     </div>
                                     <div style="width: 100%; height: 6px; background: #f5f5f4; border-radius: 3px; overflow: hidden;">
                                         <div style="width: ${width}%; height: 100%; background: #FF7E21; border-radius: 3px;"></div>
@@ -386,15 +332,7 @@
                                     </div>
                                     <div style="text-align: right;">
                                         <p style="font-size: 12px; font-weight: 700; color: ${badgeColor};">${badgeText}</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${formatCurrency(a.current_bid)}</p>
-=======
-                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">$${parseFloat(a.current_bid).toFixed(2)}</p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                         <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${formatPrice(a.current_bid)}</p>
->>>>>>> 967968b (added currency updation)
                                     </div>
                                 </div>`;
                         });
@@ -409,7 +347,7 @@
 
         function getStatusColor(status) {
             const colors = {
-                'confirmed': '#10B981', 'pending': '#FACC15', 'shipped': '#3B82F6',
+                'processing': '#F97316', 'awaiting_payment': '#78716C', 'shipped': '#3B82F6',
                 'cancelled': '#EF4444', 'delivered': '#10B981'
             };
             return colors[status] || '#a8a29e';

@@ -29,7 +29,7 @@ try {
 
     if ($role === 'farmer') {
         // 1. Total Earnings
-        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE farmer_id = ? AND payment_status = 'paid'");
+        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE farmer_id = ? AND payment_status = 'paid' AND status != 'cancelled'");
         $stmt->execute([$userId]);
         $data['total_earnings'] = $stmt->fetchColumn() ?: 0;
 
@@ -42,7 +42,7 @@ try {
         $stmt = $pdo->prepare("
             SELECT p.product_name, SUM(o.total_price) as revenue 
             FROM products p
-            LEFT JOIN orders o ON p.id = o.product_id AND o.payment_status = 'paid'
+            LEFT JOIN orders o ON p.id = o.product_id AND o.payment_status = 'paid' AND o.status != 'cancelled'
             WHERE p.farmer_id = ?
             GROUP BY p.id
             ORDER BY revenue DESC
@@ -57,7 +57,7 @@ try {
             FROM orders o
             JOIN products p ON o.product_id = p.id
             JOIN users u ON o.customer_id = u.id
-            WHERE o.farmer_id = ?
+            WHERE o.farmer_id = ? AND o.status != 'cancelled'
             ORDER BY o.order_date DESC
             LIMIT 10
         ");
@@ -66,12 +66,12 @@ try {
 
     } elseif ($role === 'customer') {
         // 1. Total Spending
-        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE customer_id = ? AND payment_status = 'paid'");
+        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE customer_id = ? AND payment_status = 'paid' AND status != 'cancelled'");
         $stmt->execute([$userId]);
         $data['total_spending'] = $stmt->fetchColumn() ?: 0;
 
         // 2. Total Orders
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE customer_id = ?");
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE customer_id = ? AND status != 'cancelled'");
         $stmt->execute([$userId]);
         $data['total_orders'] = $stmt->fetchColumn() ?: 0;
 
@@ -81,7 +81,7 @@ try {
             FROM orders o
             JOIN products p ON o.product_id = p.id
             JOIN users u ON o.farmer_id = u.id
-            WHERE o.customer_id = ?
+            WHERE o.customer_id = ? AND o.status != 'cancelled'
             ORDER BY o.order_date DESC
             LIMIT 10
         ");

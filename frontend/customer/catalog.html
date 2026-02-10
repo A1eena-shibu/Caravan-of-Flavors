@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="../assets/js/custom-ui.js?v=1.5"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -141,7 +141,7 @@
 
         <!-- Filters Removed - Replaced with Simple Header -->
         <div class="mb-12">
-            <h2 class="text-xl font-bold text-stone-800 tracking-tight">All Approved Harvests</h2>
+            <h2 class="text-xl font-bold text-stone-800 tracking-tight">All Available Harvests</h2>
             <div class="h-1 w-20 bg-primary rounded-full mt-2"></div>
         </div>
 
@@ -175,9 +175,7 @@
             <div class="md:w-1/2 p-12 space-y-8 overflow-y-auto no-scrollbar">
                 <div>
                     <div class="flex items-center gap-3 mb-4">
-                        <span id="modal-badge"
-                            class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">PREMIUM
-                            GRADE</span>
+                        <!-- Grade badge removed -->
                         <span id="modal-organic"
                             class="hidden bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest">ORGANIC</span>
                     </div>
@@ -198,20 +196,10 @@
                             <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Direct Price
                             </p>
                             <div class="flex items-baseline gap-1">
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                <p class="text-4xl font-bold text-stone-900 leading-none" id="modal-price-display">$0.00
-                                </p>
-=======
-                                <p class="text-4xl font-bold text-stone-900 leading-none">$<span
-                                        id="modal-price">0.00</span></p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                 <p class="text-4xl font-bold text-stone-900 leading-none"><span
                                         class="currency-symbol text-2xl mr-1">$</span><span id="modal-price">0.00</span>
                                 </p>
->>>>>>> 967968b (added currency updation)
-                                <span class="text-lg text-stone-400 font-medium">/kg</span>
+                                <span class="text-lg text-stone-400 font-medium">/<span id="price-unit">kg</span></span>
                             </div>
                         </div>
                         <div>
@@ -221,45 +209,52 @@
                     </div>
                 </div>
 
-                <div>
-                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-3">About this harvest
-                    </p>
-                    <p id="modal-desc" class="text-stone-600 leading-relaxed text-sm"></p>
-                </div>
+                <!-- Description section removed -->
 
                 <div class="space-y-4 pt-4">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-1">
-                            <label
-                                class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Order
-                                Quantity (kg)</label>
-                            <div class="flex items-center bg-stone-50 border border-stone-200 rounded-2xl px-4 py-1">
+                    <div class="grid grid-cols-[1.4fr_1fr] gap-4 items-end">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Order
+                                Quantity</label>
+                            <div
+                                class="flex items-center bg-white border border-stone-300 rounded-xl h-12 shadow-sm overflow-hidden">
                                 <button onclick="updateQty(-1)"
-                                    class="w-8 h-8 flex items-center justify-center hover:bg-stone-200 rounded-lg transition-all"><img
-                                        src="https://api.iconify.design/lucide:minus.svg" width="14"></button>
+                                    class="w-8 h-full flex items-center justify-center hover:bg-stone-100 transition-all text-stone-500 hover:text-primary active:scale-90 flex-shrink-0">
+                                    <img src="https://api.iconify.design/lucide:minus.svg" width="14">
+                                </button>
+
                                 <input id="order-qty" type="number" value="1" min="0.1" step="0.1"
-                                    class="flex-1 bg-transparent border-none text-center font-bold text-stone-900 outline-none">
+                                    class="flex-1 w-full bg-transparent text-stone-900 font-bold text-center text-lg outline-none border-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+
                                 <button onclick="updateQty(1)"
-                                    class="w-8 h-8 flex items-center justify-center hover:bg-stone-200 rounded-lg transition-all"><img
-                                        src="https://api.iconify.design/lucide:plus.svg" width="14"></button>
+                                    class="w-8 h-full flex items-center justify-center hover:bg-stone-100 transition-all text-stone-500 hover:text-primary active:scale-90 flex-shrink-0">
+                                    <img src="https://api.iconify.design/lucide:plus.svg" width="14">
+                                </button>
+
+                                <!-- Unit Selector -->
+                                <div
+                                    class="relative w-16 flex-shrink-0 h-full flex items-center justify-center bg-stone-50 border-l border-stone-200">
+                                    <select id="order-unit" onchange="onUnitChange()"
+                                        class="w-full h-full bg-transparent border-none font-bold text-sm text-black outline-none focus:ring-0 cursor-pointer appearance-none text-center pl-2 pr-4 z-10 absolute inset-0">
+                                        <option value="kg">kg</option>
+                                        <option value="g">g</option>
+                                    </select>
+                                    <div class="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none z-0">
+                                        <img src="https://api.iconify.design/lucide:chevron-down.svg?color=%23000000"
+                                            width="12" alt="">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex-1">
+                        <div class="space-y-2 text-right">
                             <label
-                                class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Estimated
+                                class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Estimated
                                 Total</label>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                            <div class="py-4 text-2xl font-bold text-primary font-mono" id="order-total-display">$0.00
+                            <div
+                                class="h-12 flex items-center justify-end text-xl font-bold text-primary font-mono leading-none truncate whitespace-nowrap">
+                                <span class="currency-symbol mr-0.5">₹</span><span id="order-total"
+                                    class="truncate">0.00</span>
                             </div>
-=======
-                            <div class="py-4 text-2xl font-bold text-primary font-mono">$<span
-                                    id="order-total">0.00</span></div>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
-                            <div class="py-4 text-2xl font-bold text-primary font-mono"><span
-                                    class="currency-symbol mr-1">$</span><span id="order-total">0.00</span></div>
->>>>>>> 967968b (added currency updation)
                         </div>
                     </div>
                     <div class="flex gap-4 pt-4">
@@ -301,22 +296,10 @@
                                 <div class="relative h-72 overflow-hidden">
                                      <img src="${imgSrc}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                     <div class="absolute top-6 left-6">
-                                          <span class="bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-extrabold text-stone-900 border border-white/50 shadow-sm uppercase tracking-wider">
-                                              ${product.category.replace('_', ' ')}
-                                          </span>
-                                     </div>
+                                     <!-- Category badge removed -->
                                      <div class="absolute bottom-6 right-6 flex flex-col items-end">
                                           <p class="text-[9px] font-bold text-white/70 uppercase tracking-widest mb-1 leading-none">Starting from</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                           <p class="text-2xl font-bold text-white leading-none">${formatCurrency(product.price)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
-=======
-                                          <p class="text-2xl font-bold text-white leading-none">$${parseFloat(product.price).toFixed(2)}<small class="text-xs font-semibold ml-0.5">/kg</small></p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                           <p class="text-2xl font-bold text-white leading-none">${window.CurrencyManager.format(product.price)}<small class="text-xs font-semibold ml-0.5">/${product.unit || 'kg'}</small></p>
->>>>>>> 967968b (added currency updation)
                                      </div>
                                 </div>
                                 <div class="p-10">
@@ -347,27 +330,25 @@
             } catch (error) { console.error(error); }
         }
 
+        let currentUnit = 'kg';
+
         function openProductModal(id) {
             selectedProduct = allProducts.find(p => p.id == id);
             if (!selectedProduct) return;
 
             document.getElementById('modal-title').innerText = selectedProduct.product_name;
             document.getElementById('modal-farmer').innerText = `Harvested by ${selectedProduct.farmer_name}`;
-            document.getElementById('modal-desc').innerText = selectedProduct.description || 'Premium quality spice harvested with traditional methods and care for sustainable agriculture.';
-<<<<<<< HEAD
-<<<<<<< HEAD
-            document.getElementById('modal-price-display').innerText = formatCurrency(selectedProduct.price);
-=======
-            document.getElementById('modal-price').innerText = parseFloat(selectedProduct.price).toFixed(2);
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
+
+            // Initialize Unit
+            currentUnit = selectedProduct.unit || 'kg';
+            document.getElementById('order-unit').value = currentUnit;
+            document.getElementById('price-unit').innerText = currentUnit;
+            onUnitChange(); // Reset steps and display
 
             // Client-side Price Format
-            const rate = window.CurrencyManager.settings.rate || 1;
-            const convertedPrice = parseFloat(selectedProduct.price) * rate;
-            document.getElementById('modal-price').innerText = convertedPrice.toLocaleString(undefined, { minimumFractionDigits: 2 });
->>>>>>> 967968b (added currency updation)
-            document.getElementById('modal-stock').innerText = `${selectedProduct.quantity}${selectedProduct.unit}`;
+            updatePriceDisplay();
+
+            document.getElementById('modal-stock').innerText = `${selectedProduct.quantity} ${selectedProduct.unit || 'kg'}`;
 
             // Update modal currency symbol
             const modalSymbol = document.querySelector('#productModal .currency-symbol');
@@ -379,8 +360,7 @@
             if (selectedProduct.is_organic) document.getElementById('modal-organic').classList.remove('hidden');
             else document.getElementById('modal-organic').classList.add('hidden');
 
-            document.getElementById('order-qty').value = 1;
-            document.getElementById('order-qty').max = selectedProduct.quantity;
+            document.getElementById('order-qty').value = (currentUnit === 'g') ? 100 : 1;
             updateOrderTotal();
 
             document.getElementById('productModal').classList.remove('hidden');
@@ -392,44 +372,119 @@
             document.body.style.overflow = 'auto';
         }
 
+        function onUnitChange() {
+            currentUnit = document.getElementById('order-unit').value;
+            const input = document.getElementById('order-qty');
+
+            // Update display unit for price (visual only, actual price calculation happens in updateOrderTotal/updatePriceDisplay)
+            // Actually price is always per unit of the PRODUCT in backend, but here we want to show price per SELECTED unit?
+            // Let's show Base Price per Selected Unit
+            updatePriceDisplay();
+
+            if (currentUnit === 'g') {
+                input.step = 1;
+                input.min = 0;
+                if (input.value <= 0) input.value = 100;
+            } else {
+                input.step = 0.001;
+                input.min = 0;
+            }
+            updateOrderTotal();
+        }
+
+        function updatePriceDisplay() {
+            const rate = window.CurrencyManager.settings.rate || 1;
+            let basePrice = parseFloat(selectedProduct.price) * rate;
+            let displayPrice = basePrice;
+
+            // Convert Base Price to Selected Unit Price
+            // Rule:
+            // Product Unit = kg, Selected = g  => Price / 1000
+            // Product Unit = kg, Selected = kg => Price
+            // Product Unit = g,  Selected = kg => Price * 1000
+            // Product Unit = g,  Selected = g  => Price
+
+            const productUnit = selectedProduct.unit || 'kg';
+
+            if (productUnit === 'kg' && currentUnit === 'g') {
+                displayPrice = basePrice / 1000;
+            } else if (productUnit === 'g' && currentUnit === 'kg') {
+                displayPrice = basePrice * 1000;
+            }
+
+            // If price is very small (per gram), show more decimals?
+            let decimals = 2;
+            if (displayPrice < 0.1 && displayPrice > 0) decimals = 4;
+
+            document.getElementById('modal-price').innerText = displayPrice.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            document.getElementById('price-unit').innerText = currentUnit;
+        }
+
         function updateQty(delta) {
             const input = document.getElementById('order-qty');
-            // Use parseFloat for decimals
-            let val = parseFloat(input.value) + delta;
+            let val = parseFloat(input.value);
+            let step = 1; // Always increment by 1 as per user request
 
-            // Round to 2 decimal places to avoid floating point errors like 1.0000000001
-            val = Math.round(val * 100) / 100;
+            // If delta is 1/-1, treat as step multiplier
+            val += delta * step;
 
-            if (val < 0.1) val = 0.1; // Minimum quantity
-            if (val > selectedProduct.quantity) val = selectedProduct.quantity;
+            // Rounding
+            val = Math.round(val * 1000) / 1000;
+
+            if (val < parseFloat(input.min)) val = parseFloat(input.min);
+
+            // Max check needs conversion!
+            // Stock is in Product Unit
+            const productUnit = selectedProduct.unit || 'kg';
+            let maxStock = parseFloat(selectedProduct.quantity);
+
+            // Convert Max Stock to Selected Unit
+            if (productUnit === 'kg' && currentUnit === 'g') maxStock *= 1000;
+            else if (productUnit === 'g' && currentUnit === 'kg') maxStock /= 1000;
+
+            if (val > maxStock) val = maxStock;
 
             input.value = val;
             updateOrderTotal();
         }
 
-<<<<<<< HEAD
-        const qty = parseFloat(document.getElementById('order-qty').value) || 0;
-        const price = parseFloat(selectedProduct.price);
-        document.getElementById('order-total-display').innerText = formatCurrency(qty * price);
-=======
         function updateOrderTotal() {
             const qty = parseFloat(document.getElementById('order-qty').value) || 0;
             const rate = window.CurrencyManager.settings.rate || 1;
-            const price = parseFloat(selectedProduct.price) * rate;
-            document.getElementById('order-total').innerText = (qty * price).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+            // Calculate total based on converted price
+            let basePrice = parseFloat(selectedProduct.price) * rate;
+            let unitPrice = basePrice;
+            const productUnit = selectedProduct.unit || 'kg';
+
+            if (productUnit === 'kg' && currentUnit === 'g') {
+                unitPrice = basePrice / 1000;
+            } else if (productUnit === 'g' && currentUnit === 'kg') {
+                unitPrice = basePrice * 1000;
+            }
+
+            document.getElementById('order-total').innerText = (qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
         document.getElementById('order-qty').addEventListener('input', updateOrderTotal);
 
+        function getConvertedQtyForBackend() {
+            const qty = parseFloat(document.getElementById('order-qty').value);
+            const productUnit = selectedProduct.unit || 'kg';
+
+            // Convert Selected Unit Quantity to Product Base Unit Quantity
+            if (productUnit === 'kg' && currentUnit === 'g') return qty / 1000;
+            if (productUnit === 'g' && currentUnit === 'kg') return qty * 1000;
+            return qty;
+        }
+
         async function addToCart() {
             if (!selectedProduct) return;
-            // Parse as float
-            const qty = parseFloat(document.getElementById('order-qty').value);
+            const qtyBackend = getConvertedQtyForBackend();
             const availableStock = parseFloat(selectedProduct.quantity);
 
-            if (qty > availableStock) {
-                showToast(`Sorry, only ${availableStock}kg available in stock.`, 'error');
+            if (qtyBackend > availableStock) {
+                showToast(`Sorry, only ${availableStock} ${selectedProduct.unit || 'kg'} available in stock.`, 'error');
                 return;
             }
 
@@ -439,7 +494,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         product_id: selectedProduct.id,
-                        quantity: qty
+                        quantity: qtyBackend
                     })
                 });
                 const result = await response.json();
@@ -453,27 +508,23 @@
 
         async function placeOrder() {
             if (!selectedProduct) return;
-            // Parse as float
-            const qty = parseFloat(document.getElementById('order-qty').value);
+            const qtyBackend = getConvertedQtyForBackend();
             const btn = document.querySelector('#productModal button[onclick="placeOrder()"]');
             const originalText = btn.innerText;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for ${formatCurrency(qty * selectedProduct.price)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
-=======
-            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for $${(qty * selectedProduct.price).toFixed(2)}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
             const rate = window.CurrencyManager.settings.rate || 1;
+            // Total Price calculation is simple: Backend Qty * Base Price (per product unit)
             const price = parseFloat(selectedProduct.price) * rate;
+            const totalPrice = qtyBackend * price;
             const symbol = window.CurrencyManager.settings.symbol;
 
-            if (!await showConfirm(`Confirm purchase of ${qty}kg ${selectedProduct.product_name} for ${symbol}${(qty * price).toLocaleString(undefined, { minimumFractionDigits: 2 })}?\n\nThe farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`)) return;
->>>>>>> 967968b (added currency updation)
+            // Display confirm message using Selected Unit
+            const qtyDisplay = parseFloat(document.getElementById('order-qty').value);
+
+            if (!await showConfirm(`Confirm purchase of ${qtyDisplay}${currentUnit} ${selectedProduct.product_name} for ${symbol}${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}?\n\nYou will be redirected to secure payment.`)) return;
 
             btn.disabled = true;
-            btn.innerText = "AUTHENTICATING ORDER...";
+            btn.innerText = "PROCESSING...";
 
             try {
                 const response = await fetch('../../backend/api/orders/place-order.php', {
@@ -481,22 +532,24 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         product_id: selectedProduct.id,
-                        quantity: qty
+                        quantity: qtyBackend,
+                        currency_code: window.CurrencyManager.settings.code,
+                        exchange_rate: window.CurrencyManager.settings.rate || 1
                     })
                 });
                 const result = await response.json();
 
                 if (result.success) {
-                    showToast('SUCCESS! Your order has been placed directly with the farmer.', 'success');
-                    closeProductModal();
-                    loadCatalog();
+                    // Redirect directly to payment
+                    window.location.href = `payment.html?order_id=${result.order_id}&source=catalog`;
                 } else {
                     showToast(result.message, 'error');
+                    btn.disabled = false;
+                    btn.innerText = originalText;
                 }
             } catch (error) {
                 console.error('Order error:', error);
                 showToast('Connection to marketplace failed.', 'error');
-            } finally {
                 btn.disabled = false;
                 btn.innerText = originalText;
             }

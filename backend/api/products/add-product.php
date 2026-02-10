@@ -31,14 +31,14 @@ try {
     $farmer_id = $_SESSION['user_id'];
     $product_name = $_POST['product_name'] ?? '';
     $price = $_POST['price'] ?? 0;
-    $description = $_POST['description'] ?? '';
+    // $description = $_POST['description'] ?? ''; // Removed
     $category = 'Spices';
     $quantity = $_POST['quantity'] ?? 0;
     $unit = $_POST['unit'] ?? 'kg';
 
     // Validation: Use strlen check for strings and isset for numbers to allow "0"
-    if (strlen(trim($product_name)) === 0 || $price === '' || strlen(trim($description)) === 0) {
-        throw new Exception('Product name, price, and description are required.');
+    if (strlen(trim($product_name)) === 0 || $price === '') {
+        throw new Exception('Product name and price are required.');
     }
 
     if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
@@ -78,14 +78,14 @@ try {
     $pdo = getDBConnection();
 
     $stmt = $pdo->prepare("
-        INSERT INTO products (farmer_id, product_name, category, description, price, base_currency, farmer_country, quantity, unit, image_url, quality_status, is_available) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'approved', 1)
+        INSERT INTO products (farmer_id, product_name, category, price, base_currency, farmer_country, quantity, unit, image_url, is_available) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
     ");
 
     $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
     $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
 
-    if ($stmt->execute([$farmer_id, $product_name, $category, $description, $price, $base_currency, $farmer_country, $quantity, $unit, $image_url])) {
+    if ($stmt->execute([$farmer_id, $product_name, $category, $price, $base_currency, $farmer_country, $quantity, $unit, $image_url])) {
         echo json_encode(['success' => true, 'message' => 'Product added successfully!']);
     } else {
         throw new Exception('Failed to save product to database.');

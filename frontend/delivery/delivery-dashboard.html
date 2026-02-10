@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // Immediate Session Enforcement
+    (async () => {
+        const res = await fetch('../../backend/api/auth/check-session.php');
+        const data = await res.json();
+        if (!data.logged_in) {
+            window.location.href = '../auth/login.html';
+        } else if (data.role !== 'delivery_agent') {
+            window.location.href = data.redirect;
+        }
+    })();
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Agent Dashboard | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                        'bg-dashboard': '#14110F',
+                        'card-bg': '#1C1917',
+                        'border-color': '#292524',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            min-width: 320px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 1px solid #e2e8f0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success .toast-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .toast-error .toast-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            font-weight: 700 !important;
+        }
+
+        .nav-item.active img {
+            filter: brightness(0) invert(1);
+        }
+    </style>
+</head>
+
+<body style="background: #f8fafc; color: #1e293b; font-family: 'Outfit', sans-serif;">
+    <!-- Sidebar -->
+    <aside style="width: 260px; background: #0f172a; position: fixed; height: 100vh; padding: 24px; color: white;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #ffffff; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin: 0;">
+                    Caravan</h3>
+                <span
+                    style="font-size: 10px; color: #94a3b8; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">OF
+                    FLAVOURS</span>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="#" onclick="switchView('overview')" id="nav-overview" class="nav-item active"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: white; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:layout-grid.svg?color=%2394a3b8" width="18" alt="">
+                Overview
+            </a>
+            <a href="#" onclick="switchView('tasks')" id="nav-tasks" class="nav-item"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:clock.svg?color=%2394a3b8" width="18" alt="">
+                Active Tasks
+            </a>
+            <a href="#" onclick="switchView('history')" id="nav-history" class="nav-item"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:history.svg?color=%2394a3b8" width="18" alt="">
+                Delivery History
+            </a>
+            <a href="#" onclick="switchView('profile')" id="nav-profile" class="nav-item"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%2394a3b8" width="18" alt="">
+                Profile Settings
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main style="margin-left: 260px; padding: 24px 40px;">
+        <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+            <div>
+                <h1 id="view-title" style="font-size: 28px; font-weight: 700; margin: 0;">Delivery Dashboard</h1>
+                <p id="view-subtitle" style="color: #64748b; margin-top: 4px;">Track your deliveries and earnings.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="text-align: right;">
+                    <div id="agent-name-display" style="font-weight: 700; font-size: 14px;">Agent</div>
+                    <div style="font-size: 12px; color: #64748b;">Delivery Agent</div>
+                </div>
+                <div id="agent-avatar-display"
+                    style="width: 44px; height: 44px; background: #ff7e21; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                    AG</div>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div id="overview-view">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #eff6ff; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:truck.svg?color=%233b82f6" width="24" alt="">
+                        </div>
+                        <span style="color: #3b82f6; font-size: 12px; font-weight: 700;">Lifetime</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Deliveries Made</div>
+                    <div id="stat-completed" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #fff7ed; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:clock.svg?color=%23ea580c" width="24" alt="">
+                        </div>
+                        <span style="color: #ea580c; font-size: 12px; font-weight: 700;">Active</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Pending Tasks</div>
+                    <div id="stat-pending" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+                <div
+                    style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="background: #f0fdf4; padding: 10px; border-radius: 10px;">
+                            <img src="https://api.iconify.design/lucide:wallet.svg?color=%2322c55e" width="24" alt="">
+                        </div>
+                        <span style="color: #22c55e; font-size: 12px; font-weight: 700;">This Month</span>
+                    </div>
+                    <div style="font-size: 14px; color: #64748b; font-weight: 500;">Earnings Volume</div>
+                    <div id="stat-revenue" style="font-size: 32px; font-weight: 700; margin-top: 8px;">--</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+                <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 style="font-size: 18px; font-weight: 700;">Recent Assigned Tasks</h3>
+                        <button onclick="switchView('tasks')" class="text-primary text-sm font-bold">View All</button>
+                    </div>
+                    <div id="recent-tasks-list" class="space-y-4">
+                        <div class="text-center py-8 text-stone-400">Loading tasks...</div>
+                    </div>
+                </div>
+                <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">7-Day Performance</h3>
+                    <div style="height: 300px;">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks View -->
+        <div id="tasks-view" style="display: none;">
+            <div id="all-tasks-list" class="space-y-4">
+                <!-- Tasks will be loaded here -->
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div id="history-view" style="display: none;">
+            <div style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0;">
+                <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Order ID</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Product & Customer</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Amount</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Delivery Date</th>
+                            <th style="padding: 12px; font-size: 13px; color: #64748b;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <!-- History data -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profile-view" style="display: none;">
+            <div style="background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0;">
+                <div class="flex items-center gap-6 mb-10 pb-10 border-bottom border-stone-100">
+                    <div id="profile-avatar-large"
+                        class="w-20 h-20 bg-primary text-white text-3xl font-bold flex items-center justify-center rounded-2xl">
+                        AG</div>
+                    <div>
+                        <h2 id="profile-name-display" class="text-2xl font-bold text-stone-900">Agent Name</h2>
+                        <p class="text-stone-500">Delivery Agent</p>
+                    </div>
+                </div>
+
+                <form id="profile-form" onsubmit="event.preventDefault(); updateProfile();" class="space-y-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">Full
+                                Name</label>
+                            <input type="text" id="profile-full-name" required
+                                class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:border-primary focus:outline-none font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">Email
+                                Address</label>
+                            <input type="email" id="profile-email" required
+                                class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:border-primary focus:outline-none font-medium">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">Phone
+                                Number</label>
+                            <input type="tel" id="profile-phone"
+                                class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:border-primary focus:outline-none font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-2 uppercase tracking-wide">Living
+                                Address</label>
+                            <input type="text" id="profile-address"
+                                class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:border-primary focus:outline-none font-medium">
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" id="save-profile-btn"
+                            class="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-all">Save
+                            Profile Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div
+            class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <span id="modal-order-id-label"
+                        class="text-primary font-bold text-sm tracking-widest uppercase">Order #123</span>
+                    <h3 class="text-2xl font-bold text-stone-900 mt-1">Delivery Details</h3>
+                </div>
+                <button onclick="closeOrderModal()"
+                    class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors">
+                    <img src="https://api.iconify.design/lucide:x.svg?color=%231c1917" width="20">
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Product Info</h4>
+                    <div class="flex items-center gap-4">
+                        <img id="modal-product-image" src="" alt=""
+                            class="w-20 h-20 rounded-2xl object-cover shadow-sm">
+                        <div>
+                            <div id="modal-product-name" class="font-bold text-stone-800 text-lg leading-tight">Product
+                                Name</div>
+                            <div id="modal-product-qty" class="text-stone-500 text-sm mt-1">1.00 kg</div>
+                            <div id="modal-product-price" class="text-primary font-bold text-lg mt-1">$45.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Customer Details</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                                <img src="https://api.iconify.design/lucide:user.svg?color=%233b82f6" width="16">
+                            </div>
+                            <span id="modal-customer-name" class="font-bold text-stone-800">Customer Name</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                                <img src="https://api.iconify.design/lucide:phone.svg?color=%2322c55e" width="16">
+                            </div>
+                            <span id="modal-customer-phone" class="font-bold text-stone-800">+1 234 567 890</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 p-6 bg-stone-50 rounded-2xl border border-stone-100">
+                <h4 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Delivery Address</h4>
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                        <img src="https://api.iconify.design/lucide:map-pin.svg?color=%23f97316" width="20">
+                    </div>
+                    <p id="modal-delivery-address" class="text-stone-700 font-medium text-lg leading-relaxed">
+                        123 Spices Street, Flavor Town, CA 90210
+                    </p>
+                </div>
+            </div>
+
+            <div id="modal-actions" class="mt-10 flex gap-4">
+                <!-- Dynamic actions based on status -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+        let currentView = 'overview';
+        let performanceChart = null;
+
+        function switchView(viewId) {
+            document.querySelectorAll('main > div').forEach(div => div.style.display = 'none');
+            document.getElementById(`${viewId}-view`).style.display = 'block';
+
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+
+            const titles = {
+                overview: 'Delivery Dashboard',
+                tasks: 'Active Delivery Tasks',
+                history: 'Delivery Success History',
+                profile: 'Agent Profile Settings'
+            };
+            const subtitles = {
+                overview: 'Track your deliveries and earnings performance.',
+                tasks: 'Manage and update your ongoing delivery assignments.',
+                history: 'Review your track record of successful deliveries.',
+                profile: 'Manage your contact information and preferences.'
+            };
+
+            document.getElementById('view-title').textContent = titles[viewId];
+            document.getElementById('view-subtitle').textContent = subtitles[viewId];
+            currentView = viewId;
+
+            if (viewId === 'overview') loadOverview();
+            if (viewId === 'tasks') loadTasks();
+            if (viewId === 'history') loadHistory();
+            if (viewId === 'profile') loadProfileData();
+        }
+
+        async function loadOverview() {
+            try {
+                const res = await fetch('../../backend/api/delivery/get-delivery-stats.php');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('stat-completed').textContent = data.stats.completed;
+                    document.getElementById('stat-pending').textContent = data.stats.pending;
+                    document.getElementById('stat-revenue').textContent = CurrencyManager.format(data.stats.monthly_revenue);
+                }
+                loadRecentTasks();
+                loadPerformanceChart();
+            } catch (err) { console.error('Error loading stats', err); }
+        }
+
+        async function loadRecentTasks() {
+            const container = document.getElementById('recent-tasks-list');
+            try {
+                const res = await fetch('../../backend/api/delivery/get-assigned-orders.php');
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.slice(0, 3).map(task => renderTaskCard(task)).join('');
+                } else {
+                    container.innerHTML = '<div class="text-center py-8 text-stone-400">No active tasks assigned to you.</div>';
+                }
+            } catch (err) { container.innerHTML = 'Error loading tasks.'; }
+        }
+
+        async function loadTasks() {
+            const container = document.getElementById('all-tasks-list');
+            container.innerHTML = '<div class="text-center py-20"><img src="https://api.iconify.design/lucide:loader-2.svg" class="w-12 h-12 animate-spin mx-auto text-primary"></div>';
+            try {
+                const res = await fetch('../../backend/api/delivery/get-assigned-orders.php');
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(task => renderTaskCard(task)).join('');
+                } else {
+                    container.innerHTML = '<div class="text-center py-20 text-stone-400 bg-white rounded-2xl border border-stone-100">No active tasks found at the moment.</div>';
+                }
+            } catch (err) { container.innerHTML = 'Error loading tasks.'; }
+        }
+
+        async function loadHistory() {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-20"><img src="https://api.iconify.design/lucide:loader-2.svg" class="w-10 h-10 animate-spin mx-auto text-primary"></td></tr>';
+            try {
+                const res = await fetch('../../backend/api/delivery/get-delivery-history.php');
+                const data = await res.json();
+                if (data.success && data.data.length > 0) {
+                    tbody.innerHTML = data.data.map(h => {
+                        const projectRoot = window.getProjectRoot();
+                        return `
+                            <tr style="border-bottom: 1px solid #f1f5f9;" class="hover:bg-stone-50 transition-colors">
+                                <td style="padding: 16px; font-weight: 700;">#ORD-${h.id}</td>
+                                <td style="padding: 16px;">
+                                    <div style="font-weight: 700; color: #1e293b;">${h.product_name}</div>
+                                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Customer: ${h.customer_name}</div>
+                                </td>
+                                <td style="padding: 16px; font-weight: 700; color: #16a34a;">${CurrencyManager.format(h.total_price)}</td>
+                                <td style="padding: 16px; font-size: 13px; color: #1e293b; font-weight: 600;">${new Date(h.delivered_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</td>
+                                <td style="padding: 16px;">
+                                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; background: #dcfce7; color: #16a34a;">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> DELIVERED
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-20 text-stone-400">Your delivery history is currently empty.</td></tr>';
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function renderTaskCard(task) {
+            const projectRoot = window.getProjectRoot();
+            let imgSrc = task.product_image;
+
+            // Comprehensive path check
+            if (!imgSrc) {
+                imgSrc = projectRoot + '/frontend/assets/images/logo.png';
+            } else if (imgSrc.startsWith('http')) {
+                // already absolute
+            } else if (imgSrc.startsWith('uploads/')) {
+                imgSrc = projectRoot + '/' + imgSrc;
+            } else if (imgSrc.startsWith('/uploads/')) {
+                imgSrc = projectRoot + imgSrc;
+            } else {
+                imgSrc = projectRoot + '/uploads/products/' + imgSrc;
+            }
+
+            return `
+                <div class="p-6 rounded-2xl border border-stone-100 bg-white hover:border-primary/30 hover:shadow-xl hover:shadow-stone-200 transition-all group">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <img src="${imgSrc}" 
+                             style="width: 100px; height: 100px; border-radius: 20px; object-fit: cover;"
+                             onerror="this.src='../assets/images/logo.png'">
+                        <div class="flex-grow">
+                            <div class="mb-1">
+                                <span class="text-[10px] font-extrabold text-primary uppercase tracking-widest">#ORD-${task.id}</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-stone-800">${task.product_name}</h4>
+                            <div class="flex flex-wrap gap-y-2 gap-x-6 mt-3">
+                                <div class="flex items-center gap-2 text-sm font-semibold text-stone-600">
+                                    <div class="w-6 h-6 rounded bg-blue-50 flex items-center justify-center">
+                                         <img src="https://api.iconify.design/lucide:user.svg?color=%233b82f6" width="14">
+                                    </div>
+                                    ${task.customer_name}
+                                </div>
+                                <div class="flex items-center gap-2 text-sm font-semibold text-stone-600">
+                                    <div class="w-6 h-6 rounded bg-orange-50 flex items-center justify-center">
+                                         <img src="https://api.iconify.design/lucide:map-pin.svg?color=%23f97316" width="14">
+                                    </div>
+                                    <span class="max-w-[200px] truncate">${task.delivery_address}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-3 min-w-[140px]">
+                            <span class="bg-stone-50 text-stone-400 text-[11px] font-bold px-3 py-1.5 rounded-lg border border-stone-100 whitespace-nowrap">
+                                ${new Date(task.order_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                            <button onclick='openOrderModal(${JSON.stringify(task).replace(/'/g, "&apos;")})' 
+                                    class="w-full py-2.5 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all shadow-md active:scale-95 text-center px-6">
+                                Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function updateStatus(orderId, status) {
+            const confirmMsg = status === 'delivered' ? 'Mark this order as successfully delivered?' : `Update order to ${status}?`;
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const res = await fetch('../../backend/api/delivery/update-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId, status: status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Order updated to ${status} successfully!`, 'success');
+                    closeOrderModal();
+                    if (currentView === 'overview') loadOverview();
+                    else if (currentView === 'tasks') loadTasks();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) { showToast('Connection failed. Try again.', 'error'); }
+        }
+
+        function openOrderModal(task) {
+            const projectRoot = window.getProjectRoot();
+            document.getElementById('modal-order-id-label').textContent = `#ORD-${task.id}`;
+            document.getElementById('modal-product-name').textContent = task.product_name;
+            document.getElementById('modal-product-qty').textContent = `${task.quantity} ${task.unit || 'kg'}`;
+            document.getElementById('modal-product-price').textContent = CurrencyManager.format(task.total_price);
+            document.getElementById('modal-customer-name').textContent = task.customer_name;
+            document.getElementById('modal-customer-phone').textContent = task.customer_phone || 'No phone provided';
+            document.getElementById('modal-delivery-address').textContent = task.delivery_address;
+
+            const imgEl = document.getElementById('modal-product-image');
+            let imgSrc = task.product_image;
+            if (!imgSrc) {
+                imgSrc = projectRoot + '/frontend/assets/images/logo.png';
+            } else if (imgSrc.startsWith('http')) {
+            } else if (imgSrc.startsWith('uploads/')) {
+                imgSrc = projectRoot + '/' + imgSrc;
+            } else if (imgSrc.startsWith('/uploads/')) {
+                imgSrc = projectRoot + imgSrc;
+            } else {
+                imgSrc = projectRoot + '/uploads/products/' + imgSrc;
+            }
+            imgEl.src = imgSrc;
+            imgEl.onerror = () => imgEl.src = '../assets/images/logo.png';
+
+            const actions = document.getElementById('modal-actions');
+            actions.innerHTML = `
+                <button onclick="updateStatus(${task.id}, 'delivered')" 
+                    class="flex-1 py-4 bg-primary text-white rounded-2xl font-bold hover:bg-primary-hover transition-all flex items-center justify-center gap-2">
+                    <img src="https://api.iconify.design/lucide:check-circle.svg?color=white" width="20">
+                    Confirm Delivery
+                </button>
+                ${task.status === 'ordered' ? `
+                    <button onclick="updateStatus(${task.id}, 'shipped')" 
+                        class="flex-1 py-4 border-2 border-primary text-primary rounded-2xl font-bold hover:bg-orange-50 transition-all flex items-center justify-center gap-2">
+                        <img src="https://api.iconify.design/lucide:truck.svg?color=%23FF7E21" width="20">
+                        Start Shipping
+                    </button>
+                ` : ''}
+            `;
+
+            document.getElementById('order-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function loadProfileData() {
+            try {
+                const res = await fetch('../../backend/api/auth/get-profile.php');
+                const result = await res.json();
+                if (result.success) {
+                    const user = result.data;
+                    document.getElementById('profile-full-name').value = user.full_name;
+                    document.getElementById('profile-email').value = user.email;
+                    document.getElementById('profile-phone').value = user.phone || '';
+                    document.getElementById('profile-address').value = user.address || '';
+
+                    document.getElementById('profile-name-display').textContent = user.full_name;
+                    const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    document.getElementById('profile-avatar-large').textContent = initials;
+                }
+            } catch (err) { console.error('Profile load error', err); }
+        }
+
+        async function updateProfile() {
+            const btn = document.getElementById('save-profile-btn');
+            const originalText = btn.textContent;
+
+            const formData = {
+                full_name: document.getElementById('profile-full-name').value,
+                email: document.getElementById('profile-email').value,
+                phone: document.getElementById('profile-phone').value,
+                address: document.getElementById('profile-address').value
+            };
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                const res = await fetch('../../backend/api/delivery/update-profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Profile updated successfully!', 'success');
+                    // Refresh name in header
+                    document.getElementById('agent-name-display').textContent = formData.full_name;
+                    const initials = formData.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    document.getElementById('agent-avatar-display').textContent = initials;
+                    document.getElementById('profile-name-display').textContent = formData.full_name;
+                    document.getElementById('profile-avatar-large').textContent = initials;
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Failed to save profile.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        async function loadPerformanceChart() {
+            try {
+                const res = await fetch('../../backend/api/delivery/get-performance.php');
+                const data = await res.json();
+
+                if (data.success) {
+                    const ctx = document.getElementById('performanceChart').getContext('2d');
+                    if (performanceChart) performanceChart.destroy();
+
+                    performanceChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Successful Deliveries',
+                                data: data.data,
+                                borderColor: '#FF7E21',
+                                backgroundColor: 'rgba(255, 126, 33, 0.1)',
+                                borderWidth: 4,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#FF7E21',
+                                pointBorderColor: 'white',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#0f172a',
+                                    padding: 12,
+                                    titleFont: { size: 14, weight: 'bold' },
+                                    bodyFont: { size: 14 },
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0,0,0,0.05)' },
+                                    ticks: { stepSize: 1, color: '#94a3b8', font: { weight: 'bold' } }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (err) { console.error('Chart load error', err); }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <img src="https://api.iconify.design/lucide:${type === 'success' ? 'check' : 'alert-circle'}.svg" width="16">
+                </div>
+                <div class="toast-message">${message}</div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        async function logout() {
+            await fetch('../../backend/api/auth/logout.php');
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = () => {
+            CurrencyManager.init().then(() => {
+                loadOverview();
+                // Load global profile info for header
+                fetch('../../backend/api/auth/get-profile.php')
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            document.getElementById('agent-name-display').textContent = d.data.full_name;
+                            const initials = d.data.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                            document.getElementById('agent-avatar-display').textContent = initials;
+                        }
+                    });
+            });
+        };
+    </script>
+</body>
+
+</html>

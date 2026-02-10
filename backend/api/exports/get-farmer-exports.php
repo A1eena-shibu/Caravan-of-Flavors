@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'farmer') {
 $farmer_id = $_SESSION['user_id'];
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM exports WHERE farmer_id = ? ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("SELECT id, product_name, destination_country, quantity, unit, status, tracking_number, shipping_carrier, created_at FROM exports WHERE farmer_id = ? ORDER BY created_at DESC");
     $stmt->execute([$farmer_id]);
     $exports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

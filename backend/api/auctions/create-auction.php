@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'farmer') {
 
 $farmer_id = $_SESSION['user_id'];
 $product_name = $_POST['product_name'] ?? '';
-$description = $_POST['description'] ?? '';
+// $description = $_POST['description'] ?? ''; // Removed
 $starting_price = $_POST['starting_price'] ?? 0;
 $quantity = $_POST['quantity'] ?? 1.0;
 $unit = $_POST['unit'] ?? 'kg';
@@ -60,8 +60,8 @@ try {
     $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
     $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
 
-    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, description, starting_price, base_currency, farmer_country, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
-    $stmt->execute([$farmer_id, $product_name, $description, $starting_price, $base_currency, $farmer_country, $starting_price, $quantity, $unit, $start_time, $end_time, $image_url]);
+    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, starting_price, base_currency, farmer_country, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+    $stmt->execute([$farmer_id, $product_name, $starting_price, $base_currency, $farmer_country, $starting_price, $quantity, $unit, $start_time, $end_time, $image_url]);
 
     echo json_encode(['success' => true, 'message' => 'Auction created successfully', 'auction_id' => $pdo->lastInsertId()]);
 } catch (PDOException $e) {

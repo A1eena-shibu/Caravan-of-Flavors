@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="../assets/js/custom-ui.js?v=1.5"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -178,44 +178,6 @@
         </div>
     </main>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmation-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog"
-        aria-modal="true">
-        <!-- Backdrop -->
-        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
-
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <!-- Modal Panel -->
-                <div
-                    class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 text-center">
-                        <div
-                            class="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-orange-50 mb-4">
-                            <img src="https://api.iconify.design/lucide:alert-circle.svg?color=%23FF7E21"
-                                class="w-8 h-8">
-                        </div>
-                        <h3 class="text-xl font-bold leading-6 text-stone-900 mb-2" id="modal-title">Confirm Action</h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-stone-500 leading-relaxed" id="modal-desc">
-                                Are you sure you want to proceed?
-                            </p>
-                        </div>
-                    </div>
-                    <div class="bg-stone-50 px-4 py-3 sm:flex sm:justify-center sm:px-6 gap-3">
-                        <button type="button" onclick="hideModal()"
-                            class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-stone-900 shadow-sm ring-1 ring-inset ring-stone-300 hover:bg-stone-50 sm:mt-0 sm:w-auto transition-colors">
-                            CANCEL
-                        </button>
-                        <button type="button" onclick="confirmCheckout()"
-                            class="inline-flex w-full justify-center rounded-xl bg-[#FF7E21] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#e66d1a] sm:w-auto transition-colors">
-                            CONFIRM
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         let cartItems = [];
@@ -228,7 +190,12 @@
                 const container = document.getElementById('cart-items-container');
 
                 if (result.success && result.items.length > 0) {
-                    cartItems = result.items.reverse(); // Newest first
+                    cartItems = result.items.reverse().map(item => {
+                        // Initialize display unit and quantity
+                        item.displayUnit = item.unit || 'kg';
+                        item.displayQuantity = parseFloat(item.quantity);
+                        return item;
+                    });
                     container.innerHTML = '';
 
                     cartItems.forEach(item => {
@@ -264,15 +231,7 @@
                                         </div>
                                         <div class="text-right">
                                             <!-- CLEAN PRICE DISPLAY: NO FAKE OFFERS -->
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                            <p class="text-xl font-bold text-stone-900">${formatCurrency(item.price)}</p>
-=======
-                                            <p class="text-xl font-bold text-stone-900">$${parseFloat(item.price).toFixed(2)}</p>
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                                             <p class="text-xl font-bold text-stone-900">${formatPrice(item.price)}</p>
->>>>>>> 967968b (added currency updation)
                                         </div>
                                     </div>
 
@@ -280,19 +239,30 @@
                                         <!-- Actions -->
                                         <div class="flex items-center gap-6">
                                             <!-- Quantity -->
-                                            <!-- Quantity -->
                                             <div class="flex items-center gap-1 bg-stone-100 rounded-lg p-1">
                                                 <button onclick="updateQuantity('${item.id}', -1)" 
-                                                    class="w-8 h-8 rounded-md flex items-center justify-center bg-white text-stone-600 shadow-sm hover:text-primary hover:shadow transition-all disabled:opacity-40 disabled:hover:text-stone-600" ${item.quantity <= 0.1 ? 'disabled' : ''}>
+                                                    class="w-8 h-8 rounded-md flex items-center justify-center bg-white text-stone-600 shadow-sm hover:text-primary hover:shadow transition-all disabled:opacity-40 disabled:hover:text-stone-600" ${item.displayQuantity <= 0 ? 'disabled' : ''}>
                                                     <span class="font-bold text-lg leading-none mb-0.5">-</span>
                                                 </button>
-                                                <input id="qty-${item.id}" type="number" step="0.1" min="0.1" value="${item.quantity}" 
+                                                <input id="qty-${item.id}" type="number" step="${item.displayUnit === 'g' ? 1 : 0.001}" min="0" value="${item.displayQuantity}" 
                                                     oninput="updateQuantity('${item.id}', 0)"
                                                     class="w-16 text-center font-bold text-stone-900 text-sm bg-transparent border-none outline-none focus:ring-0 appearance-none p-0">
                                                 <button onclick="updateQuantity('${item.id}', 1)" 
                                                     class="w-8 h-8 rounded-md flex items-center justify-center bg-white text-stone-600 shadow-sm hover:text-primary hover:shadow transition-all">
                                                     <span class="font-bold text-lg leading-none mb-0.5">+</span>
                                                 </button>
+
+                                                <!-- Unit Selector -->
+                                                <div class="relative w-12 flex-shrink-0 h-8 flex items-center justify-center bg-white rounded-md border border-stone-200 ml-1">
+                                                    <select id="unit-${item.id}" onchange="changeUnit('${item.id}')"
+                                                        class="w-full h-full bg-transparent border-none font-bold text-xs text-black outline-none focus:ring-0 cursor-pointer appearance-none text-center pr-4">
+                                                        <option value="kg" ${item.displayUnit === 'kg' ? 'selected' : ''}>kg</option>
+                                                        <option value="g" ${item.displayUnit === 'g' ? 'selected' : ''}>g</option>
+                                                    </select>
+                                                    <div class="absolute right-0.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                        <img src="https://api.iconify.design/lucide:chevron-down.svg?color=%23000000" width="10">
+                                                    </div>
+                                                </div>
                                             </div>
                                             
                                             <!-- Remove -->
@@ -324,18 +294,8 @@
                         </div>
                     `;
                     document.getElementById('checkout-btn').disabled = true;
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    document.getElementById('price-subtotal').innerText = formatCurrency(0);
-                    document.getElementById('price-total').innerText = formatCurrency(0);
-=======
-                    document.getElementById('price-subtotal').innerText = "$0.00";
-                    document.getElementById('price-total').innerText = "$0.00";
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                     document.getElementById('price-subtotal').innerText = formatPrice(0);
                     document.getElementById('price-total').innerText = formatPrice(0);
->>>>>>> 967968b (added currency updation)
                 }
             } catch (error) { console.error(error); }
         }
@@ -343,6 +303,41 @@
         function toggleSelection(id, isChecked) {
             if (isChecked) selectedItems.add(id);
             else selectedItems.delete(id);
+            updateSummary();
+        }
+
+        function changeUnit(cartId) {
+            const item = cartItems.find(i => i.id == cartId);
+            if (!item) return;
+
+            const unitSelect = document.getElementById(`unit-${cartId}`);
+            const input = document.getElementById(`qty-${cartId}`);
+            const oldUnit = item.displayUnit;
+            const newUnit = unitSelect.value;
+
+            if (oldUnit === newUnit) return;
+
+            let val = parseFloat(input.value);
+            if (isNaN(val)) val = item.displayQuantity;
+
+            // Convert value
+            if (oldUnit === 'kg' && newUnit === 'g') {
+                val = val * 1000;
+                input.step = 1;
+                input.min = 0;
+            } else if (oldUnit === 'g' && newUnit === 'kg') {
+                val = val / 1000;
+                input.step = 0.001;
+                input.min = 0;
+            }
+
+            // Rounding
+            val = Math.round(val * 1000) / 1000;
+            input.value = val;
+
+            item.displayUnit = newUnit;
+            item.displayQuantity = val;
+
             updateSummary();
         }
 
@@ -355,34 +350,22 @@
             selectedItems.forEach(id => {
                 const item = cartItems.find(i => i.id == id);
                 if (item) {
+                    // Always calculate based on product base unit for price consistency
+                    // item.price is per product unit (e.g. per kg)
+                    // item.quantity is quantity in product base unit
                     subtotal += item.price * item.quantity;
                     unitTotal += parseFloat(item.price);
                     count++;
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">${formatCurrency(item.price * item.quantity)}</span></div>`;
-=======
-                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">$${(item.price * item.quantity).toFixed(2)}</span></div>`;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
-                    nameListHTML += `<div class="truncate flex justify-between"><span>${item.quantity}kg x ${item.product_name}</span> <span class="font-medium">${formatPrice(item.price * item.quantity)}</span></div>`;
->>>>>>> 967968b (added currency updation)
+
+                    const displayQty = item.displayQuantity || item.quantity;
+                    const displayUnit = item.displayUnit || item.unit || 'kg';
+                    nameListHTML += `<div class="truncate flex justify-between"><span>${displayQty}${displayUnit} x ${item.product_name}</span> <span class="font-medium">${formatPrice(item.price * item.quantity)}</span></div>`;
                 }
             });
 
             document.getElementById('price-count-label').innerText = `Price (${count} items)`;
-<<<<<<< HEAD
-<<<<<<< HEAD
-            document.getElementById('price-subtotal').innerText = formatCurrency(unitTotal);
-            document.getElementById('price-total').innerText = formatCurrency(subtotal);
-=======
-            document.getElementById('price-subtotal').innerText = `$${unitTotal.toFixed(2)}`;
-            document.getElementById('price-total').innerText = `$${subtotal.toFixed(2)}`;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
             document.getElementById('price-subtotal').innerText = formatPrice(unitTotal);
             document.getElementById('price-total').innerText = formatPrice(subtotal);
->>>>>>> 967968b (added currency updation)
 
             const summaryListEl = document.getElementById('summary-items-list');
             if (summaryListEl) {
@@ -412,25 +395,37 @@
             if (!item) return;
 
             const input = document.getElementById(`qty-${cartId}`);
-            let currentVal = parseFloat(input ? input.value : item.quantity);
-            if (isNaN(currentVal)) currentVal = parseFloat(item.quantity);
+            let currentDisplayVal = parseFloat(input ? input.value : item.displayQuantity);
+            if (isNaN(currentDisplayVal)) currentDisplayVal = parseFloat(item.displayQuantity);
 
-            let newQty = currentVal + change;
+            const displayUnit = item.displayUnit || 'kg';
+            const step = 1; // Always increment by integer steps (1kg, 1g)
 
-            // Round to 2 decimals
-            newQty = Math.round(newQty * 100) / 100;
+            let newDisplayQty = currentDisplayVal + (change * step);
+            newDisplayQty = Math.round(newDisplayQty * 1000) / 1000;
 
-            if (newQty < 0.1) newQty = 0.1;
+            const min = 0;
+            if (newDisplayQty < min) newDisplayQty = min;
 
-            item.quantity = newQty;
+            item.displayQuantity = newDisplayQty;
 
-            // Only update input value if it was a button click (change != 0)
-            // If manual input (change == 0), let user type freely
-            if (input && change !== 0) input.value = newQty;
+            // Convert back to product base unit for storage and calculation
+            const productUnit = item.unit || 'kg';
+            let qtyForBackend = newDisplayQty;
+
+            if (productUnit === 'kg' && displayUnit === 'g') {
+                qtyForBackend = newDisplayQty / 1000;
+            } else if (productUnit === 'g' && displayUnit === 'kg') {
+                qtyForBackend = newDisplayQty * 1000;
+            }
+
+            item.quantity = qtyForBackend;
+
+            if (input && change !== 0) input.value = newDisplayQty;
 
             // Update button state
             const minusBtn = input ? input.previousElementSibling : null;
-            if (minusBtn) minusBtn.disabled = newQty <= 0.1;
+            if (minusBtn) minusBtn.disabled = newDisplayQty <= min;
 
             updateSummary();
 
@@ -438,7 +433,7 @@
                 const response = await fetch('../../backend/api/cart/update-cart.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cart_id: cartId, quantity: newQty })
+                    body: JSON.stringify({ cart_id: cartId, quantity: qtyForBackend })
                 });
 
                 const text = await response.text();
@@ -455,10 +450,8 @@
                 }
             } catch (e) {
                 console.error(e);
-                item.quantity = currentVal;
-                if (input) input.value = currentVal;
-                updateSummary();
-                // Debounce toast or only show on significant error to avoid spamming while typing
+                // On error, we should ideally revert, but for now just log
+                // Reverting might be confusing if user is typing fast
                 if (change !== 0) showToast(e.message || "Failed to update quantity", 'error');
             }
         }
@@ -481,19 +474,7 @@
             } catch (error) { console.error(error); }
         }
 
-        // --- Confirmation Modal Logic ---
-
-        function showModal(title, message) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-desc').innerText = message;
-            document.getElementById('confirmation-modal').classList.remove('hidden');
-        }
-
-        function hideModal() {
-            document.getElementById('confirmation-modal').classList.add('hidden');
-        }
-
-        function checkout() {
+        async function checkout() {
             let subtotal = 0;
             let itemDetails = [];
 
@@ -501,32 +482,24 @@
                 const item = cartItems.find(i => i.id == id);
                 if (item) {
                     subtotal += item.price * item.quantity;
-                    // Attempt to use unit 'kg' if we knew it, but here we just list names
-                    itemDetails.push(`${item.quantity}kg ${item.product_name}`);
+                    const dQty = item.displayQuantity || item.quantity;
+                    const dUnit = item.displayUnit || item.unit || 'kg';
+                    itemDetails.push(`${dQty}${dUnit} ${item.product_name}`);
                 }
             });
 
             const itemsStr = itemDetails.join(', ');
             const totalStr = formatPrice(subtotal);
 
-            // Truncate if too long
-            const displayItems = itemsStr.length > 60 ? itemsStr.substring(0, 60) + '...' : itemsStr;
+            // Truncate if too long for a clean look
+            const displayItems = itemsStr.length > 50 ? itemsStr.substring(0, 50) + '...' : itemsStr;
+            const msg = `Confirm purchase of ${displayItems} for ${totalStr}? You will be redirected to secure payment.`;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            const msg = `Confirm purchase of ${displayItems} for ${formatCurrency(subtotal)}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
-=======
-            const msg = `Confirm purchase of ${displayItems} for $${totalStr}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
-            const msg = `Confirm purchase of ${displayItems} for ${totalStr}? The farmer will be instantly notified to accept your order. You can proceed with secure payment once they approve.`;
->>>>>>> 967968b (added currency updation)
-
-            showModal('Confirm Action', msg);
+            const confirmed = await showConfirm(msg);
+            if (confirmed) confirmCheckout();
         }
 
         async function confirmCheckout() {
-            hideModal();
             const address = "Default Address";
             const btn = document.getElementById('checkout-btn');
             btn.disabled = true;
@@ -540,36 +513,26 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         delivery_address: address,
-                        selected_cart_ids: selectedIds
+                        selected_cart_ids: selectedIds,
+                        currency_code: window.CurrencyManager.settings.code,
+                        exchange_rate: window.CurrencyManager.settings.rate || 1
                     })
                 });
                 const text = await response.text();
                 let result;
                 try { result = JSON.parse(text); } catch (e) { throw new Error("Invalid server response at checkout"); }
 
-                if (result.success) {
-                    showModal('Order Placed Successfully!', 'SUCCESS! Your order has been placed directly with the farmer. They will review it shortly. You can track its status in the "Orders" page.');
-
-                    // Hide the Confirm/Cancel buttons in the success modal case, or change them to just "OK"
-                    // Simpler approach: Just change the confirmCheckout button to "Done" and reload on click, or redirect to Orders
-                    const modalBtns = document.querySelector('#confirmation-modal .bg-stone-50');
-                    if (modalBtns) {
-                        modalBtns.innerHTML = `
-                            <button onclick="window.location.href='orders.html'" 
-                                class="inline-flex w-full justify-center rounded-xl bg-[#FF7E21] px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-[#e66d1a] sm:w-auto transition-colors">
-                                GO TO ORDERS
-                            </button>
-                         `;
-                        // Center the new button
-                        modalBtns.classList.add('justify-center');
-                    }
-
-                    // Clear cart UI behind modal
-                    document.getElementById('cart-items-container').innerHTML = '';
-                    updateSummary();
+                if (result.success && result.order_ids && result.order_ids.length > 0) {
+                    // Direct redirect to payment page, matching Catalog flow
+                    const idsParam = result.order_ids.join(',');
+                    window.location.href = `payment.html?order_ids=${idsParam}&source=cart`;
                 } else {
-                    showToast(result.message, 'error');
+                    showToast(result.message || "Checkout failed", 'error');
                     btn.disabled = false;
+                    btn.innerHTML = `
+                        <span>PROCEED TO CHECKOUT</span>
+                        <img src="https://api.iconify.design/lucide:arrow-right.svg?color=white" class="w-5 h-5 group-hover:translate-x-1 transition-transform">
+                    `;
                     updateSummary();
                 }
             } catch (error) {

@@ -8,7 +8,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET');
 header('Access-Control-Allow-Headers: Content-Type');
 
-session_start();
+require_once '../../config/session.php';
 
 // Destroy all session data
 $_SESSION = array();

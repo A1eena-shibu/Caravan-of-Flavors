@@ -28,10 +28,13 @@ try {
             o.id, 
             o.status, 
             o.delivery_address,
+            o.delivery_agent_id,
             c.full_name as customer_name,
-            c.phone as customer_phone
+            c.phone as customer_phone,
+            da.full_name as agent_name
         FROM orders o
         JOIN users c ON o.customer_id = c.id
+        LEFT JOIN users da ON o.delivery_agent_id = da.id
         WHERE o.status IN ('shipped', 'delivered')
         ORDER BY o.updated_at DESC
     ";

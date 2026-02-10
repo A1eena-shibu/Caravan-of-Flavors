@@ -14,10 +14,10 @@ try {
     }
 
     $cart_id = $data['cart_id'];
-    $quantity = (int) $data['quantity'];
+    $quantity = (float) $data['quantity'];
 
-    if ($quantity < 1) {
-        throw new Exception('Quantity must be at least 1');
+    if ($quantity <= 0) {
+        throw new Exception('Quantity must be positive');
     }
 
     $pdo = getDBConnection();

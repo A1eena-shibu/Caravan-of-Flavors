@@ -49,48 +49,39 @@ try {
 
     // Validation for state transitions
     $allowed = false;
-    if ($new_status === 'confirmed' && $current_status === 'pending')
-        $allowed = true; // Accept
-    if ($new_status === 'cancelled' && $current_status === 'pending')
-<<<<<<< HEAD
-        $allowed = true; // Reject
-=======
-        $allowed = true; // Cancel
-    if ($new_status === 'rejected' && $current_status === 'pending')
-        $allowed = true; // Reject (New)
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-    if ($new_status === 'shipped' && ($current_status === 'confirmed' || $current_status === 'processing'))
-        $allowed = true; // Shipped
+
+    // 1. Cancel/Reject logic (Reject is removed, but we keep Cancel)
+    // 1. Cancel logic
+    // 1. Cancel logic
+    if ($new_status === 'cancelled' && ($current_status === 'ordered'))
+        $allowed = true; // Cancel before shipping
+
+    // 2. Ordered -> Shipped
+    if ($new_status === 'shipped' && ($current_status === 'ordered'))
+        $allowed = true;
+
+    // 3. Shipped -> Delivered
     if ($new_status === 'delivered' && $current_status === 'shipped')
-        $allowed = true; // Delivered
+        $allowed = true;
 
     if (!$allowed) {
         throw new Exception("Invalid status transition from $current_status to $new_status.");
     }
 
     // Update status and timestamp
-<<<<<<< HEAD
-    if ($new_status === 'cancelled' && isset($data['reason'])) {
-=======
-    if (($new_status === 'cancelled' || $new_status === 'rejected') && isset($data['reason'])) {
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-        $reason = $data['reason'];
-        $updateStmt = $pdo->prepare("UPDATE orders SET status = ?, rejection_reason = ?, rejected_at = NOW() WHERE id = ?");
-        $result = $updateStmt->execute([$new_status, $reason, $order_id]);
+    if ($new_status === 'cancelled') {
+        // We removed rejection_reason and rejected_at columns from schema, so we just update status
+        // If we want to store reason, we need a column. But schema update removed it.
+        // Let's just update status.
+        $sql = "UPDATE orders SET status = 'cancelled' WHERE id = ?";
+        $result = $pdo->prepare($sql)->execute([$order_id]);
     } else {
         $sql = "UPDATE orders SET status = ?";
 
-        if ($new_status === 'confirmed')
-            $sql .= ", accepted_at = NOW()";
         if ($new_status === 'shipped')
             $sql .= ", shipped_at = NOW()";
         if ($new_status === 'delivered')
             $sql .= ", delivered_at = NOW()";
-<<<<<<< HEAD
-=======
-        if ($new_status === 'rejected')
-            $sql .= ", rejected_at = NOW()"; // Fallback if no reason provided
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
         $sql .= " WHERE id = ?";
         $updateStmt = $pdo->prepare($sql);
@@ -98,8 +89,6 @@ try {
     }
 
     if ($result) {
-<<<<<<< HEAD
-=======
         // --- Log to Order Tracking ---
         $comment = "Order status updated to $new_status";
         if (isset($reason))
@@ -109,7 +98,6 @@ try {
         $trackStmt->execute([$order_id, $new_status, $comment]);
         // -----------------------------
 
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         echo json_encode(['success' => true, 'message' => "Order status updated to $new_status."]);
     } else {
         throw new Exception("Failed to update order status.");

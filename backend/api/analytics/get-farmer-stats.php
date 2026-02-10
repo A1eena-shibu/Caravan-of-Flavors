@@ -5,18 +5,11 @@
  */
 
 header('Content-Type: application/json');
+require_once '../../config/session.php';
 require_once '../../config/database.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if user is logged in and is a farmer
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'farmer') {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+// Check authorization
+require_role('farmer');
 
 $farmer_id = $_SESSION['user_id'];
 $pdo = getDBConnection();
@@ -33,8 +26,8 @@ try {
     $stmt->execute([$farmer_id]);
     $revenueTarget = $stmt->fetchColumn() ?: 500.00;
 
-    // 2. Active Orders
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE farmer_id = ? AND status IN ('pending', 'confirmed', 'processing', 'shipped')");
+    // 2. Active Orders (Ordered but not yet delivered/cancelled)
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE farmer_id = ? AND status IN ('ordered', 'shipped')");
     $stmt->execute([$farmer_id]);
     $activeOrders = $stmt->fetchColumn() ?: 0;
 
@@ -43,17 +36,10 @@ try {
     $stmt->execute([$farmer_id]);
     $totalCustomers = $stmt->fetchColumn() ?: 0;
 
-<<<<<<< HEAD
-    // 4. Avg Rating
-    $stmt = $pdo->prepare("SELECT AVG(r.rating) FROM reviews r JOIN products p ON r.product_id = p.id WHERE p.farmer_id = ?");
-    $stmt->execute([$farmer_id]);
-    $avgRating = round($stmt->fetchColumn() ?: 0, 1);
-=======
     // 4. Total Products (Replaced Avg Rating)
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE farmer_id = ?");
     $stmt->execute([$farmer_id]);
     $totalProducts = $stmt->fetchColumn() ?: 0;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
 
     // 5. Recent Activity (Last 5 orders)
     $stmt = $pdo->prepare("
@@ -66,7 +52,7 @@ try {
         LIMIT 5
     ");
     $stmt->execute([$farmer_id]);
-    $recentActivity = $stmt->fetchAll();
+    $recentActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // 6. Sales Performance (Weekly for last 4 weeks)
     $stmt = $pdo->prepare("
@@ -193,11 +179,7 @@ try {
             'target' => (float) $revenueTarget,
             'active_orders' => (int) $activeOrders,
             'customers' => (int) $totalCustomers,
-<<<<<<< HEAD
-            'rating' => (float) $avgRating
-=======
             'total_products' => (int) $totalProducts
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
         ],
         'recent_activity' => $recentActivity,
         'weekly_performance' => $weeklyStats,

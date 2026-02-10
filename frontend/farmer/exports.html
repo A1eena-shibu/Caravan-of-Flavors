@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
+    <script src="../assets/js/custom-ui.js?v=1.5"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -395,14 +395,15 @@
         function getStatusBadge(status) {
             const styles = {
                 pending: 'bg-stone-100 text-stone-500',
-                packaged: 'bg-blue-50 text-blue-600',
-                customs: 'bg-orange-50 text-orange-600',
-                shipped: 'bg-primary/10 text-primary',
-                delivered: 'bg-green-50 text-green-600',
-                cancelled: 'bg-red-50 text-red-600'
+                packaged: 'bg-blue-100 text-blue-700',
+                customs: 'bg-amber-100 text-amber-700',
+                shipped: 'bg-blue-100 text-blue-700',
+                delivered: 'bg-emerald-100 text-emerald-700',
+                cancelled: 'bg-rose-100 text-rose-700'
             };
-            const label = status.toUpperCase();
-            return `<span class="px-3 py-1 rounded-full text-[9px] font-bold tracking-widest ${styles[status] || styles.pending}">${label}</span>`;
+            const s = (status || '').trim().toLowerCase();
+            const label = s.toUpperCase() || 'PENDING';
+            return `<span class="px-3 py-1 rounded-full text-[9px] font-bold tracking-widest ${styles[s] || styles.pending}">${label}</span>`;
         }
 
         window.onload = loadExports;

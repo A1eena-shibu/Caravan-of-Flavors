@@ -21,8 +21,10 @@ $delivery_address = $data['delivery_address'] ?? 'Default Address';
 try {
     $pdo->beginTransaction();
 
-    // 0. Parse selected items (if any)
+    // 0. Parse inputs
     $selected_cart_ids = $data['selected_cart_ids'] ?? [];
+    $currency_code = $data['currency_code'] ?? 'USD'; // Default if missing
+    $exchange_rate = $data['exchange_rate'] ?? 1.0;
 
     // 1. Get cart items
     $query = "
@@ -60,8 +62,8 @@ try {
         $total_price = $item['price'] * $item['quantity'];
 
         // 2. Create Order
-        $orderStmt = $pdo->prepare("INSERT INTO orders (customer_id, product_id, farmer_id, quantity, unit_price, total_price, status, delivery_address) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)");
-        $orderStmt->execute([$customer_id, $item['product_id'], $item['farmer_id'], $item['quantity'], $item['price'], $total_price, $delivery_address]);
+        $orderStmt = $pdo->prepare("INSERT INTO orders (customer_id, product_id, farmer_id, quantity, unit_price, total_price, status, delivery_address, currency_code, exchange_rate) VALUES (?, ?, ?, ?, ?, ?, 'ordered', ?, ?, ?)");
+        $orderStmt->execute([$customer_id, $item['product_id'], $item['farmer_id'], $item['quantity'], $item['price'], $total_price, $delivery_address, $currency_code, $exchange_rate]);
         $created_order_ids[] = $pdo->lastInsertId();
 
         // 3. Update Stock

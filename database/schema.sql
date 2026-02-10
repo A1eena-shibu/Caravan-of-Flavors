@@ -33,14 +33,11 @@ CREATE TABLE products (
     farmer_id INT NOT NULL,
     product_name VARCHAR(255) NOT NULL,
     category VARCHAR(100) NOT NULL,
-    description TEXT,
     price DECIMAL(12, 6) NOT NULL,
     base_currency VARCHAR(10) DEFAULT 'USD',
     farmer_country VARCHAR(100),
     quantity DECIMAL(10, 2) NOT NULL,
     unit VARCHAR(20) DEFAULT 'kg',
-    grade VARCHAR(50), -- e.g., 'A', 'B', 'Premium'
-    quality_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
     image_url VARCHAR(500),
     harvest_date DATE,
     expiry_date DATE,
@@ -53,8 +50,7 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_farmer (farmer_id),
-    INDEX idx_category (category),
-    INDEX idx_quality (quality_status)
+    INDEX idx_category (category)
 ) ENGINE=InnoDB;
 
 -- Orders table
@@ -64,21 +60,17 @@ CREATE TABLE orders (
     product_id INT NOT NULL,
     farmer_id INT NOT NULL,
     quantity DECIMAL(10, 2) NOT NULL,
-    unit_price DECIMAL(10, 2) NOT NULL,
-    total_price DECIMAL(10, 2) NOT NULL,
-<<<<<<< HEAD
-    status ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
-=======
-    status ENUM('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'rejected') DEFAULT 'pending',
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+    unit_price DECIMAL(12, 6) NOT NULL,
+    total_price DECIMAL(12, 6) NOT NULL,
+    currency_code VARCHAR(10) DEFAULT 'USD',
+    exchange_rate DECIMAL(10, 6) DEFAULT 1.000000,
+    status ENUM('ordered', 'shipped', 'delivered', 'cancelled') DEFAULT 'ordered',
     delivery_address TEXT NOT NULL,
+    delivery_agent_id INT NULL DEFAULT NULL,
     payment_method VARCHAR(50),
     payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
-    rejection_reason TEXT, -- Stores reason if order is cancelled/rejected
-    accepted_at TIMESTAMP NULL,
     shipped_at TIMESTAMP NULL,
     delivered_at TIMESTAMP NULL,
-    rejected_at TIMESTAMP NULL,
     notes TEXT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -87,12 +79,9 @@ CREATE TABLE orders (
     FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_customer (customer_id),
     INDEX idx_farmer (farmer_id),
-<<<<<<< HEAD
-    INDEX idx_status (status)
-=======
     INDEX idx_status (status),
-    INDEX idx_order_date (order_date)
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
+    INDEX idx_order_date (order_date),
+    INDEX idx_delivery_agent (delivery_agent_id)
 ) ENGINE=InnoDB;
 
 -- Inventory table (for tracking stock)
@@ -168,6 +157,17 @@ CREATE TABLE order_tracking (
     INDEX idx_order (order_id)
 ) ENGINE=InnoDB;
 
+-- Product Tracking History
+CREATE TABLE product_tracking (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    comment TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    INDEX idx_product (product_id)
+) ENGINE=InnoDB;
+
 -- Inventory Transaction Logs
 CREATE TABLE inventory_logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -190,7 +190,6 @@ CREATE TABLE auctions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     farmer_id INT NOT NULL,
     product_name VARCHAR(255) NOT NULL,
-    description TEXT,
     starting_price DECIMAL(10, 2) NOT NULL,
     base_currency VARCHAR(10) DEFAULT 'USD',
     farmer_country VARCHAR(100),

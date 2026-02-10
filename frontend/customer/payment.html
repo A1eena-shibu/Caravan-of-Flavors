@@ -9,10 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-<<<<<<< HEAD
-    <script src="../assets/js/custom-ui.js?v=1.4"></script>
-=======
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script> <!-- Sandbox ID -->
     <script>
@@ -144,8 +140,8 @@
                     <div id="paypal-button-container" class="hidden"></div>
                 </div>
 
-                <button onclick="window.location.href='orders.html'"
-                    class="w-full text-center text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-stone-600 transition-colors mt-4">
+                <button onclick="confirmCancel()"
+                    class="w-full text-center text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-red-500 hover:bg-red-50 py-3 rounded-xl transition-all mt-4">
                     Cancel Transaction
                 </button>
             </div>
@@ -183,16 +179,16 @@
                         amount = parseFloat(result.order.total_price);
                         if (result.order.customer_name) customerName = result.order.customer_name;
                         if (result.order.customer_email) customerEmail = result.order.customer_email;
+                        window.orderDetails = result.order;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        document.getElementById('amount-display').innerText = formatCurrency(amount);
-=======
-                        document.getElementById('amount-display').innerText = `$${amount.toFixed(2)}`;
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
-                        document.getElementById('amount-display').innerText = formatPrice(amount);
->>>>>>> 967968b (added currency updation)
+                        // Use stored rate if currency matches, ensuring EXACT price match
+                        if (result.order.currency_code === CurrencyManager.settings.code && result.order.exchange_rate) {
+                            const lockedRate = parseFloat(result.order.exchange_rate);
+                            const lockedVal = amount * lockedRate;
+                            document.getElementById('amount-display').innerText = CurrencyManager.settings.symbol + lockedVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        } else {
+                            document.getElementById('amount-display').innerText = formatPrice(amount);
+                        }
 
                         if (result.order.payment_status === 'paid') {
                             showToast("This order is already paid.", "success");
@@ -467,24 +463,25 @@
                 if (!address.trim()) { showToast("Please enter delivery address first.", "error"); return; }
 
                 // Calculate correct amount
-                const rate = CurrencyManager.settings ? CurrencyManager.settings.rate : 1;
                 const currencyCode = CurrencyManager.settings ? CurrencyManager.settings.code : 'USD';
+                let rate = (currencyCode === 'USD') ? 1 : (CurrencyManager.settings ? CurrencyManager.settings.rate : 1);
+
+                // Use locked rate if available (from global order object if we exposed it, or re-fetch? We need order details here)
+                // We didn't expose 'result.order' globally in fetchOrderDetails. Let's assume we can't easily access it without global var.
+                // Or we can rely on what's displayed? No, insecure.
+                // Let's rely on standard rate unless we assume fetchOrderDetails stored it.
+                // Wait, I should store order details globally.
+
+                if (window.orderDetails && window.orderDetails.currency_code === currencyCode && window.orderDetails.exchange_rate) {
+                    rate = parseFloat(window.orderDetails.exchange_rate);
+                }
+
                 const finalAmount = (amount * rate).toFixed(2); // Convert base USD to target
 
                 var options = {
                     "key": "rzp_test_1DP5mmOlF5G5ag", // Generic Test Key
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    "amount": Math.round(convertPrice(amount) * 100), // Amount in local currency subunits
-                    "currency": getUserCurrency(),
-=======
-                    "amount": amount * 100, // Amount in paise
-                    "currency": "INR", // Changed to INR for better test key compatibility
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
-=======
                     "amount": Math.round(finalAmount * 100), // Amount in paise/cents (integer)
                     "currency": currencyCode,
->>>>>>> 967968b (added currency updation)
                     "name": "Caravan of Flavours",
                     "description": orderIds ? "Payment for Multiple Orders" : "Payment for Order #" + legacyOrderId,
                     "image": "../assets/images/logo.png",
@@ -532,14 +529,7 @@
 
                         return actions.order.create({
                             purchase_units: [{
-<<<<<<< HEAD
-                                amount: {
-                                    value: convertPrice(amount).toFixed(2),
-                                    currency_code: getUserCurrency()
-                                }
-=======
                                 amount: { value: amount }
->>>>>>> 7a93d84e57fb4b8a4284292b9e5f4cf08fc28c30
                             }]
                         });
                     },
@@ -554,6 +544,126 @@
                     }
                 }).render('#paypal-button-container');
                 paypalRendered = true;
+            }
+        </script>
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" style="display: none;"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <img src="https://api.iconify.design/lucide:alert-triangle.svg?color=%23ef4444" width="24">
+                    </div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2">Clear Transaction?</h3>
+                    <p class="text-sm text-stone-500 mb-6">Are you sure you want to cancel this transaction? Your order
+                        will remain unpaid.</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="closeConfirmModal()"
+                            class="px-4 py-2 rounded-lg bg-stone-100 text-stone-600 font-bold text-sm hover:bg-stone-200 transition-colors">
+                            No, Go Back
+                        </button>
+                        <button onclick="performCancel(event)"
+                            class="px-4 py-2 rounded-lg bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30">
+                            Yes, Clear It
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function confirmCancel() {
+                document.getElementById('confirmation-modal').style.display = 'flex';
+            }
+
+            function closeConfirmModal() {
+                document.getElementById('confirmation-modal').style.display = 'none';
+            }
+
+            async function performCancel(event) {
+                // safer button selection
+                const btn = event ? event.target.closest('button') : document.querySelector('#confirmation-modal button.bg-red-500');
+                if (!btn) {
+                    console.error("Cancel button not found");
+                    return;
+                }
+
+                const originalText = btn.innerText;
+                btn.disabled = true;
+                btn.innerHTML = `<img src="https://api.iconify.design/lucide:loader-2.svg?color=white" class="w-4 h-4 animate-spin inline"> Cancelling...`;
+
+                if (!finalOrderIds) {
+                    showToast("No Order ID found to cancel", "error");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    return;
+                }
+
+                const ids = finalOrderIds.split(',').filter(id => id.trim() !== ''); // Filter empty strings
+
+                if (ids.length === 0) {
+                    showToast("Invalid Order IDs", "error");
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    return;
+                }
+
+                const source = urlParams.get('source');
+                const isCart = source === 'cart';
+
+                console.log("Cancelling Orders:", ids, "Source:", source, "Restore:", isCart);
+                const apiUrl = '../../backend/api/orders/cancel-order.php';
+                console.log("Fetching API:", apiUrl);
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            order_ids: ids,
+                            restore_to_cart: isCart
+                        })
+                    });
+
+                    console.log("Response Status:", response.status, response.statusText);
+                    const responseText = await response.text();
+                    console.log("Response Text:", responseText);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status} ${response.statusText}\nResponse: ${responseText.substring(0, 100)}`);
+                    }
+
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch (e) {
+                        throw new Error("Invalid JSON response from server: " + responseText.substring(0, 50) + "...");
+                    }
+
+                    if (result.success) {
+                        const targetPage = isCart ? 'cart.html' : 'catalog.html';
+                        showToast(`Transaction cleared. Returning to ${isCart ? 'cart' : 'catalog'}...`, 'success');
+                        setTimeout(() => {
+                            window.location.href = targetPage;
+                        }, 1000);
+                    } else {
+                        showToast(result.message || 'Failed to cancel', 'error');
+                        btn.disabled = false;
+                        btn.innerText = originalText;
+                    }
+                } catch (error) {
+                    console.error("Cancel error:", error);
+                    alert("Cancel Error Details:\n" + error.message); // Use alert for easier debugging by user
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            }
+
+            // Exposed for main.js CurrencyManager
+            window.updatePaymentPrice = function () {
+                if (amount > 0) {
+                    document.getElementById('amount-display').innerText = formatPrice(amount);
+                }
             }
         </script>
         <script src="../assets/js/main.js"></script>

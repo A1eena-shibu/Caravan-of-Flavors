@@ -23,11 +23,12 @@ try {
     $product_id = $_POST['product_id'] ?? null;
     $product_name = $_POST['product_name'] ?? '';
     $price = $_POST['price'] ?? 0;
-    $description = $_POST['description'] ?? '';
+    // $description = $_POST['description'] ?? ''; // Removed
     $quantity = $_POST['quantity'] ?? 0;
+    $unit = $_POST['unit'] ?? 'kg';
 
-    if (!$product_id || strlen(trim($product_name)) === 0 || $price === '' || strlen(trim($description)) === 0) {
-        throw new Exception('Product name, price, and description are required.');
+    if (!$product_id || strlen(trim($product_name)) === 0 || $price === '') {
+        throw new Exception('Product name and price are required.');
     }
 
     // Verify ownership
@@ -70,11 +71,15 @@ try {
 
     $stmt = $pdo->prepare("
         UPDATE products 
-        SET product_name = ?, description = ?, price = ?, quantity = ?, image_url = ?
+        SET product_name = ?, price = ?, quantity = ?, unit = ?, image_url = ?
         WHERE id = ? AND farmer_id = ?
     ");
 
-    if ($stmt->execute([$product_name, $description, $price, $quantity, $image_url, $product_id, $farmer_id])) {
+    if ($stmt->execute([$product_name, $price, $quantity, $unit, $image_url, $product_id, $farmer_id])) {
+        // Log product update
+        $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, comment) VALUES (?, 'updated', 'Product details updated by farmer')");
+        $trackStmt->execute([$product_id]);
+
         echo json_encode(['success' => true, 'message' => 'Product updated successfully!']);
     } else {
         throw new Exception('Failed to update product.');
