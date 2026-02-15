@@ -14,7 +14,9 @@ if (isset($_SESSION['user_id'])) {
     ];
     $redirect = $redirectMap[$role] ?? '../customer/customer-dashboard.html';
 
-    echo json_encode(['logged_in' => true, 'redirect' => $redirect, 'role' => $role]);
+    // For admins, include their access level
+    $admin_access = $_SESSION['admin_access'] ?? 'all';
+    echo json_encode(['logged_in' => true, 'redirect' => $redirect, 'role' => $role, 'admin_access' => $admin_access]);
 } else {
     echo json_encode(['logged_in' => false]);
 }

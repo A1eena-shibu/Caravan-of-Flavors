@@ -36,17 +36,31 @@ try {
     $pdo = getDBConnection();
 
     // Ensure the product belongs to the farmer
+    $stmt = $pdo->prepare("SELECT product_name FROM products WHERE id = ? AND farmer_id = ?");
+    $stmt->execute([$product_id, $farmer_id]);
+    $product = $stmt->fetch();
+
+    if (!$product) {
+        throw new Exception('Product not found or unauthorized');
+    }
+
+    $product_name = $product['product_name'];
+
+    // Delete the product
     $stmt = $pdo->prepare("DELETE FROM products WHERE id = ? AND farmer_id = ?");
 
     if ($stmt->execute([$product_id, $farmer_id])) {
-        if ($stmt->rowCount() > 0) {
-            echo json_encode(['success' => true, 'message' => 'Product deleted successfully']);
-        } else {
-            throw new Exception('Product not found or unauthorized');
-        }
+        // Log to admin_logs so it persists
+        // We use the farmer (current user) as the 'admin_id' context for this action
+        // action_type = 'product_deleted'
+        $logStmt = $pdo->prepare("INSERT INTO admin_logs (admin_id, action_type, target_table, target_id, description) VALUES (?, 'product_deleted', 'products', ?, ?)");
+        $logStmt->execute([$farmer_id, $product_id, "Deleted product: " . $product_name]);
+
+        echo json_encode(['success' => true, 'message' => 'Product deleted successfully']);
     } else {
         throw new Exception('Failed to delete product');
     }
+
 
 } catch (Exception $e) {
     http_response_code(400);

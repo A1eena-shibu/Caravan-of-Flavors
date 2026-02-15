@@ -126,24 +126,55 @@
             <div class="flex gap-4">
                 <div class="bg-white border border-stone-200 px-6 py-3 rounded-2xl shadow-sm flex items-center gap-3">
                     <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-sm font-bold text-stone-600 uppercase tracking-tighter"
-                        id="active-auctions-count">0 ACTIVE NOW</span>
+                    <span class="text-sm font-bold text-stone-600 uppercase" id="active-auctions-count">0 ACTIVE
+                        NOW</span>
                 </div>
             </div>
         </header>
 
         <div id="auctions-grid"
-            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px;">
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px; margin-bottom: 80px;">
             <div class="col-span-full py-32 text-center">
                 <img src="https://api.iconify.design/lucide:loader-2.svg"
                     class="w-12 h-12 animate-spin mx-auto text-primary" alt="">
                 <p class="mt-6 text-stone-400 font-medium tracking-wide">Syncing with the harvest floor...</p>
             </div>
         </div>
+
+        <!-- Won Auctions Section -->
+        <div id="won-auctions-section" class="hidden">
+            <header style="margin-bottom: 32px;">
+                <h2 style="font-size: 32px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">Won Auctions
+                </h2>
+                <p style="font-size: 15px; color: #1c1917; margin-top: 4px;">Exclusive harvests awaiting your final
+                    seal.</p>
+            </header>
+
+            <!-- Won Auctions Filters -->
+            <div id="won-filter-wrapper" class="mb-8">
+                <div id="won-filter-container"
+                    style="display: flex; gap: 12px; flex-wrap: wrap; background: #fafaf9; padding: 10px; border-radius: 28px; border: 1px solid #f5f5f4; width: fit-content;">
+                    <span data-filter="all"
+                        class="filter-pill active bg-white border border-stone-200 px-8 py-3.5 rounded-[20px] text-sm font-bold text-stone-600 cursor-pointer transition-all shadow-sm">All</span>
+                    <span data-filter="to_pay"
+                        class="filter-pill bg-transparent border border-transparent px-8 py-3.5 rounded-[20px] text-sm font-bold text-stone-400 cursor-pointer transition-all hover:text-stone-600">To
+                        Pay</span>
+                    <span data-filter="shipped"
+                        class="filter-pill bg-transparent border border-transparent px-8 py-3.5 rounded-[20px] text-sm font-bold text-stone-400 cursor-pointer transition-all hover:text-stone-600">Shipped</span>
+                    <span data-filter="delivered"
+                        class="filter-pill bg-transparent border border-transparent px-8 py-3.5 rounded-[20px] text-sm font-bold text-stone-400 cursor-pointer transition-all hover:text-stone-600">Delivered</span>
+                </div>
+            </div>
+            <div id="won-auctions-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px;">
+            </div>
+        </div>
     </main>
 
+    </div>
+
     <!-- Bidding Modal -->
-    <div id="bidModal" onclick="if(event.target === this) closeBidModal();"
+    <div id="bidModal"
         class="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] hidden flex items-center justify-center p-6">
         <div
             class="bg-white p-0 rounded-[40px] w-full max-w-lg relative shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden">
@@ -190,8 +221,7 @@
                             <input type="number" step="0.01" name="bid_amount" id="bid-amount-input" required
                                 class="w-full pl-12 pr-6 py-6 bg-stone-50 border border-stone-200 rounded-3xl focus:outline-none focus:border-primary focus:bg-white transition-all text-2xl font-bold text-stone-900">
                         </div>
-                        <p class="text-[11px] text-stone-400 mt-3 font-semibold text-center italic">A small platform fee
-                            may apply upon winning.</p>
+
                     </div>
                     <button type="submit" id="bid-submit-btn"
                         class="w-full bg-stone-900 hover:bg-black text-white py-6 rounded-3xl font-bold text-sm tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-stone-900/10">
@@ -204,22 +234,143 @@
 
     <script>
         let auctions = [];
+        let wonAuctions = [];
+        let wonFilter = 'all';
         let timerInterval;
+        let currentAuctionId = null;
+
+        function setWonFilter(filter) {
+            wonFilter = filter;
+            document.querySelectorAll('#won-filter-container .filter-pill').forEach(pill => {
+                if (pill.dataset.filter === filter) {
+                    pill.classList.add('active', 'bg-white', 'border-stone-200', 'text-stone-600', 'shadow-sm');
+                    pill.classList.remove('bg-transparent', 'border-transparent', 'text-stone-400');
+                } else {
+                    pill.classList.remove('active', 'bg-white', 'border-stone-200', 'text-stone-600', 'shadow-sm');
+                    pill.classList.add('bg-transparent', 'border-transparent', 'text-stone-400');
+                }
+            });
+            renderWonAuctions();
+        }
+
+        function renderWonAuctions() {
+            const wonGrid = document.getElementById('won-auctions-grid');
+            const wonSection = document.getElementById('won-auctions-section');
+
+            if (wonAuctions.length === 0) {
+                wonSection.classList.add('hidden');
+                return;
+            }
+
+            wonSection.classList.remove('hidden');
+            wonGrid.innerHTML = '';
+
+            const filtered = wonAuctions.filter(auction => {
+                if (wonFilter === 'all') return true;
+                if (wonFilter === 'to_pay') return auction.payment_status === 'pending';
+                if (wonFilter === 'shipped') return auction.shipping_status === 'shipped';
+                if (wonFilter === 'delivered') return auction.shipping_status === 'delivered';
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                wonGrid.innerHTML = `
+                    <div class="col-span-full py-20 text-center bg-white border border-dashed border-stone-200 rounded-[36px]">
+                        <img src="https://api.iconify.design/lucide:inbox.svg?color=%23a8a29e" width="48" class="mx-auto mb-4 opacity-30">
+                        <p style="color: #a8a29e; font-size: 15px; font-weight: 500;">No items found matching this filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(auction => {
+                const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
+
+                let badges = '';
+                let actionBtn = '';
+                if (auction.payment_status === 'pending') {
+                    badges = `<div class="bg-orange-500 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">PAYMENT DUE</div>`;
+                    actionBtn = `<a href="payment.html?auction_id=${auction.id}" class="w-full inline-block text-center bg-primary hover:bg-primary-hover text-white py-5 rounded-[24px] font-bold text-[11px] tracking-[0.25em] transition-all transform hover:shadow-xl">PAY NOW</a>`;
+                } else {
+                    badges = `<div class="bg-[#3B82F6] text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">PAID</div>`;
+                    if (auction.shipping_status === 'shipped') {
+                        badges += `<div class="bg-[#1C1917] text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">SHIPPED</div>`;
+                    } else if (auction.shipping_status === 'delivered') {
+                        badges += `<div class="bg-green-600 text-white px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">DELIVERED</div>`;
+                    } else {
+                        badges += `<div class="bg-stone-200 text-stone-500 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-sm">AWAITING SHIPMENT</div>`;
+                    }
+
+                    let shipStatusText = 'AWAITING SHIPMENT';
+                    if (auction.shipping_status === 'shipped') shipStatusText = 'DELIVERY PENDING';
+                    if (auction.shipping_status === 'delivered') shipStatusText = 'DELIVERED';
+
+                    actionBtn = `<div class="bg-stone-50 py-5 rounded-[24px] text-center text-[11px] font-bold text-stone-400 tracking-widest uppercase border border-stone-100">${shipStatusText}</div>`;
+                }
+
+                wonGrid.innerHTML += `
+                    <div class="bg-white border border-stone-200 rounded-[36px] overflow-hidden hover:shadow-2xl transition-all duration-500">
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="${imgSrc}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                            <div class="absolute top-6 right-6 flex items-center justify-end gap-1.5 flex-wrap">
+                                ${badges}
+                            </div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="font-bold text-xl text-stone-900 mb-2 truncate">${auction.product_name}</h3>
+                            <div class="flex justify-between items-center mb-6">
+                                <p class="text-[11px] font-bold text-stone-400 uppercase tracking-tighter">WINNING BID</p>
+                                <p class="text-xl font-bold text-stone-900">${CurrencyManager.formatFrom(auction.current_bid, auction.base_currency)}</p>
+                            </div>
+                            <div class="pt-6 border-t border-stone-50">
+                                ${actionBtn}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
         async function loadAuctions() {
             try {
+                // Load Active Auctions
                 const response = await fetch('../../backend/api/auctions/get-active-auctions.php');
                 const result = await response.json();
-                const grid = document.getElementById('auctions-grid');
 
+                // Load Won Auctions
+                const wonResponse = await fetch('../../backend/api/auctions/get-won-auctions.php');
+                const wonResult = await wonResponse.json();
+
+                const grid = document.getElementById('auctions-grid');
+                const wonGrid = document.getElementById('won-auctions-grid');
+                const wonSection = document.getElementById('won-auctions-section');
+
+                // Process Active Auctions
                 if (result.success && result.auctions.length > 0) {
                     auctions = result.auctions;
                     grid.innerHTML = '';
                     document.getElementById('active-auctions-count').innerText = `${auctions.length} ACTIVE NOW`;
 
                     result.auctions.forEach(auction => {
-                        const timeLeft = calculateTimeLeft(auction.end_time);
+                        const isScheduled = auction.status === 'scheduled';
+                        const targetTime = isScheduled ? auction.start_time_iso : auction.end_time_iso;
+                        const timeLeft = calculateTimeLeft(targetTime);
                         const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
+
+                        let statusBadge = '';
+                        if (isScheduled) {
+                            statusBadge = `<div class="absolute top-6 right-6 bg-stone-500 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-xl shadow-stone-500/20 tracking-widest z-10 uppercase">Starting Soon</div>`;
+                        } else if (auction.my_high_bid) {
+                            const isWinning = parseFloat(auction.my_high_bid) >= parseFloat(auction.current_bid);
+                            statusBadge = isWinning ?
+                                `<div class="absolute top-6 right-6 bg-green-500 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-xl shadow-green-500/20 tracking-widest z-10">WINNING</div>` :
+                                `<div class="absolute top-6 right-6 bg-red-500 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-xl shadow-red-500/20 tracking-widest z-10">OUTBID</div>`;
+                        }
+
+                        const liveBadge = isScheduled ?
+                            `<div class="absolute bottom-6 right-6 bg-stone-700/80 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-bold text-white shadow-xl tracking-widest">SCHEDULED</div>` :
+                            `<div class="absolute bottom-6 right-6 bg-primary px-4 py-1.5 rounded-full text-[10px] font-bold text-white shadow-xl shadow-primary/20 tracking-widest">LIVE</div>`;
 
                         grid.innerHTML += `
                             <div class="bg-white border border-stone-200 rounded-[36px] overflow-hidden group hover:shadow-2xl transition-all duration-500">
@@ -231,9 +382,8 @@
                                             ${auction.quantity}${auction.unit} AVAILABLE
                                         </div>
                                     </div>
-                                    <div class="absolute bottom-6 right-6 bg-primary px-4 py-1.5 rounded-full text-[10px] font-bold text-white shadow-xl shadow-primary/20 tracking-widest">
-                                        LIVE
-                                    </div>
+                                    ${statusBadge}
+                                    ${liveBadge}
                                 </div>
                                 <div class="p-8">
                                     <div class="flex justify-between items-start mb-6">
@@ -248,7 +398,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1 leading-none">High Bid</p>
-                                            <p class="text-xl font-bold text-stone-900 font-mono italic">${formatPrice(auction.current_bid)}</p>
+                                            <p class="text-xl font-bold text-stone-900 font-mono italic">${CurrencyManager.formatFrom(auction.current_bid, auction.base_currency)}</p>
                                         </div>
                                     </div>
                                     
@@ -256,20 +406,25 @@
                                         <div class="flex items-center justify-between py-4 border-y border-stone-50">
                                             <div class="flex items-center gap-3">
                                                  <img src="https://api.iconify.design/lucide:clock.svg?color=%23FF7E21" width="18">
-                                                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Ending In</span>
+                                                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-widest">${isScheduled ? 'Starting In' : 'Ending In'}</span>
                                             </div>
-                                            <span class="text-sm font-bold text-primary font-mono countdown" data-expire="${auction.end_time}">${timeLeft}</span>
+                                            <span class="text-sm font-bold text-primary font-mono countdown" data-expire="${targetTime}">${timeLeft}</span>
                                         </div>
                                         
-                                        <button onclick="openBidModal('${auction.id}')" class="w-full bg-stone-900 hover:bg-black text-white py-5 rounded-[24px] font-bold text-[11px] tracking-[0.25em] transition-all transform group-hover:translate-y-[-2px] hover:shadow-xl">
-                                            VIEW & PLACE BID
-                                        </button>
+                                        ${isScheduled ? `
+                                            <button disabled class="w-full bg-stone-200 text-stone-400 py-5 rounded-[24px] font-bold text-[11px] tracking-[0.25em] cursor-not-allowed">
+                                                STARTING SOON
+                                            </button>
+                                        ` : `
+                                            <button onclick="openBidModal('${auction.id}')" class="w-full bg-stone-900 hover:bg-black text-white py-5 rounded-[24px] font-bold text-[11px] tracking-[0.25em] transition-all transform group-hover:translate-y-[-2px] hover:shadow-xl">
+                                                VIEW & PLACE BID
+                                            </button>
+                                        `}
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
-                    startCountdowns();
                 } else {
                     grid.innerHTML = `
                         <div class="col-span-full py-32 text-center bg-white border border-dashed border-stone-200 rounded-[48px]">
@@ -279,6 +434,15 @@
                         </div>
                     `;
                 }
+
+                // Process Won Auctions
+                if (wonResult.success) {
+                    wonAuctions = wonResult.auctions || [];
+                    renderWonAuctions();
+                }
+
+                startCountdowns();
+                if (currentAuctionId) refreshBidModal();
             } catch (error) {
                 console.error('Error loading auctions:', error);
             }
@@ -295,17 +459,27 @@
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
+        let isRefreshing = false;
         function startCountdowns() {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
+                let hasEnded = false;
                 document.querySelectorAll('.countdown').forEach(el => {
                     const time = calculateTimeLeft(el.dataset.expire);
                     el.innerText = time;
                     if (time === "AUCTION ENDED") {
                         el.classList.remove('text-primary');
                         el.classList.add('text-stone-300');
+                        hasEnded = true;
                     }
                 });
+
+                if (hasEnded && !isRefreshing) {
+                    isRefreshing = true;
+                    loadAuctions().finally(() => {
+                        setTimeout(() => { isRefreshing = false; }, 2000);
+                    });
+                }
 
                 const modalTimer = document.getElementById('modal-time-left');
                 if (modalTimer && modalTimer.dataset.expire) {
@@ -315,35 +489,61 @@
         }
 
         function openBidModal(auctionId) {
+            currentAuctionId = auctionId;
             const auction = auctions.find(a => a.id == auctionId);
+            if (!auction) return;
+
+            document.getElementById('bidModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            refreshBidModal();
+        }
+
+        function refreshBidModal() {
+            if (!currentAuctionId) return;
+            const auction = auctions.find(a => a.id == currentAuctionId);
             if (!auction) return;
 
             document.getElementById('modal-auction-id').value = auction.id;
             document.getElementById('modal-product-name').innerText = auction.product_name;
             document.getElementById('modal-farmer-name').innerText = `Harvested by ${auction.farmer_name}`;
-            document.getElementById('modal-current-bid').innerText = formatPrice(auction.current_bid);
+            document.getElementById('modal-current-bid').innerText = CurrencyManager.formatFrom(auction.current_bid, auction.base_currency);
             document.getElementById('modal-time-left').dataset.expire = auction.end_time;
-            document.getElementById('modal-time-left').innerText = calculateTimeLeft(auction.end_time);
 
             const bidInput = document.getElementById('bid-amount-input');
-            const minBid = (parseFloat(auction.current_bid) + 1).toFixed(2);
-            bidInput.min = minBid;
-            bidInput.value = minBid;
+            const currentConvBid = CurrencyManager.convert(auction.current_bid, auction.base_currency, CurrencyManager.getCode());
+
+            const suggestedBid = Math.floor(parseFloat(currentConvBid)) + 1;
+            bidInput.placeholder = suggestedBid;
+
+            // Only update value if it's empty or less than current
+            if (!bidInput.value || parseFloat(bidInput.value) <= parseFloat(currentConvBid)) {
+                bidInput.value = suggestedBid;
+            }
 
             const imgSrc = auction.image_url ? '../../' + auction.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=800&q=80';
             document.getElementById('modal-image').src = imgSrc;
-
-            document.getElementById('bidModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
         }
 
         function closeBidModal() {
+            currentAuctionId = null;
             document.getElementById('bidModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
 
         async function placeBid(e) {
             e.preventDefault();
+            const auction = auctions.find(a => a.id == currentAuctionId);
+            if (!auction) return;
+
+            const bidInput = document.getElementById('bid-amount-input');
+            const bidValue = parseFloat(bidInput.value);
+            const currentConvBid = parseFloat(CurrencyManager.convert(auction.current_bid, auction.base_currency, CurrencyManager.getCode()));
+
+            if (bidValue <= currentConvBid) {
+                showToast(`Your bid must be HIGHER than ${CurrencyManager.formatFrom(auction.current_bid, auction.base_currency)}`, 'error');
+                return;
+            }
+
             const btn = document.getElementById('bid-submit-btn');
             const originalText = btn.innerText;
             const formData = new FormData(e.target);
@@ -376,12 +576,28 @@
             }
         }
 
+        function openPaymentModal(auctionId) {
+            window.location.href = `payment.html?auction_id=${auctionId}`;
+        }
+
         window.onload = async () => {
             await CurrencyManager.init();
+
+            // Bind Won Auctions Filters
+            const wonFilterContainer = document.getElementById('won-filter-container');
+            if (wonFilterContainer) {
+                wonFilterContainer.addEventListener('click', (e) => {
+                    const pill = e.target.closest('.filter-pill');
+                    if (pill) {
+                        setWonFilter(pill.dataset.filter);
+                    }
+                });
+            }
+
             loadAuctions();
         };
     </script>
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=2.5"></script>
 </body>
 
 </html>

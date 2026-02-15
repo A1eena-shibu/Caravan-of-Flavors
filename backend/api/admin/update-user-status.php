@@ -12,15 +12,24 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Security Check: Ensure user is admin
 if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    // http_response_code(403);
-    // echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    // exit;
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (!isset($data['user_id']) || !isset($data['action'])) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+    exit;
+}
+
+$action = $data['action'];
+
+// Super Admin Check for sensitive actions
+if (in_array($action, ['block', 'unblock']) && $_SESSION['user_email'] !== 'admin@gmail.com') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized: Only the Super Admin can block or unblock users.']);
     exit;
 }
 

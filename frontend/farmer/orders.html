@@ -296,7 +296,7 @@
                                 <!-- Right Side: Price & Actions -->
                                 <div class="flex items-center gap-10 self-center h-full pl-8 border-l border-stone-100/50 md:border-l-0">
                                     <div class="text-right flex flex-col justify-center h-full">
-                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${window.formatPrice ? window.formatPrice(order.total_price) : '$' + order.total_price}</p>
+                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(order.total_price, order.exchange_rate, order.currency_code) : (window.formatPrice ? window.formatPrice(order.total_price) : '$' + order.total_price))}</p>
                                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">${order.quantity} ${order.unit || 'kg'}</p>
                                         <p class="text-[9px] font-bold uppercase tracking-widest mt-1 ${order.payment_status === 'paid' ? 'text-green-500' : 'text-stone-400'}">
                                             ${order.payment_status === 'paid' ? 'Payment Verified' : 'Awaiting Payment'}

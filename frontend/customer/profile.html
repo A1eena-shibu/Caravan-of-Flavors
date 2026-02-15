@@ -494,13 +494,11 @@
                         }
 
                         const rate = CurrencyManager.rates[country.currency_code] || 1;
-                        CurrencyManager.settings = {
+                        CurrencyManager.updateSettings({
                             symbol: country.currency_symbol,
                             code: country.currency_code,
                             rate: rate
-                        };
-                        sessionStorage.setItem('user_currency_settings', JSON.stringify(CurrencyManager.settings));
-                        CurrencyManager.applyToStaticMarkers();
+                        });
                     };
                     updateSettings();
                 }

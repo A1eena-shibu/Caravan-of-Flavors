@@ -22,6 +22,8 @@ try {
             o.id,
             o.status,
             o.total_price,
+            o.currency_code,
+            o.exchange_rate,
             o.quantity,
             p.unit,
             o.order_date,

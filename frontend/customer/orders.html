@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.7"></script>
+    <script src="../assets/js/custom-ui.js?v=1.8"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -319,7 +319,7 @@
                                 <div class="flex items-center gap-10 self-center h-full pl-8 border-l border-stone-100/50 md:border-l-0">
                                     <!-- Price Block (Left of Button) -->
                                     <div class="text-right flex flex-col justify-center h-full">
-                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${window.CurrencyManager.format(order.total_price)}</p>
+                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(order.total_price, order.exchange_rate, order.currency_code) : (window.CurrencyManager.format(order.total_price)))}</p>
                                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">${order.quantity} ${order.unit || 'kg'}</p>
                                     </div>
                                     
@@ -345,7 +345,7 @@
                                             `}
 
                                             ${(statusKey === 'ordered') ?
-                                `<button onclick="cancelOrder('${order.id}', ${order.total_price})" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
+                                `<button onclick="cancelOrder('${order.id}', ${order.total_price}, ${order.exchange_rate}, '${order.currency_code}')" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
                                                 CANCEL
                                             </button>`
                                 : ''}
@@ -475,7 +475,7 @@
             loadOrders();
         };
 
-        async function cancelOrder(orderId, amount) {
+        async function cancelOrder(orderId, amount, rate, code) {
             const confirmed = await window.showConfirm("Are you sure you want to cancel this order?");
             if (!confirmed) return;
 
@@ -488,7 +488,7 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    const formattedAmount = window.CurrencyManager.format(amount);
+                    const formattedAmount = window.CurrencyManager.formatHistorical(amount, rate, code);
                     if (typeof window.showAlert === 'function') {
                         await window.showAlert(`Your refund of ${formattedAmount} will be credited within 7 business days.`, 'Cancellation Successful');
                     } else {

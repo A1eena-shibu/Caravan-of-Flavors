@@ -30,7 +30,7 @@ $start_time = $_POST['start_time'] ?? '';
 $end_time = $_POST['end_time'] ?? '';
 $image_url = '';
 
-if (empty($product_name) || empty($starting_price) || empty($start_time) || empty($end_time) || empty($quantity)) {
+if (empty($product_name) || !isset($_POST['starting_price']) || $_POST['starting_price'] === '' || empty($start_time) || empty($end_time) || !isset($_POST['quantity']) || $_POST['quantity'] === '') {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }
@@ -57,11 +57,25 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 try {
-    $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
+    require_once '../services/CurrencyService.php';
+
+    $base_currency = $_SESSION['user_currency_code'] ?? CurrencyService::BASE_CURRENCY;
     $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
 
-    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, starting_price, base_currency, farmer_country, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
-    $stmt->execute([$farmer_id, $product_name, $starting_price, $base_currency, $farmer_country, $starting_price, $quantity, $unit, $start_time, $end_time, $image_url]);
+    // Convert starting price to INR
+    $startingPriceVal = (float) $starting_price;
+    if ($base_currency !== CurrencyService::BASE_CURRENCY) {
+        $startingPriceVal = CurrencyService::convert($startingPriceVal, $base_currency, CurrencyService::BASE_CURRENCY);
+    }
+
+    // Determine initial status based on start time
+    $current_time = time();
+    $scheduled_start = strtotime($start_time);
+    $initial_status = ($scheduled_start > $current_time) ? 'scheduled' : 'active';
+
+    // Store with INR as base currency
+    $stmt = $pdo->prepare("INSERT INTO auctions (farmer_id, product_name, starting_price, base_currency, farmer_country, current_bid, quantity, unit, start_time, end_time, image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$farmer_id, $product_name, $startingPriceVal, CurrencyService::BASE_CURRENCY, $farmer_country, $startingPriceVal, $quantity, $unit, $start_time, $end_time, $image_url, $initial_status]);
 
     echo json_encode(['success' => true, 'message' => 'Auction created successfully', 'auction_id' => $pdo->lastInsertId()]);
 } catch (PDOException $e) {

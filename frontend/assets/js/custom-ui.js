@@ -118,7 +118,7 @@ const CustomUI = {
             const cancelBtn = document.getElementById('custom-modal-cancel');
 
             titleEl.textContent = title;
-            msgEl.textContent = message;
+            msgEl.innerHTML = message;
             confirmBtn.textContent = confirmText;
 
             if (cancelText) {

@@ -18,7 +18,7 @@ if (!isset($_SESSION['user_id'])) {
 
 try {
     $pdo = getDBConnection();
-    $stmt = $pdo->prepare("SELECT id, email, full_name, role, country, currency_code, currency_symbol, profile_image, google_id, phone, address, created_at FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, email, full_name, role, country, currency_code, currency_symbol, profile_image, google_id, phone, address, low_stock_threshold, created_at FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
 

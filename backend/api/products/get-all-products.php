@@ -18,19 +18,20 @@ try {
         FROM products p
         JOIN users u ON p.farmer_id = u.id
         WHERE p.is_available = TRUE
-        ORDER BY p.created_at DESC
+        ORDER BY p.id DESC
     ");
     $stmt->execute();
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $targetCurrency = $_SESSION['user_currency_code'] ?? 'USD';
-    $targetSymbol = $_SESSION['user_currency_symbol'] ?? '$';
+    $targetCurrency = $_SESSION['user_currency_code'] ?? CurrencyService::BASE_CURRENCY;
+    $targetSymbol = $_SESSION['user_currency_symbol'] ?? '₹';
 
     foreach ($products as &$product) {
         $basePrice = (float) $product['price'];
         $baseCurrency = $product['base_currency'];
 
-        $convertedPrice = CurrencyService::convert($basePrice, $baseCurrency, $targetCurrency);
+        // Skip conversion if target currency matches stored currency
+        $convertedPrice = ($targetCurrency === $baseCurrency) ? $basePrice : CurrencyService::convert($basePrice, $baseCurrency, $targetCurrency);
 
         $product['display_price'] = $convertedPrice;
         $product['display_currency_code'] = $targetCurrency;

@@ -41,6 +41,14 @@ try {
         throw new Exception('Product name and price are required.');
     }
 
+    if ($price <= 0) {
+        throw new Exception('Price must be greater than zero.');
+    }
+
+    if ($quantity < 0) {
+        throw new Exception('Quantity cannot be negative.');
+    }
+
     if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
         throw new Exception('Product image is required.');
     }
@@ -82,10 +90,25 @@ try {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
     ");
 
-    $base_currency = $_SESSION['user_currency_code'] ?? 'USD';
+    require_once '../services/CurrencyService.php';
+
+    $base_currency = $_SESSION['user_currency_code'] ?? 'INR';
     $farmer_country = $_SESSION['user_country'] ?? 'Unknown';
 
-    if ($stmt->execute([$farmer_id, $product_name, $category, $price, $base_currency, $farmer_country, $quantity, $unit, $image_url])) {
+    // Convert price to INR for storage
+    $priceVal = (float) $price;
+    if ($base_currency !== CurrencyService::BASE_CURRENCY) {
+        $priceVal = CurrencyService::convert($priceVal, $base_currency, CurrencyService::BASE_CURRENCY);
+    }
+
+    // Always store as INR
+    if ($stmt->execute([$farmer_id, $product_name, $category, $priceVal, CurrencyService::BASE_CURRENCY, $farmer_country, $quantity, $unit, $image_url])) {
+        $product_id = $pdo->lastInsertId();
+
+        // [HISTORICAL LOG] Save snapshot of listing state
+        $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, quantity, price, unit, category, comment) VALUES (?, 'listed', ?, ?, ?, ?, 'Product initially listed')");
+        $trackStmt->execute([$product_id, $quantity, $priceVal, $unit, $category]);
+
         echo json_encode(['success' => true, 'message' => 'Product added successfully!']);
     } else {
         throw new Exception('Failed to save product to database.');

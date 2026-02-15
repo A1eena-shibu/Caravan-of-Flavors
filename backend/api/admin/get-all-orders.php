@@ -20,25 +20,54 @@ if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
 try {
     $pdo = getDBConnection();
 
-    // Fetch ALL orders with Customer and Farmer details
+    // Fetch ALL orders with Customer and Farmer details (Unified with Auctions)
     $sql = "
         SELECT 
-            o.id, 
-            o.order_date, 
-            o.quantity, 
-            o.total_price, 
-            o.status, 
-            o.payment_status,
-            o.payment_method,
-            p.product_name, 
-            p.image_url as product_image,
-            c.full_name as customer_name,
-            f.full_name as farmer_name
-        FROM orders o
-        JOIN products p ON o.product_id = p.id
-        JOIN users c ON o.customer_id = c.id
-        JOIN users f ON o.farmer_id = f.id
-        ORDER BY o.order_date DESC
+            id, order_date, quantity, total_price, status, payment_status, payment_method, 
+            product_name, product_image, customer_name, farmer_name, type
+        FROM (
+            SELECT 
+                o.id, 
+                o.order_date, 
+                o.quantity, 
+                o.total_price as total_price, 
+                o.status, 
+                o.payment_status,
+                o.payment_method,
+                p.product_name, 
+                p.image_url as product_image,
+                c.full_name as customer_name,
+                f.full_name as farmer_name,
+                'order' as type
+            FROM orders o
+            JOIN products p ON o.product_id = p.id
+            JOIN users c ON o.customer_id = c.id
+            JOIN users f ON o.farmer_id = f.id
+
+            UNION ALL
+
+            SELECT 
+                a.id, 
+                a.updated_at as order_date, 
+                a.quantity, 
+                a.current_bid as total_price, 
+                CASE 
+                    WHEN a.shipping_status = 'shipped' THEN 'shipped'
+                    ELSE a.status 
+                END as status, 
+                a.payment_status,
+                'wallet' as payment_method,
+                a.product_name, 
+                a.image_url as product_image,
+                c.full_name as customer_name,
+                f.full_name as farmer_name,
+                'auction' as type
+            FROM auctions a
+            JOIN users c ON a.winner_id = c.id
+            JOIN users f ON a.farmer_id = f.id
+            WHERE a.status IN ('completed', 'shipped', 'paid') AND a.winner_id IS NOT NULL
+        ) as combined_transactions
+        ORDER BY order_date DESC
     ";
 
     $stmt = $pdo->prepare($sql);

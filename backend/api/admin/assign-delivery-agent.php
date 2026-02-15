@@ -19,8 +19,9 @@ try {
         throw new Exception('Order ID and Agent ID are required');
     }
 
-    $order_id = $data->order_id;
+    $id = $data->order_id; // Keeping the name 'order_id' from frontend for compatibility, but it's the item ID
     $agent_id = $data->agent_id;
+    $type = isset($data->type) ? $data->type : 'order'; // Default to 'order'
 
     $pdo = getDBConnection();
 
@@ -31,22 +32,20 @@ try {
         throw new Exception('Invalid delivery agent selected');
     }
 
-    // Update Order
-    // We are adding delivery_agent_id to the orders table.
-    // Assuming the column exists or needs to be added. 
-    // Based on previous context, I should assume it exists or I might need to add it if I could run SQL.
-    // Since I can't run SQL DDL easily without knowing schema fully, I'll assume the column 'delivery_agent_id' exists 
-    // or I'm using a generic field.
-    // Wait, the user asked to "assign agents". The simplest way is a column `delivery_agent_id`.
+    // Update corresponding table
+    if ($type === 'auction') {
+        $sql = "UPDATE auctions SET delivery_agent_id = ? WHERE id = ?";
+    } else {
+        $sql = "UPDATE orders SET delivery_agent_id = ? WHERE id = ?";
+    }
 
-    $sql = "UPDATE orders SET delivery_agent_id = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
-    $result = $stmt->execute([$agent_id, $order_id]);
+    $result = $stmt->execute([$agent_id, $id]);
 
     if ($result) {
-        echo json_encode(['success' => true, 'message' => 'Agent assigned successfully']);
+        echo json_encode(['success' => true, 'message' => 'Agent assigned successfully to ' . $type]);
     } else {
-        throw new Exception('Failed to update order');
+        throw new Exception('Failed to update ' . $type);
     }
 
 } catch (Exception $e) {

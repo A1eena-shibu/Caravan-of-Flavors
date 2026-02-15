@@ -4,7 +4,11 @@ function processExpiredAuctions($pdo)
     try {
         $pdo->beginTransaction();
 
-        // 1. Find all active auctions that have already ended
+        // 1a. Transition 'scheduled' auctions to 'active' if their start time has passed
+        $activateStmt = $pdo->prepare("UPDATE auctions SET status = 'active' WHERE status = 'scheduled' AND start_time <= NOW()");
+        $activateStmt->execute();
+
+        // 1b. Find all active auctions that have already ended
         $stmt = $pdo->prepare("
             SELECT id, farmer_id, product_name, current_bid 
             FROM auctions 

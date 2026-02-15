@@ -31,6 +31,14 @@ try {
         throw new Exception('Product name and price are required.');
     }
 
+    if ($price <= 0) {
+        throw new Exception('Price must be greater than zero.');
+    }
+
+    if ($quantity < 0) {
+        throw new Exception('Quantity cannot be negative.');
+    }
+
     // Verify ownership
     $stmt = $pdo->prepare("SELECT image_url FROM products WHERE id = ? AND farmer_id = ?");
     $stmt->execute([$product_id, $farmer_id]);
@@ -75,10 +83,20 @@ try {
         WHERE id = ? AND farmer_id = ?
     ");
 
-    if ($stmt->execute([$product_name, $price, $quantity, $unit, $image_url, $product_id, $farmer_id])) {
-        // Log product update
-        $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, comment) VALUES (?, 'updated', 'Product details updated by farmer')");
-        $trackStmt->execute([$product_id]);
+    require_once '../services/CurrencyService.php';
+
+    // Convert price to INR for storage if needed
+    $user_currency = $_SESSION['user_currency_code'] ?? CurrencyService::BASE_CURRENCY;
+    $priceVal = (float) $price;
+    if ($user_currency !== CurrencyService::BASE_CURRENCY) {
+        $priceVal = CurrencyService::convert($priceVal, $user_currency, CurrencyService::BASE_CURRENCY);
+    }
+
+    if ($stmt->execute([$product_name, $priceVal, $quantity, $unit, $image_url, $product_id, $farmer_id])) {
+        // [HISTORICAL LOG] Save snapshot of update state
+        $category = 'Spices'; // App default
+        $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, quantity, price, unit, category, comment) VALUES (?, 'updated', ?, ?, ?, ?, 'Product details updated by farmer')");
+        $trackStmt->execute([$product_id, $quantity, $priceVal, $unit, $category]);
 
         echo json_encode(['success' => true, 'message' => 'Product updated successfully!']);
     } else {

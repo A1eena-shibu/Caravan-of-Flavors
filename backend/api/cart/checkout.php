@@ -23,7 +23,10 @@ try {
 
     // 0. Parse inputs
     $selected_cart_ids = $data['selected_cart_ids'] ?? [];
-    $currency_code = $data['currency_code'] ?? 'USD'; // Default if missing
+
+    // Default to INR as the base currency if missing
+    require_once '../services/CurrencyService.php';
+    $currency_code = $data['currency_code'] ?? CurrencyService::BASE_CURRENCY;
     $exchange_rate = $data['exchange_rate'] ?? 1.0;
 
     // 1. Get cart items
@@ -71,8 +74,18 @@ try {
         $updateStmt->execute([$item['quantity'], $item['product_id']]);
 
         // 4. Notification
+        $farmer_id = $item['farmer_id'];
+        $farmerStmt = $pdo->prepare("SELECT currency_code, currency_symbol FROM users WHERE id = ?");
+        $farmerStmt->execute([$farmer_id]);
+        $farmer = $farmerStmt->fetch(PDO::FETCH_ASSOC);
+
+        $farmerCurrency = $farmer['currency_code'] ?? CurrencyService::BASE_CURRENCY;
+        $farmerSymbol = $farmer['currency_symbol'] ?? '₹';
+        $displayTotal = CurrencyService::convert($total_price, CurrencyService::BASE_CURRENCY, $farmerCurrency);
+        $formattedTotal = CurrencyService::formatPrice($displayTotal, $farmerSymbol, $farmerCurrency);
+
         $notifStmt = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'New Market Order!', ?, 'order')");
-        $notifStmt->execute([$item['farmer_id'], "New order received for {$item['quantity']}kg of {$item['product_name']}."]);
+        $notifStmt->execute([$farmer_id, "New order received for {$item['quantity']}kg of {$item['product_name']}. Total: {$formattedTotal}"]);
     }
 
     // 5. Clear Cart (Only selected items or all if no selection)

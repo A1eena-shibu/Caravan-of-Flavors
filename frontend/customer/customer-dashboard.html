@@ -157,7 +157,7 @@
                                         <div style="height: 2px; background: #e7e5e4; margin: 12px 0;"></div>
                                         <div style="font-size: 11px; color: #1c1917; display: flex; align-items: center; gap: 6px;">
                                             <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="12">
-                                            Total: ${formatPrice(order.total_price)}
+                                            Total: ${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(order.total_price, order.exchange_rate, order.currency_code) : (window.formatPrice ? window.formatPrice(order.total_price) : '$' + order.total_price))}
                                         </div>
                                     </div>
                                 `;
@@ -194,7 +194,7 @@
                                                     ${status}
                                                 </span>
                                             </td>
-                                    <td style="padding: 16px; font-weight: 700; font-size: 14px; text-align: center;">${formatPrice(tx.total_price)}</td>
+                                    <td style="padding: 16px; font-weight: 700; font-size: 14px; text-align: center;">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(tx.total_price, tx.exchange_rate, tx.currency_code) : (window.formatPrice ? window.formatPrice(tx.total_price) : '$' + tx.total_price))}</td>
                                 </tr>
                             `;
                             }).join('');
@@ -262,16 +262,21 @@
                 </div>
             </div>
 
-            <div
-                style="background: linear-gradient(135deg, #fff7ed, #fed7aa); border: 1px solid #fb923c; border-radius: 16px; padding: 24px; text-align: center;">
-                <img src="https://api.iconify.design/lucide:truck.svg?color=%23f97316" width="48"
-                    style="margin-bottom: 16px;" alt="">
+            <div style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fb923c; border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.15), 0 4px 6px -2px rgba(249, 115, 22, 0.1); min-height: 240px; transition: all 0.3s ease; cursor: default;"
+                onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 20px 25px -5px rgba(249, 115, 22, 0.2), 0 10px 10px -5px rgba(249, 115, 22, 0.1)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px -3px rgba(249, 115, 22, 0.15), 0 4px 6px -2px rgba(249, 115, 22, 0.1)'">
+
+                <div
+                    style="background: rgba(255,255,255,0.6); padding: 16px; border-radius: 50%; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1);">
+                    <img src="https://api.iconify.design/lucide:truck.svg?color=%23ea580c" width="48" alt="">
+                </div>
+
                 <h3 id="active-shipments-text"
-                    style="font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #1c1917;">0 Active Shipments
+                    style="font-size: 28px; font-weight: 800; margin: 0; color: #7c2d12; letter-spacing: -0.02em;">
+                    0 Active Shipments
                 </h3>
-                <button onclick="window.location.href='orders.html?filter=shipped'"
-                    style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 16px; font-size: 13px;">Manage
-                    All</button>
+                <p style="margin-top: 8px; font-size: 14px; font-weight: 600; color: #c2410c; opacity: 0.8;">In Transit
+                </p>
             </div>
         </div>
 

@@ -18,27 +18,43 @@ try {
     $agent_id = $_SESSION['user_id'];
     $pdo = getDBConnection();
 
-    // Total Deliveries (Completed)
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered'");
-    $stmt->execute([$agent_id]);
+    // Total Deliveries (Orders + Auctions)
+    $stmt = $pdo->prepare("
+        SELECT 
+            (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered') +
+            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'delivered')
+    ");
+    $stmt->execute([$agent_id, $agent_id]);
     $completedCount = $stmt->fetchColumn();
 
-    // Pending Deliveries (Assigned/Ordered/Shipped)
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status IN ('ordered', 'shipped')");
-    $stmt->execute([$agent_id]);
+    // Pending Deliveries (Orders + Auctions) - For auctions, 'shipped' implies pending delivery
+    $stmt = $pdo->prepare("
+        SELECT 
+            (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status IN ('ordered', 'shipped')) +
+            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'shipped')
+    ");
+    $stmt->execute([$agent_id, $agent_id]);
     $pendingCount = $stmt->fetchColumn();
 
-    // Monthly Earnings (Example metric)
-    $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered' AND MONTH(delivered_at) = MONTH(CURRENT_DATE())");
-    $stmt->execute([$agent_id]);
-    $monthlyRevenue = $stmt->fetchColumn() ?: 0;
+    // Monthly Earnings (Orders only for now as auctions might not have commission logic defined yet)
+    $monthlyRevenue = 0;
+
+    // Today's Deliveries (Orders + Auctions)
+    $stmt = $pdo->prepare("
+        SELECT 
+            (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered' AND DATE(delivered_at) = CURRENT_DATE) +
+            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND DATE(shipped_at) = CURRENT_DATE)
+    ");
+    $stmt->execute([$agent_id, $agent_id]);
+    $todayCompleted = $stmt->fetchColumn();
 
     echo json_encode([
         'success' => true,
         'stats' => [
             'completed' => (int) $completedCount,
             'pending' => (int) $pendingCount,
-            'monthly_revenue' => (float) $monthlyRevenue
+            'monthly_revenue' => (float) $monthlyRevenue,
+            'today_completed' => (int) $todayCompleted
         ]
     ]);
 

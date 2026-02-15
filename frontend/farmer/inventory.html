@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/styles.css">
-    <script src="../assets/js/custom-ui.js?v=1.5"></script>
+    <script src="../assets/js/custom-ui.js?v=1.6"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -109,7 +109,35 @@
                     listings.</p>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="position: relative;">
+                    <button onclick="toggleThresholdSettings()"
+                        class="bg-white border border-[#e7e5e4] hover:bg-stone-50 text-[#1c1917] px-4 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all">
+                        <img src="https://api.iconify.design/lucide:settings-2.svg?color=%231c1917" width="18" alt="">
+                        Update Threshold
+                    </button>
+                    <!-- Threshold Settings Panel -->
+                    <div id="threshold-panel"
+                        class="hidden absolute right-0 mt-2 w-72 bg-white border border-[#e7e5e4] rounded-24 shadow-2xl p-6 z-50">
+                        <h3 class="text-sm font-bold text-[#1c1917] mb-2 uppercase tracking-wider">Low Stock
+                            Notification</h3>
+                        <p class="text-xs text-stone-500 mb-4">Set the quantity level that triggers a "Low Stock"
+                            warning.</p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-stone-400 uppercase">Threshold (kg)</label>
+                                <input type="number" id="threshold-input"
+                                    class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl px-4 py-2 text-sm outline-none focus:border-primary mt-1">
+                            </div>
+                            <button onclick="saveThreshold()" id="save-threshold-btn"
+                                class="w-full bg-[#1c1917] text-white py-2.5 rounded-xl text-sm font-bold hover:bg-stone-800 transition-all">
+                                Update Limit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <button
                     class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-primary/20"
                     onclick="openAddProductModal()">
@@ -123,9 +151,62 @@
         <div
             style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 0; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
             <div
-                style="padding: 24px; border-bottom: 1px solid #e7e5e4; display: flex; justify-content: center; align-items: center;">
-                <h3 style="font-weight: 700; font-size: 16px;">Product List</h3>
+                style="padding: 24px; border-bottom: 1px solid #e7e5e4; display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-weight: 700; font-size: 16px;">Product List</h3>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="filter-count" class="text-[10px] font-bold text-stone-400 uppercase">All
+                            Products</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between;">
+                    <!-- Search Input (Reduced size) -->
+                    <div style="position: relative; width: 320px;">
+                        <img src="https://api.iconify.design/lucide:search.svg?color=%23a8a29e"
+                            style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px;"
+                            alt="">
+                        <input type="text" id="inventory-search" placeholder="Search products..."
+                            oninput="handleSearch(this.value)"
+                            class="w-full bg-[#fafaf9] border border-[#e7e5e4] rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-primary transition-all">
+                    </div>
+
+                    <!-- Filter Buttons (Increased size) -->
+                    <div
+                        style="display: flex; background: #fafaf9; padding: 6px; border-radius: 14px; border: 1px solid #e7e5e4; gap: 4px;">
+                        <button onclick="setFilter('all')" id="filter-all" class="filter-btn active-filter">All
+                            Products</button>
+                        <button onclick="setFilter('low')" id="filter-low" class="filter-btn">Low Stock</button>
+                        <button onclick="setFilter('out')" id="filter-out" class="filter-btn">Out of Stock</button>
+                    </div>
+                </div>
             </div>
+
+            <style>
+                .filter-btn {
+                    padding: 10px 24px;
+                    font-size: 13px;
+                    font-weight: 700;
+                    border-radius: 10px;
+                    transition: all 0.2s;
+                    color: #78716c;
+                    cursor: pointer;
+                    border: none;
+                    background: transparent;
+                    white-space: nowrap;
+                }
+
+                .filter-btn:hover {
+                    color: #1c1917;
+                    background: rgba(0, 0, 0, 0.02);
+                }
+
+                .filter-btn.active-filter {
+                    background: white;
+                    color: #1c1917;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                }
+            </style>
 
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -173,7 +254,7 @@
     </main>
 
     <!-- Modal and Form (Same logic as current dash) -->
-    <div id="product-modal" onclick="if(event.target === this) closeProductModal();"
+    <div id="product-modal"
         class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
         <div
             class="bg-white border border-stone-200 rounded-[32px] p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -204,7 +285,7 @@
                         <div class="relative">
                             <span
                                 class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 currency-symbol">$</span>
-                            <input type="number" step="0.01" name="price" placeholder="25.00"
+                            <input type="number" step="0.01" name="price" placeholder="25.00" min="0.01"
                                 onkeydown="return ['e', 'E', '+', '-'].includes(event.key) ? false : true"
                                 class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-8 pr-4 py-3 text-sm focus:border-primary outline-none transition-all">
                         </div>
@@ -213,7 +294,7 @@
                         <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-wider">Quantity
                             (kg)</label>
                         <div class="flex gap-2">
-                            <input type="number" step="any" name="quantity" placeholder="100.0"
+                            <input type="number" step="any" name="quantity" placeholder="100.0" min="0"
                                 onkeydown="return ['e', 'E', '+', '-'].includes(event.key) ? false : true"
                                 class="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none transition-all">
                             <input type="hidden" name="unit" value="kg">
@@ -267,11 +348,28 @@
             }
         }
 
-        function openAddProductModal() {
+        function showModal() {
             const modal = document.getElementById('product-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
+        }
+
+        function openAddProductModal() {
+            // Reset Modal state for "ADD" mode
+            document.getElementById('modal-title').textContent = 'Add New Product';
+            document.getElementById('modal-subtitle').textContent = 'List your fresh harvest for the world to see.';
+            document.getElementById('submit-btn').innerHTML = 'SAVE PRODUCT <img src="https://api.iconify.design/lucide:check.svg?color=white" class="w-5 h-5" alt="">';
+            document.getElementById('edit-product-id').value = '';
+
+            const form = document.getElementById('add-product-form');
+            form.reset();
+
+            // Reset preview
+            document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+
+            showModal();
         }
 
         function closeProductModal() {
@@ -311,10 +409,89 @@
         let allProducts = [];
         let currentPage = 1;
         const itemsPerPage = 10;
+        let lowStockThreshold = 100; // Default
+        let currentFilter = 'all'; // all, low, out
+        let searchQuery = '';
+
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase();
+            currentPage = 1;
+            renderProducts();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+
+            // Update UI
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
+            document.getElementById(`filter-${filter}`).classList.add('active-filter');
+
+            renderProducts();
+        }
+
+        function toggleThresholdSettings() {
+            const panel = document.getElementById('threshold-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        async function saveThreshold() {
+            const btn = document.getElementById('save-threshold-btn');
+            const newThreshold = document.getElementById('threshold-input').value;
+
+            if (!newThreshold || newThreshold < 1) {
+                showToast('Please enter a valid threshold (min 1).', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+
+            try {
+                // Fetch current profile to get names/emails required by update-profile.php
+                const profileRes = await fetch('../../backend/api/auth/get-profile.php');
+                const profileData = await profileRes.json();
+
+                if (!profileData.success) throw new Exception('Profile fetch failed');
+
+                const formData = new FormData();
+                formData.append('full_name', profileData.data.full_name);
+                formData.append('low_stock_threshold', newThreshold);
+
+                const response = await fetch('../../backend/api/auth/update-profile.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Low stock threshold updated!', 'success');
+                    lowStockThreshold = parseInt(newThreshold);
+                    toggleThresholdSettings();
+                    loadProducts(); // Reload to refresh highlighting
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Threshold update error:', error);
+                showToast('Connection failed', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Update Limit';
+            }
+        }
 
         async function loadProducts() {
             const tableBody = document.getElementById('product-table-body');
             try {
+                // Fetch stats to get current threshold
+                const statsResponse = await fetch('../../backend/api/analytics/get-farmer-stats.php');
+                const statsResult = await statsResponse.json();
+                if (statsResult.success) {
+                    lowStockThreshold = statsResult.stats.low_stock_threshold || 100;
+                    document.getElementById('threshold-input').value = lowStockThreshold;
+                }
+
                 // Ensure table is showing loading state if called again
                 if (!tableBody.querySelector('.animate-spin')) {
                     tableBody.innerHTML = `
@@ -361,11 +538,35 @@
             const tableBody = document.getElementById('product-table-body');
             tableBody.innerHTML = '';
 
-            const totalItems = allProducts.length;
             const symbol = CurrencyManager.getSymbol();
 
+            // Apply Filters and Search
+            let filtered = allProducts.filter(p => {
+                const matchesSearch = p.product_name.toLowerCase().includes(searchQuery) ||
+                    p.id.toString().includes(searchQuery);
+
+                let matchesFilter = true;
+                if (currentFilter === 'low') {
+                    matchesFilter = parseFloat(p.quantity) < lowStockThreshold && parseFloat(p.quantity) > 0;
+                } else if (currentFilter === 'out') {
+                    matchesFilter = parseFloat(p.quantity) <= 0;
+                }
+
+                return matchesSearch && matchesFilter;
+            });
+
+            const totalItems = filtered.length;
+
+            // Update filter count text
+            const countEl = document.getElementById('filter-count');
+            if (searchQuery || currentFilter !== 'all') {
+                countEl.textContent = `Found ${totalItems} product${totalItems !== 1 ? 's' : ''}`;
+            } else {
+                countEl.textContent = `All Products (${allProducts.length})`;
+            }
+
             if (totalItems === 0) {
-                renderEmptyInventory();
+                renderEmptySearchResults();
                 updatePaginationInfo(0, 0, 0);
                 return;
             }
@@ -373,12 +574,22 @@
             // Calculate slice range
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-            const currentProducts = allProducts.slice(startIndex, endIndex);
+            const currentProducts = filtered.slice(startIndex, endIndex);
 
             currentProducts.forEach(product => {
                 const imageUrl = product.image_url ? `../../${product.image_url}` : 'https://placehold.co/400x400/1c1917/FF7E21?text=Spice';
+                const status = getStatus(product.quantity);
+
+                // Row Highlight Color
+                let rowBg = 'transparent';
+                if (parseFloat(product.quantity) <= 0) {
+                    rowBg = '#fef2f2'; // Red tint for Out of Stock
+                } else if (parseFloat(product.quantity) < lowStockThreshold) {
+                    rowBg = '#fffbeb'; // Yellow tint for Low Stock
+                }
+
                 const row = `
-                    <tr style="border-bottom: 1px solid #f5f5f4; hover: background: #fafaf9; transition: all 0.2s;" class="hover:bg-stone-50 group">
+                    <tr style="border-bottom: 1px solid #f5f5f4; background: ${rowBg}; transition: all 0.2s;" class="hover:opacity-80 group">
                         <td style="padding: 16px 24px;">
                             <div style="display: flex; align-items: center; gap: 14px;">
                                 <div style="width: 44px; height: 44px; border-radius: 10px; overflow: hidden; background: #f5f5f4; border: 1px solid #e7e5e4;">
@@ -390,8 +601,15 @@
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 16px 24px; font-size: 14px; font-weight: 700; color: #1c1917; text-align: center;">
-                            ${product.unit === 'g' ? (product.quantity / 1000).toFixed(2) : parseFloat(product.quantity)} <small style="color: #a8a29e; font-weight: 400;">kg</small>
+                        <td style="padding: 16px 24px; text-align: center;">
+                            <div class="flex flex-col items-center gap-1">
+                                <span style="font-size: 14px; font-weight: 700; color: #1c1917;">
+                                    ${product.unit === 'g' ? (product.quantity / 1000).toFixed(2) : parseFloat(product.quantity)} <small style="color: #a8a29e; font-weight: 400;">kg</small>
+                                </span>
+                                <span style="font-size: 9px; font-bold; padding: 2px 8px; border-radius: 99px; background: ${status.bg}; color: ${status.text}; white-space: nowrap;">
+                                    ${status.label}
+                                </span>
+                            </div>
                         </td>
                         <!-- Description cell removed -->
                         <td style="padding: 16px 24px; font-size: 14px; font-weight: 700; color: #1c1917; text-align: center;">
@@ -457,6 +675,32 @@
             }
         }
 
+        function renderEmptySearchResults() {
+            const tableBody = document.getElementById('product-table-body');
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="padding: 80px 24px; text-align: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                            <div style="background: #fafaf9; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <img src="https://api.iconify.design/lucide:search-x.svg?color=%23a8a29e" width="32" alt="">
+                            </div>
+                            <div>
+                                <h3 style="font-size: 16px; font-weight: 700; color: #1c1917;">No products found</h3>
+                                <p style="font-size: 14px; color: #a8a29e; margin-top: 4px;">Try adjusting your search or filters.</p>
+                            </div>
+                            <button onclick="resetFilters()" class="text-primary font-bold text-sm hover:underline">Clear all filters</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function resetFilters() {
+            document.getElementById('inventory-search').value = '';
+            searchQuery = '';
+            setFilter('all');
+        }
+
         function renderEmptyInventory() {
             const tableBody = document.getElementById('product-table-body');
             tableBody.innerHTML = `
@@ -482,12 +726,11 @@
             form.product_id.value = product.id;
             form.product_name.value = product.product_name;
 
-            // Convert Price for Display
+            // Convert Price for Display with magnitude-aware snapping
             const rate = (window.CurrencyManager && window.CurrencyManager.settings && window.CurrencyManager.settings.rate) ? window.CurrencyManager.settings.rate : 1;
-            // Use parseFloat logic similar to main.js to strip trailing zeros
-            // toFixed(2) ensures precision first, parseFloat strips if integers
-            const convertedPrice = parseFloat((parseFloat(product.price) * rate).toFixed(2));
-            form.price.value = convertedPrice;
+            let val = window.CurrencyManager.snap(parseFloat(product.price) * rate);
+
+            form.price.value = parseFloat(val.toFixed(2));
 
             form.quantity.value = product.quantity;
             form.unit.value = product.unit || 'kg';
@@ -510,7 +753,7 @@
                 // document.getElementById('product-image').required = true;
             }
 
-            openAddProductModal();
+            showModal();
         }
 
         async function deleteProduct(id) {
@@ -558,7 +801,7 @@
 
         function getStatus(qty) {
             qty = parseFloat(qty);
-            if (qty > 100) return { label: 'IN STOCK', bg: 'rgba(16, 185, 129, 0.1)', text: '#10B981' };
+            if (qty >= lowStockThreshold) return { label: 'IN STOCK', bg: 'rgba(16, 185, 129, 0.1)', text: '#10B981' };
             if (qty > 0) return { label: 'LOW STOCK', bg: 'rgba(234, 179, 8, 0.1)', text: '#eab308' };
             return { label: 'OUT OF STOCK', bg: 'rgba(239, 68, 68, 0.1)', text: '#ff0000' };
         }
@@ -589,6 +832,14 @@
                 showToast('Please enter the quantity.', 'error');
                 return;
             }
+            if (parseFloat(qty) < 0) {
+                showToast('Quantity cannot be negative.', 'error');
+                return;
+            }
+            if (parseFloat(price) <= 0) {
+                showToast('Price must be greater than zero.', 'error');
+                return;
+            }
             /* if (!desc || !desc.trim()) {
                 showToast('Please enter the description.', 'error');
                 return;
@@ -598,11 +849,8 @@
                 return;
             }
 
-            // Reverse Convert Price (Native -> USD)
-            const rate = (window.CurrencyManager && window.CurrencyManager.settings && window.CurrencyManager.settings.rate) ? window.CurrencyManager.settings.rate : 1;
-            // Use 6 decimal places for precision storage
-            const usdPrice = (parseFloat(price) / rate).toFixed(6);
-            formData.set('price', usdPrice);
+            // Send the raw price. The server will handle conversion to USD for storage.
+            formData.set('price', price);
 
             const btn = form.querySelector('button[type="submit"]');
             const apiUrl = productId ? '../../backend/api/products/update-product.php' : '../../backend/api/products/add-product.php';
@@ -631,7 +879,7 @@
             }
         }
     </script>
-    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/main.js?v=2.2"></script>
 </body>
 
 </html>

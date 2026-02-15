@@ -155,24 +155,38 @@
             const urlParams = new URLSearchParams(window.location.search);
             const orderIds = urlParams.get('order_ids');
             const legacyOrderId = urlParams.get('order_id');
+            const auctionId = urlParams.get('auction_id');
             const finalOrderIds = orderIds || legacyOrderId;
 
+            const isAuction = !!auctionId;
+
             let amount = 0;
+            let sourceCurrency = 'USD'; // Default for orders
             let customerName = "Valued Customer";
             let customerEmail = "customer@example.com";
 
-            if (!finalOrderIds) {
-                showToast("Invalid Order ID(s)", "error");
-                setTimeout(() => window.location.href = 'orders.html', 2000);
+            if (!finalOrderIds && !auctionId) {
+                showToast("Invalid Order/Auction ID(s)", "error");
+                setTimeout(() => window.location.href = isAuction ? 'auctions.html' : 'orders.html', 2000);
             }
 
-            const displayId = orderIds ? `Check Summary (${orderIds.split(',').length} Items)` : `ORD-${(legacyOrderId || '000').toString().padStart(5, '0')}`;
+            const displayId = isAuction ? `AUC-${auctionId.toString().padStart(5, '0')}` :
+                (orderIds ? `Check Summary (${orderIds.split(',').length} Items)` : `ORD-${(legacyOrderId || '000').toString().padStart(5, '0')}`);
+
+            if (isAuction) {
+                document.querySelector('p[class*="text-stone-400 uppercase"]').innerText = 'Auction Reference';
+            }
             document.getElementById('order-id-display').innerText = displayId;
 
             async function fetchOrderDetails() {
                 try {
-                    const param = orderIds ? `order_ids=${orderIds}` : `order_id=${legacyOrderId}`;
-                    const response = await fetch(`../../backend/api/orders/get-order-details.php?${param}`);
+                    let response;
+                    if (isAuction) {
+                        response = await fetch(`../../backend/api/auctions/get-auction-payment-details.php?auction_id=${auctionId}`);
+                    } else {
+                        const param = orderIds ? `order_ids=${orderIds}` : `order_id=${legacyOrderId}`;
+                        response = await fetch(`../../backend/api/orders/get-order-details.php?${param}`);
+                    }
                     const result = await response.json();
 
                     if (result.success && result.order) {
@@ -180,15 +194,9 @@
                         if (result.order.customer_name) customerName = result.order.customer_name;
                         if (result.order.customer_email) customerEmail = result.order.customer_email;
                         window.orderDetails = result.order;
+                        sourceCurrency = result.order.currency_code || 'USD';
 
-                        // Use stored rate if currency matches, ensuring EXACT price match
-                        if (result.order.currency_code === CurrencyManager.settings.code && result.order.exchange_rate) {
-                            const lockedRate = parseFloat(result.order.exchange_rate);
-                            const lockedVal = amount * lockedRate;
-                            document.getElementById('amount-display').innerText = CurrencyManager.settings.symbol + lockedVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        } else {
-                            document.getElementById('amount-display').innerText = formatPrice(amount);
-                        }
+                        renderAmountDisplay();
 
                         if (result.order.payment_status === 'paid') {
                             showToast("This order is already paid.", "success");
@@ -216,7 +224,6 @@
                         if (!phoneInput.value && user.phone) phoneInput.value = user.phone;
                         if (!addressInput.value && user.address) {
                             addressInput.value = user.address;
-                            updateCurrencyFromAddress();
                         }
                     }
                 } catch (error) {
@@ -393,16 +400,25 @@
                 btn.disabled = true;
 
                 try {
-                    const response = await fetch('../../backend/api/orders/process-payment.php', {
+                    const endpoint = isAuction ? '../../backend/api/auctions/pay-auction.php' : '../../backend/api/orders/process-payment.php';
+                    const payload = isAuction ? {
+                        auction_id: auctionId,
+                        address: address,
+                        phone: phone,
+                        payment_method: paymentMethod,
+                        transaction_details: details
+                    } : {
+                        order_ids: finalOrderIds,
+                        address: address,
+                        phone: phone,
+                        payment_method: paymentMethod,
+                        transaction_details: details
+                    };
+
+                    const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            order_ids: finalOrderIds,
-                            address: address,
-                            phone: phone,
-                            payment_method: paymentMethod,
-                            transaction_details: details
-                        })
+                        body: JSON.stringify(payload)
                     });
                     const result = await response.json();
                     if (result.success) {
@@ -420,7 +436,7 @@
                                     <img src="https://api.iconify.design/lucide:check.svg?color=%2316a34a" width="40">
                                 </div>
                                 <h3 class="text-2xl font-bold text-stone-900 mb-2">Payment Successful!</h3>
-                                <p class="text-stone-500 text-sm mb-6">Your transaction has been verified. Redirecting you to orders...</p>
+                                <p class="text-stone-500 text-sm mb-6">Your transaction has been verified. Redirecting you to ${isAuction ? 'auctions' : 'orders'}...</p>
                                 <div class="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
                                     <div class="bg-green-500 h-full w-full animate-[loading_2s_ease-in-out]"></div>
                                 </div>
@@ -432,7 +448,7 @@
                         document.getElementById('payment-actions').innerHTML = '';
 
                         setTimeout(() => {
-                            window.location.href = 'orders.html';
+                            window.location.href = isAuction ? 'auctions.html' : 'orders.html';
                         }, 2000);
                         return true;
                     } else {
@@ -462,21 +478,25 @@
                 }
                 if (!address.trim()) { showToast("Please enter delivery address first.", "error"); return; }
 
-                // Calculate correct amount
+                // Calculate correct amount for Razorpay
                 const currencyCode = CurrencyManager.settings ? CurrencyManager.settings.code : 'USD';
-                let rate = (currencyCode === 'USD') ? 1 : (CurrencyManager.settings ? CurrencyManager.settings.rate : 1);
-
-                // Use locked rate if available (from global order object if we exposed it, or re-fetch? We need order details here)
-                // We didn't expose 'result.order' globally in fetchOrderDetails. Let's assume we can't easily access it without global var.
-                // Or we can rely on what's displayed? No, insecure.
-                // Let's rely on standard rate unless we assume fetchOrderDetails stored it.
-                // Wait, I should store order details globally.
+                let finalAmountValue = 0;
 
                 if (window.orderDetails && window.orderDetails.currency_code === currencyCode && window.orderDetails.exchange_rate) {
-                    rate = parseFloat(window.orderDetails.exchange_rate);
+                    // Use locked rate for exact match if currency matches
+                    const lockedRate = parseFloat(window.orderDetails.exchange_rate);
+                    finalAmountValue = CurrencyManager.snap(amount * lockedRate);
+                } else {
+                    // Standard conversion using CurrencyManager
+                    finalAmountValue = CurrencyManager.convert(amount, sourceCurrency, currencyCode);
+                    // convert() might already call snap, but let's be safe
+                    finalAmountValue = CurrencyManager.snap(finalAmountValue);
                 }
 
-                const finalAmount = (amount * rate).toFixed(2); // Convert base USD to target
+                const finalAmount = finalAmountValue.toFixed(2);
+
+                const logoUrl = encodeURI(window.location.origin + window.getProjectRoot() + "/frontend/assets/images/logo.png");
+                console.log("Razorpay Logo URL:", logoUrl);
 
                 var options = {
                     "key": "rzp_test_1DP5mmOlF5G5ag", // Generic Test Key
@@ -484,7 +504,7 @@
                     "currency": currencyCode,
                     "name": "Caravan of Flavours",
                     "description": orderIds ? "Payment for Multiple Orders" : "Payment for Order #" + legacyOrderId,
-                    "image": "../assets/images/logo.png",
+                    "image": encodeURI(window.location.origin + window.getProjectRoot() + "/frontend/assets/images/logo.png"),
                     "handler": function (response) {
                         // Payment successful
                         completeOrder('Razorpay', {
@@ -592,6 +612,14 @@
                 btn.disabled = true;
                 btn.innerHTML = `<img src="https://api.iconify.design/lucide:loader-2.svg?color=white" class="w-4 h-4 animate-spin inline"> Cancelling...`;
 
+                if (isAuction) {
+                    showToast(`Transaction cleared. Returning to auctions...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'auctions.html';
+                    }, 1000);
+                    return;
+                }
+
                 if (!finalOrderIds) {
                     showToast("No Order ID found to cancel", "error");
                     btn.disabled = false;
@@ -659,14 +687,30 @@
                 }
             }
 
+            function renderAmountDisplay() {
+                if (amount <= 0) return;
+
+                let displayPrice = "";
+                // Use stored rate if currency matches, ensuring EXACT price match for locked orders
+                if (window.orderDetails && window.orderDetails.currency_code === CurrencyManager.settings.code && window.orderDetails.exchange_rate) {
+                    const lockedRate = parseFloat(window.orderDetails.exchange_rate);
+                    const lockedVal = CurrencyManager.snap(amount * lockedRate);
+                    displayPrice = CurrencyManager.settings.symbol + lockedVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    // Standard conversion handling both USD inputs (orders) and non-USD inputs (auctions)
+                    displayPrice = CurrencyManager.formatFrom(amount, sourceCurrency);
+                }
+
+                const amountDisplay = document.getElementById('amount-display');
+                amountDisplay.innerText = displayPrice;
+            }
+
             // Exposed for main.js CurrencyManager
             window.updatePaymentPrice = function () {
-                if (amount > 0) {
-                    document.getElementById('amount-display').innerText = formatPrice(amount);
-                }
+                renderAmountDisplay();
             }
         </script>
-        <script src="../assets/js/main.js"></script>
+        <script src="../assets/js/main.js?v=2.2"></script>
 </body>
 
 </html>

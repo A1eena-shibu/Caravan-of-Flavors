@@ -28,9 +28,13 @@ try {
     $data = [];
 
     if ($role === 'farmer') {
-        // 1. Total Earnings
-        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE farmer_id = ? AND payment_status = 'paid' AND status != 'cancelled'");
-        $stmt->execute([$userId]);
+        // 1. Total Earnings (Unified)
+        $stmt = $pdo->prepare("
+            SELECT 
+                (SELECT IFNULL(SUM(total_price), 0) FROM orders WHERE farmer_id = ? AND payment_status = 'paid' AND status != 'cancelled') +
+                (SELECT IFNULL(SUM(current_bid), 0) FROM auctions WHERE farmer_id = ? AND payment_status = 'paid')
+        ");
+        $stmt->execute([$userId, $userId]);
         $data['total_earnings'] = $stmt->fetchColumn() ?: 0;
 
         // 2. Total Products Listed
@@ -38,54 +42,88 @@ try {
         $stmt->execute([$userId]);
         $data['total_products'] = $stmt->fetchColumn() ?: 0;
 
-        // 3. Top Products (by sales)
+        // 3. Top Products (Unified)
         $stmt = $pdo->prepare("
-            SELECT p.product_name, SUM(o.total_price) as revenue 
-            FROM products p
-            LEFT JOIN orders o ON p.id = o.product_id AND o.payment_status = 'paid' AND o.status != 'cancelled'
-            WHERE p.farmer_id = ?
-            GROUP BY p.id
+            SELECT product_name, SUM(revenue) as revenue
+            FROM (
+                SELECT p.product_name, SUM(o.total_price) as revenue 
+                FROM products p
+                JOIN orders o ON p.id = o.product_id
+                WHERE p.farmer_id = ? AND o.payment_status = 'paid' AND o.status != 'cancelled'
+                GROUP BY p.id
+                UNION ALL
+                SELECT product_name, SUM(current_bid) as revenue
+                FROM auctions
+                WHERE farmer_id = ? AND payment_status = 'paid'
+                GROUP BY product_name
+            ) as combined
+            GROUP BY product_name
             ORDER BY revenue DESC
             LIMIT 5
         ");
-        $stmt->execute([$userId]);
+        $stmt->execute([$userId, $userId]);
         $data['top_products'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // 4. Recent Sales Activity
+        // 4. Recent Sales Activity (Unified)
         $stmt = $pdo->prepare("
-            SELECT o.id, p.product_name, u.full_name as customer_name, o.total_price, o.order_date, o.status
-            FROM orders o
-            JOIN products p ON o.product_id = p.id
-            JOIN users u ON o.customer_id = u.id
-            WHERE o.farmer_id = ? AND o.status != 'cancelled'
-            ORDER BY o.order_date DESC
+            SELECT id, product_name, customer_name, total_price, order_date, status, type
+            FROM (
+                SELECT o.id, p.product_name, u.full_name as customer_name, o.total_price as total_price, o.order_date, o.status, 'order' as type
+                FROM orders o
+                JOIN products p ON o.product_id = p.id
+                JOIN users u ON o.customer_id = u.id
+                WHERE o.farmer_id = ? AND o.status != 'cancelled'
+                
+                UNION ALL
+                
+                SELECT a.id, a.product_name, u.full_name as customer_name, a.current_bid as total_price, a.updated_at as order_date, a.status, 'auction' as type
+                FROM auctions a
+                LEFT JOIN users u ON a.winner_id = u.id
+                WHERE a.farmer_id = ? AND a.status IN ('completed', 'shipped', 'active')
+            ) as combined_history
+            ORDER BY order_date DESC
             LIMIT 10
         ");
-        $stmt->execute([$userId]);
+        $stmt->execute([$userId, $userId]);
         $data['history'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     } elseif ($role === 'customer') {
         // 1. Total Spending
-        $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE customer_id = ? AND payment_status = 'paid' AND status != 'cancelled'");
-        $stmt->execute([$userId]);
+        // 1. Total Spending (Unified)
+        $stmt = $pdo->prepare("
+            SELECT 
+                (SELECT IFNULL(SUM(total_price), 0) FROM orders WHERE customer_id = ? AND payment_status = 'paid' AND status != 'cancelled') +
+                (SELECT IFNULL(SUM(current_bid), 0) FROM auctions WHERE winner_id = ? AND payment_status = 'paid')
+        ");
+        $stmt->execute([$userId, $userId]);
         $data['total_spending'] = $stmt->fetchColumn() ?: 0;
 
-        // 2. Total Orders
+        // 2. Total Orders (Orders Specific Only as requested)
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE customer_id = ? AND status != 'cancelled'");
         $stmt->execute([$userId]);
         $data['total_orders'] = $stmt->fetchColumn() ?: 0;
 
-        // 3. Recent Purchases
+        // 3. Recent Purchases (Unified)
         $stmt = $pdo->prepare("
-            SELECT o.id, p.product_name, u.full_name as farmer_name, o.total_price, o.order_date, o.status
-            FROM orders o
-            JOIN products p ON o.product_id = p.id
-            JOIN users u ON o.farmer_id = u.id
-            WHERE o.customer_id = ? AND o.status != 'cancelled'
-            ORDER BY o.order_date DESC
+            SELECT id, product_name, farmer_name, total_price, order_date, status, type
+            FROM (
+                SELECT o.id, p.product_name, u.full_name as farmer_name, o.total_price as total_price, o.order_date, o.status, 'order' as type
+                FROM orders o
+                JOIN products p ON o.product_id = p.id
+                JOIN users u ON o.farmer_id = u.id
+                WHERE o.customer_id = ? AND o.status != 'cancelled'
+                
+                UNION ALL
+                
+                SELECT a.id, a.product_name, u.full_name as farmer_name, a.current_bid as total_price, a.updated_at as order_date, a.status, 'auction' as type
+                FROM auctions a
+                JOIN users u ON a.farmer_id = u.id
+                WHERE a.winner_id = ? AND a.status IN ('completed', 'shipped')
+            ) as combined_history
+            ORDER BY order_date DESC
             LIMIT 10
         ");
-        $stmt->execute([$userId]);
+        $stmt->execute([$userId, $userId]);
         $data['history'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

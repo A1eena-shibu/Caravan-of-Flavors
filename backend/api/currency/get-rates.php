@@ -19,8 +19,8 @@ if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTime)) {
 
 // 2. Fetch Live Rates
 try {
-    // using open.er-api.com which is free and reliable
-    $url = "https://open.er-api.com/v6/latest/USD";
+    // Base: INR
+    $url = "https://open.er-api.com/v6/latest/INR";
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -44,7 +44,7 @@ try {
 
     $result = [
         'success' => true,
-        'base' => 'USD',
+        'base' => 'INR',
         'date' => date('Y-m-d'),
         'rates' => $data['rates']
     ];
@@ -70,7 +70,7 @@ try {
         echo json_encode([
             'success' => false,
             'message' => $e->getMessage(),
-            'rates' => ['USD' => 1] // Minimal fallback
+            'rates' => ['INR' => 1] // Minimal fallback
         ]);
     }
 }

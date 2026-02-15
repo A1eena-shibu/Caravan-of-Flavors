@@ -30,13 +30,18 @@ if (!$auction_id) {
 }
 
 try {
-    // Check if auction belongs to farmer
-    $stmt = $pdo->prepare("SELECT id, image_url FROM auctions WHERE id = ? AND farmer_id = ?");
+    // Check if auction belongs to farmer and its status
+    $stmt = $pdo->prepare("SELECT id, image_url, status FROM auctions WHERE id = ? AND farmer_id = ?");
     $stmt->execute([$auction_id, $farmer_id]);
     $auction = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$auction) {
         echo json_encode(['success' => false, 'message' => 'Auction not found or unauthorized']);
+        exit;
+    }
+
+    if ($auction['status'] !== 'active') {
+        echo json_encode(['success' => false, 'message' => 'Completed or cancelled auctions cannot be deleted for record-keeping purposes.']);
         exit;
     }
 

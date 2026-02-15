@@ -4,12 +4,37 @@
  * Returns global aggregated stats for the admin dashboard
  */
 
-header('Content-Type: application/json');
+
+// Error handling for JSON
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Crucial for JSON responses
+
+// Enable CORS
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json; charset=UTF-8");
+
+// Handle Fatal Errors
+function shutdownHandler()
+{
+    $error = error_get_last();
+    if ($error && ($error['type'] === E_ERROR || $error['type'] === E_PARSE || $error['type'] === E_CORE_ERROR)) {
+        ob_end_clean(); // Clean any partial output
+        http_response_code(500);
+        // Log to file
+        file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "Fatal Error: " . print_r($error, true) . "\n", FILE_APPEND);
+        echo json_encode(['success' => false, 'message' => 'Fatal Error: ' . $error['message']]);
+    }
+}
+register_shutdown_function('shutdownHandler');
+
 ob_start();
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Check if user is logged in and is an admin
 // For now, if role check is not strictly implemented in session for 'admin', 
@@ -36,7 +61,13 @@ try {
     $totalFarmers = $userStats['farmer'] ?? 0;
 
     // 2. Total Global Revenue
-    $stmt = $pdo->prepare("SELECT SUM(total_price) FROM orders WHERE status != 'cancelled' AND payment_status = 'paid'");
+    // Combined Orders (Normalized to Payment Currency) + Auctions (Paid)
+    $stmt = $pdo->prepare("
+        SELECT 
+            (SELECT COALESCE(SUM(total_price), 0) FROM orders WHERE status != 'cancelled' AND payment_status = 'paid') +
+            (SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE status IN ('completed', 'shipped', 'paid') AND payment_status = 'paid')
+        as total_revenue
+    ");
     $stmt->execute();
     $totalRevenue = $stmt->fetchColumn() ?: 0;
 
@@ -66,28 +97,34 @@ try {
                 WHEN ot.status = 'rejected' THEN 'rejected the order'
                 ELSE CONCAT('updated order status to ', ot.status)
             END as action,
-            CONCAT(p.product_name, ' (', o.quantity, ' ', p.unit, ') from farmer ', f.full_name) as details,
+            CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name) as details,
             o.id as reference_id,
             o.total_price as amount
         FROM order_tracking ot
         JOIN orders o ON ot.order_id = o.id
         JOIN users u ON o.customer_id = u.id
         JOIN products p ON o.product_id = p.id
-        JOIN users f ON o.farmer_id = f.id)
+        JOIN users f ON o.farmer_id = f.id
+        WHERE u.email != 'admin@gmail.com')
 
         UNION ALL
 
         (SELECT 
             'product' as type,
-            p.created_at as timestamp,
+            pt.updated_at as timestamp,
             u.full_name as user_name,
             u.role as user_role,
-            'listed a new product' as action,
-            CONCAT(p.product_name, ' in ', p.category, ' - ', p.quantity, ' ', p.unit, ' @ ', p.price, '/', p.unit) as details,
-            p.id as reference_id,
-            p.price as amount
-        FROM products p
-        JOIN users u ON p.farmer_id = u.id)
+            CASE WHEN pt.action = 'listed' THEN 'listed a new product' ELSE 'updated product details' END as action,
+            CASE 
+                WHEN pt.action = 'listed' THEN CONCAT(p.product_name, ' in ', pt.category, ' - ', 0 + pt.quantity, ' ', pt.unit, ' @ ', pt.price, '/', pt.unit)
+                ELSE CONCAT(p.product_name, ' (', 0 + pt.quantity, ' ', pt.unit, ') @ ', pt.price, '/', pt.unit)
+            END as details,
+            pt.id as reference_id,
+            pt.price as amount
+        FROM product_tracking pt
+        JOIN products p ON pt.product_id = p.id
+        JOIN users u ON p.farmer_id = u.id
+        WHERE u.email != 'admin@gmail.com')
 
         UNION ALL
 
@@ -101,7 +138,7 @@ try {
             id as reference_id,
             0 as amount
         FROM users
-        WHERE role != 'admin')
+        WHERE role != 'admin' AND email != 'admin@gmail.com')
 
         UNION ALL
 
@@ -116,25 +153,102 @@ try {
             CAST(r.rating AS DECIMAL(10,2)) as amount
         FROM reviews r
         JOIN users u ON r.customer_id = u.id
-        JOIN products p ON r.product_id = p.id)
+        JOIN products p ON r.product_id = p.id
+        WHERE u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.start_time as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'started an auction' as action,
+            CONCAT(a.product_name, ' - Starting Price: ', a.starting_price) as details,
+            a.id as reference_id,
+            a.starting_price as amount
+        FROM auctions a
+        JOIN users u ON a.farmer_id = u.id
+        WHERE u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.end_time as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'auction completed' as action,
+            CONCAT(a.product_name, ' - Winning Bid: ', a.current_bid) as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM auctions a
+        JOIN users u ON a.farmer_id = u.id
+        WHERE a.status IN ('completed', 'shipped', 'paid', 'delivered') AND a.winner_id IS NOT NULL AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.updated_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'payment confirmed' as action,
+            CONCAT(a.product_name, ' paid by winner') as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM auctions a
+        JOIN users u ON a.winner_id = u.id
+        WHERE a.payment_status = 'paid' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.shipped_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'shipped auction item' as action,
+            CONCAT(a.product_name, ' shipped to winner') as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM auctions a
+        JOIN users u ON a.farmer_id = u.id
+        WHERE a.shipping_status = 'shipped' AND a.shipped_at IS NOT NULL AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'bid' as type,
+            b.bid_time as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'placed a bid' as action,
+            CONCAT('Bid ', b.bid_amount, ' on ', a.product_name) as details,
+            b.id as reference_id,
+            b.bid_amount as amount
+        FROM bids b
+        JOIN users u ON b.customer_id = u.id
+        JOIN auctions a ON b.auction_id = a.id
+        WHERE u.email != 'admin@gmail.com')
 
         UNION ALL
 
         (SELECT 
             'product' as type,
-            pt.updated_at as timestamp,
+            al.created_at as timestamp,
             u.full_name as user_name,
             u.role as user_role,
-            'updated product details' as action,
-            CONCAT(p.product_name, ' (', p.quantity, ' ', p.unit, ') @ ', p.price, '/', p.unit) as details,
-            p.id as reference_id,
-            p.price as amount
-        FROM product_tracking pt
-        JOIN products p ON pt.product_id = p.id
-        JOIN users u ON p.farmer_id = u.id)
+            'deleted a product' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'product_deleted' AND u.email != 'admin@gmail.com')
 
         ORDER BY timestamp DESC
-        LIMIT 4
+        LIMIT 6
     ");
     $stmt->execute();
     $recentActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -145,22 +259,46 @@ try {
     if ($period === '30_days') {
         // Daily sales for last 30 days
         $stmt = $pdo->prepare("
-            SELECT 
-                DATE_FORMAT(order_date, '%Y-%m-%d') as time_label,
-                SUM(total_price) as total_sales
-            FROM orders 
-            WHERE order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status != 'cancelled' AND payment_status = 'paid'
+            SELECT time_label, SUM(total_sales) as total_sales FROM (
+                SELECT 
+                    DATE_FORMAT(order_date, '%Y-%m-%d') as time_label,
+                    total_price as total_sales
+                FROM orders 
+                WHERE order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status != 'cancelled' AND payment_status = 'paid'
+                
+                UNION ALL
+                
+                SELECT 
+                    DATE_FORMAT(updated_at, '%Y-%m-%d') as time_label,
+                    current_bid as total_sales
+                FROM auctions
+                WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+                  AND status IN ('completed', 'shipped', 'paid') 
+                  AND payment_status = 'paid'
+            ) as combined_sales
             GROUP BY time_label
             ORDER BY time_label ASC
         ");
     } else {
         // Monthly sales for last 12 months
         $stmt = $pdo->prepare("
-            SELECT 
-                DATE_FORMAT(order_date, '%Y-%m') as time_label,
-                SUM(total_price) as total_sales
-            FROM orders 
-            WHERE order_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) AND status != 'cancelled' AND payment_status = 'paid'
+            SELECT time_label, SUM(total_sales) as total_sales FROM (
+                SELECT 
+                    DATE_FORMAT(order_date, '%Y-%m') as time_label,
+                    total_price as total_sales
+                FROM orders 
+                WHERE order_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR) AND status != 'cancelled' AND payment_status = 'paid'
+                
+                UNION ALL
+                
+                SELECT 
+                    DATE_FORMAT(updated_at, '%Y-%m') as time_label,
+                    current_bid as total_sales
+                FROM auctions
+                WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR) 
+                  AND status IN ('completed', 'shipped', 'paid') 
+                  AND payment_status = 'paid'
+            ) as combined_sales
             GROUP BY time_label
             ORDER BY time_label ASC
         ");
@@ -266,10 +404,22 @@ try {
 
     // 10. Top Farmers (Revenue Board)
     $stmt = $pdo->prepare("
-        SELECT u.full_name, u.profile_image, SUM(o.total_price) as total_sales
-        FROM users u
-        JOIN orders o ON u.id = o.farmer_id
-        WHERE o.status != 'cancelled' AND o.payment_status = 'paid'
+        SELECT 
+            u.full_name, 
+            u.profile_image, 
+            SUM(total_sales) as total_sales
+        FROM (
+            SELECT farmer_id, total_price as total_sales 
+            FROM orders 
+            WHERE status != 'cancelled' AND payment_status = 'paid'
+            
+            UNION ALL
+            
+            SELECT farmer_id, current_bid as total_sales 
+            FROM auctions 
+            WHERE status IN ('completed', 'shipped', 'paid') AND payment_status = 'paid'
+        ) as all_sales
+        JOIN users u ON all_sales.farmer_id = u.id
         GROUP BY u.id
         ORDER BY total_sales DESC
         LIMIT 3
@@ -314,6 +464,9 @@ try {
 
 } catch (Exception $e) {
     ob_clean();
+    // Log error to file
+    file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "Error in get-admin-stats.php: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
+
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }

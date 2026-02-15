@@ -18,20 +18,22 @@ try {
     $agent_id = $_SESSION['user_id'];
     $pdo = getDBConnection();
 
-    // Get last 7 days of deliveries
+    // Get last 7 days of deliveries (Orders + Auctions)
     $stmt = $pdo->prepare("
-        SELECT 
-            DATE(delivered_at) as date,
-            COUNT(*) as count
-        FROM orders 
-        WHERE delivery_agent_id = ? 
-        AND status = 'delivered'
-        AND delivered_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
-        GROUP BY DATE(delivered_at)
+        SELECT date, COUNT(*) as count FROM (
+            SELECT DATE(delivered_at) as date FROM orders 
+            WHERE delivery_agent_id = ? AND status = 'delivered' AND delivered_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+            
+            UNION ALL
+            
+            SELECT DATE(shipped_at) as date FROM auctions 
+            WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND shipped_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+        ) as combined_deliveries
+        GROUP BY date
         ORDER BY date ASC
     ");
 
-    $stmt->execute([$agent_id]);
+    $stmt->execute([$agent_id, $agent_id]);
     $performance = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Format for Chart.js

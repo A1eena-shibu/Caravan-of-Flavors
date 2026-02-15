@@ -7,8 +7,9 @@
 class CurrencyService
 {
     private static $apiUrl = "https://open.er-api.com/v6/latest/"; // Base URL
+    const BASE_CURRENCY = 'INR';
 
-    public static function getExchangeRates($baseCurrency = 'USD')
+    public static function getExchangeRates($baseCurrency = self::BASE_CURRENCY)
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

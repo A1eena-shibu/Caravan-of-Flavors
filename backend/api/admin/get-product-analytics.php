@@ -16,11 +16,11 @@ try {
 
     // 1. Low Stock Alert (Stock < 20)
     $stmt = $pdo->prepare("
-        SELECT p.id, p.product_name, p.stock_quantity, u.full_name as farmer_name
+        SELECT p.id, p.product_name, p.quantity as stock_quantity, u.full_name as farmer_name
         FROM products p
         JOIN users u ON p.farmer_id = u.id
-        WHERE p.stock_quantity < 20
-        ORDER BY p.stock_quantity ASC
+        WHERE p.quantity < 20
+        ORDER BY p.quantity ASC
         LIMIT 10
     ");
     $stmt->execute();

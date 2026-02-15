@@ -11,16 +11,16 @@ header('Pragma: no-cache');
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 
 // Set secure session cookie parameters
-$duration = 30 * 24 * 60 * 60; // 30 days
-session_set_cookie_params([
-    'lifetime' => $duration,
-    'path' => '/',
-    'secure' => isset($_SERVER['HTTPS']),
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-
 if (session_status() === PHP_SESSION_NONE) {
+    // Set secure session cookie parameters
+    $duration = 30 * 24 * 60 * 60; // 30 days
+    session_set_cookie_params([
+        'lifetime' => $duration,
+        'path' => '/',
+        'secure' => isset($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
     session_start();
 }
 

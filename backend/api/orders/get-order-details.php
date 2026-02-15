@@ -46,7 +46,7 @@ try {
             'status' => $first_order['status'],
             'total_price' => $total_price,
             'payment_status' => $first_order['payment_status'], // Assuming all have same status initially
-            'currency_code' => $first_order['currency_code'] ?? 'USD',
+            'currency_code' => $first_order['currency_code'] ?? 'INR',
             'exchange_rate' => $first_order['exchange_rate'] ?? 1.0,
             'customer_name' => $first_order['customer_name'],
             'customer_email' => $first_order['customer_email'],

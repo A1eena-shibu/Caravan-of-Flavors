@@ -71,6 +71,12 @@ try {
         $_SESSION['user_country'] = $country;
     }
 
+    $low_stock_threshold = $_POST['low_stock_threshold'] ?? null;
+    if ($low_stock_threshold !== null && $low_stock_threshold !== '') {
+        $updateFields[] = "low_stock_threshold = ?";
+        $params[] = (int) $low_stock_threshold;
+    }
+
     if (!$isGoogleUser) {
         // Handle Email Update
         if (!empty($email) && $email !== $user['email']) {

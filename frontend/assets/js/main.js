@@ -102,7 +102,7 @@ const CurrencyManager = {
     settings: null,
     isFetching: false,
 
-    // Exchange Rates (Base: USD)
+    // Exchange Rates (Base: INR)
     // Initially empty, populated from backend
     rates: {},
 
@@ -117,14 +117,21 @@ const CurrencyManager = {
         if (cachedRates) {
             try {
                 this.rates = JSON.parse(cachedRates);
+                // Cache-bust: If rates appear to be old USD-based (where INR ~ 80+), clear it
+                if (this.rates && this.rates['INR'] > 50) {
+                    sessionStorage.removeItem('exchange_rates');
+                    sessionStorage.removeItem('user_currency_settings');
+                    this.rates = {};
+                    this.settings = null;
+                }
             } catch (e) { console.error('Error parsing rates', e); }
         }
 
         if (cached) {
             try {
                 this.settings = JSON.parse(cached);
-                // Sanitize: Force USD to 1 even from cache
-                if (this.settings.code === 'USD') this.settings.rate = 1;
+                // Sanitize: Force INR to 1 even from cache
+                if (this.settings.code === 'INR') this.settings.rate = 1;
 
                 this.applyToStaticMarkers();
                 this.fetchSettings(); // Verify in background
@@ -159,6 +166,11 @@ const CurrencyManager = {
                 if (response.ok) {
                     const result = await response.json();
                     if (result.success && result.rates) {
+                        // Cache-bust: If rates appear to be old USD-based, reject them
+                        if (result.rates['INR'] > 50) {
+                            console.warn('Received stale USD-based rates from backend. Forcing refresh.');
+                            return;
+                        }
                         this.rates = result.rates;
                         sessionStorage.setItem('exchange_rates', JSON.stringify(this.rates));
                         if (this.settings && this.settings.code) {
@@ -197,11 +209,11 @@ const CurrencyManager = {
                     try {
                         const result = JSON.parse(text);
                         if (result.success) {
-                            const code = result.data.currency_code || 'USD';
+                            const code = result.data.currency_code || 'INR';
                             const newSettings = {
-                                symbol: result.data.currency_symbol || '$',
+                                symbol: result.data.currency_symbol || '₹',
                                 code: code,
-                                rate: (code === 'USD') ? 1 : (this.rates[code] || 1) // Set rate based on code, force 1 for USD
+                                rate: (code === 'INR') ? 1 : (this.rates[code] || 1) // Set rate based on code, force 1 for INR
                             };
 
                             this.settings = newSettings;
@@ -219,34 +231,120 @@ const CurrencyManager = {
 
         this.isFetching = false;
         if (!this.settings) {
-            this.settings = { symbol: '$', code: 'USD', rate: 1 };
+            this.settings = { symbol: '₹', code: 'INR', rate: 1 };
             this.applyToStaticMarkers();
         }
         return this.settings;
     },
 
+    // central method to update settings and trigger UI refresh
+    updateSettings(newSettings) {
+        this.settings = { ...this.settings, ...newSettings };
+        sessionStorage.setItem('user_currency_settings', JSON.stringify(this.settings));
+        this.applyToStaticMarkers();
+        this.refreshUI();
+    },
+
+    convert(amount, fromCode, toCode) {
+        if (!fromCode || !toCode || fromCode === toCode) return parseFloat(amount);
+
+        // Convert fromCode -> INR -> toCode
+        const rates = this.rates || {};
+        const fromRate = fromCode === 'INR' ? 1 : rates[fromCode];
+        const toRate = toCode === 'INR' ? 1 : rates[toCode];
+
+        if (!fromRate || !toRate || fromRate > 10 || toRate > 10) {
+            // Safety: If rates look suspicious (e.g. fromRate is 83 but should be 1), 
+            // it means we have a base mismatch. Skip conversion to avoid crazy numbers.
+            console.warn(`Currency base mismatch detected: fromRate=${fromRate}, toRate=${toRate}`);
+            return parseFloat(amount);
+        }
+
+        const amountInBase = parseFloat(amount) / fromRate;
+        return amountInBase * toRate;
+    },
+
+    snap(val) {
+        if (typeof val !== 'number' || isNaN(val)) return val;
+
+        // 1. "Pretty Rounding" for large values (clean numbers)
+        // We prioritize this for large values so that conversion artifacts like 299,983
+        // snap to 300,000 before they just get rounded to the nearest (ugly) integer.
+        if (val > 1000) {
+            const tolerances = [10000, 5000, 1000, 500, 100, 50];
+            const threshold = val * 0.0005; // 0.05% tolerance (e.g. ±150 for 300k)
+
+            for (const t of tolerances) {
+                if (t > val / 2) continue;
+                let pretty = Math.round(val / t) * t;
+                if (Math.abs(val - pretty) <= threshold) {
+                    return pretty;
+                }
+            }
+        }
+
+        // 2. Basic rounding to nearest integer (Magnitude-aware)
+        // Increased tolerance to 0.15 to handle cases like 250.12
+        let rounded = Math.round(val);
+        if (Math.abs(val - rounded) < Math.max(0.15, val * 0.001)) return rounded;
+
+        return val;
+    },
+
     format(amount) {
-        const settings = this.settings || { symbol: '$', code: 'USD', rate: 1 };
+        const settings = this.settings || { symbol: '₹', code: 'INR', rate: 1 };
         let num = parseFloat(amount);
         if (isNaN(num)) return amount;
 
-        // Convert Logic: database is USD -> target currency
-        // Assumption: 'amount' passed in is always in USD.
-        // If the 'amount' could be already converted, we might have issues, 
-        // but typically raw data in frontend is what comes from DB (USD).
+        // Default format assumes input is INR
+        const rate = (settings.code === 'INR') ? 1 : (this.rates[settings.code] || 1);
+        let val = this.snap(num * rate);
 
-        const rate = (settings.code === 'USD') ? 1 : (settings.rate || 1);
-        num = num * rate;
+        return settings.symbol + val.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    },
 
-        return settings.symbol + num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    formatFrom(amount, fromCode) {
+        const settings = this.settings || { symbol: '₹', code: 'INR', rate: 1 };
+        const converted = this.convert(amount, fromCode, settings.code);
+        const val = this.snap(converted);
+        return settings.symbol + val.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    },
+
+    formatHistorical(amountUSD, storedRate, storedCurrencyCode) {
+        const userCurrency = this.getCode(); // Current viewer's currency
+        const isOriginalCurrency = (userCurrency === storedCurrencyCode);
+
+        // HYBRID LOGIC:
+        // 1. If viewing in same currency as order: Use Stored Rate (Shows exact original price like 100 INR)
+        // 2. If viewing in DIFFERENT currency: Use Live Rate (Shows fair value in new currency)
+
+        let val;
+
+        if (isOriginalCurrency) {
+            // Use Stored Rate -> Snaps to original integer
+            val = parseFloat(amountUSD || 0) * (parseFloat(storedRate) || 1);
+            let rounded = Math.round(val);
+            if (Math.abs(val - rounded) < Math.max(0.05, val * 0.0001)) val = rounded;
+        } else {
+            // Use Live Rate -> Convert INR to UserCurrency
+            // (amount is now assumed to be in base INR)
+            val = this.convert(amountUSD, 'INR', userCurrency);
+        }
+
+        return val.toLocaleString(undefined, {
+            style: 'currency',
+            currency: userCurrency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
     },
 
     getSymbol() {
-        return this.settings ? this.settings.symbol : '$';
+        return this.settings ? this.settings.symbol : '₹';
     },
 
     getCode() {
-        return this.settings ? this.settings.code : 'USD';
+        return this.settings ? this.settings.code : 'INR';
     },
 
     applyToStaticMarkers() {

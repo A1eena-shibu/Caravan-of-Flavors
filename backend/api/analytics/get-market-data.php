@@ -6,29 +6,59 @@ try {
     $pdo = getDBConnection();
 
     // 1. Card Stats
-    // Total Orders
+    // Total Orders (Orders Only)
     $stmtTotal = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status != 'cancelled'");
     $totalOrders = $stmtTotal->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
 
-    // Shipped Orders
-    $stmtShipped = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status = 'shipped'");
+    // Shipped Orders (Orders + Auctions)
+    $stmtShipped = $pdo->query("
+        SELECT (SELECT COUNT(*) FROM orders WHERE status = 'shipped') + 
+               (SELECT COUNT(*) FROM auctions WHERE shipping_status = 'shipped') as val
+    ");
     $shippedOrders = $stmtShipped->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
 
-    // Delivered Orders
-    $stmtDelivered = $pdo->query("SELECT COUNT(*) as val FROM orders WHERE status = 'delivered'");
+    // Delivered Orders (Orders + Auctions)
+    // Auctions don't have explicit 'delivered' status column usually, but let's check if we track it.
+    // Based on previous files, auctions have 'shipping_status'. If 'delivered' is a valid shipping_status:
+    $stmtDelivered = $pdo->query("
+        SELECT (SELECT COUNT(*) FROM orders WHERE status = 'delivered') + 
+               (SELECT COUNT(*) FROM auctions WHERE shipping_status = 'delivered') as val
+    ");
     $deliveredOrders = $stmtDelivered->fetch(PDO::FETCH_ASSOC)['val'] ?? 0;
 
-    // 2. Chart: Orders by Status (Pie)
-    $stmtStatus = $pdo->query("SELECT status, COUNT(*) as count FROM orders GROUP BY status");
+    // 2. Chart: Orders by Status (Pie) - Unified
+    $stmtStatus = $pdo->query("
+        SELECT status, COUNT(*) as count FROM (
+            SELECT status FROM orders
+            UNION ALL
+            SELECT CASE 
+                WHEN shipping_status IS NOT NULL THEN shipping_status
+                WHEN status = 'completed' THEN 'processing' 
+                ELSE status 
+            END as status 
+            FROM auctions 
+            WHERE status IN ('completed', 'shipped') AND payment_status = 'paid'
+        ) as combined
+        GROUP BY status
+    ");
     $statusData = $stmtStatus->fetchAll(PDO::FETCH_ASSOC);
 
     // 3. Chart: Top Ordered Products (Bar)
+    // 3. Chart: Top Ordered Products (Bar) - Unified
     $stmtTop = $pdo->query("
-        SELECT p.product_name, COUNT(o.id) as count
-        FROM orders o
-        JOIN products p ON o.product_id = p.id
-        WHERE o.status != 'cancelled'
-        GROUP BY p.product_name
+        SELECT product_name, COUNT(*) as count FROM (
+            SELECT p.product_name 
+            FROM orders o
+            JOIN products p ON o.product_id = p.id
+            WHERE o.status != 'cancelled'
+            
+            UNION ALL
+            
+            SELECT product_name 
+            FROM auctions 
+            WHERE status IN ('completed', 'shipped') AND payment_status = 'paid'
+        ) as combined_products
+        GROUP BY product_name
         ORDER BY count DESC
         LIMIT 5
     ");

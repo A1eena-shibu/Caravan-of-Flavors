@@ -17,14 +17,14 @@ try {
         SELECT 
             r.id, 
             r.rating, 
-            r.comment, 
+            r.review_text as comment, 
             r.created_at,
             p.product_name,
             u.full_name as customer_name,
             u.id as user_id
         FROM reviews r
         JOIN products p ON r.product_id = p.id
-        JOIN users u ON r.user_id = u.id
+        JOIN users u ON r.customer_id = u.id
         ORDER BY r.created_at DESC
         LIMIT 50
     ";

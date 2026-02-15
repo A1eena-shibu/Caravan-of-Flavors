@@ -18,7 +18,7 @@ $customer_id = $_SESSION['user_id'];
 
 try {
     $stmt = $pdo->prepare("
-        SELECT o.id, o.status, o.total_price, o.quantity, o.order_date, p.product_name, p.image_url, p.unit, u.full_name as farmer_name, o.shipped_at, o.delivered_at
+        SELECT o.id, o.status, o.total_price, o.currency_code, o.exchange_rate, o.quantity, o.order_date, p.product_name, p.image_url, p.unit, u.full_name as farmer_name, o.shipped_at, o.delivered_at, 'catalog' as source
         FROM orders o
         LEFT JOIN products p ON o.product_id = p.id
         LEFT JOIN users u ON o.farmer_id = u.id

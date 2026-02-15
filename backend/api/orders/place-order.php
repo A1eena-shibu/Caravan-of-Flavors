@@ -40,7 +40,8 @@ try {
 
     $total_price = $product['price'] * $quantity;
 
-    $currency_code = $data['currency_code'] ?? 'USD';
+    require_once '../services/CurrencyService.php';
+    $currency_code = $data['currency_code'] ?? CurrencyService::BASE_CURRENCY;
     $exchange_rate = $data['exchange_rate'] ?? 1.0;
 
     // 2. Create Order
@@ -58,8 +59,21 @@ try {
 
     // 4b. Create Notification for Farmer
     $unit = $product['unit'] ?? 'kg';
+
+    // Convert for notification display (Farmer might see in their currency)
+    require_once '../services/CurrencyService.php';
+    $farmer_id = $product['farmer_id'];
+    $farmerStmt = $pdo->prepare("SELECT currency_code, currency_symbol FROM users WHERE id = ?");
+    $farmerStmt->execute([$farmer_id]);
+    $farmer = $farmerStmt->fetch(PDO::FETCH_ASSOC);
+
+    $farmerCurrency = $farmer['currency_code'] ?? CurrencyService::BASE_CURRENCY;
+    $farmerSymbol = $farmer['currency_symbol'] ?? '₹';
+    $displayTotal = CurrencyService::convert($total_price, CurrencyService::BASE_CURRENCY, $farmerCurrency);
+    $formattedTotal = CurrencyService::formatPrice($displayTotal, $farmerSymbol, $farmerCurrency);
+
     $notifStmt = $pdo->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, 'New Order Received!', ?, 'order')");
-    $notifStmt->execute([$product['farmer_id'], "You have a new order for {$quantity}{$unit} of {$product['product_name']}. Total: \${$total_price}"]);
+    $notifStmt->execute([$farmer_id, "You have a new order for {$quantity}{$unit} of {$product['product_name']}. Total: {$formattedTotal}"]);
 
     $pdo->commit();
     echo json_encode(['success' => true, 'message' => 'Order placed successfully!', 'order_id' => $order_id]);

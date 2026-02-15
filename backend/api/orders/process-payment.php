@@ -34,41 +34,15 @@ try {
         $address .= "\nContact: " . $phone;
     }
 
-    // --- Auto-Save to User Profile if missing ---
+    // --- Auto-Save to User Profile ---
     if (session_status() === PHP_SESSION_NONE)
         session_start();
     if (isset($_SESSION['user_id'])) {
         $userId = $_SESSION['user_id'];
 
-        // Fetch current user details to check what's missing
-        $stmtUser = $pdo->prepare("SELECT phone, address FROM users WHERE id = ?");
-        $stmtUser->execute([$userId]);
-        $currentUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
-
-        if ($currentUser) {
-            $updateUserFields = [];
-            $updateUserParams = [];
-
-            // If profile phone is empty and we have a new phone
-            if (empty($currentUser['phone']) && !empty($phone)) {
-                $updateUserFields[] = "phone = ?";
-                $updateUserParams[] = $phone;
-            }
-
-            // If profile address is empty and we have a new address
-            // Note: We use the raw address from input, not the one with appended phone
-            if (empty($currentUser['address']) && !empty($data['address'])) {
-                $updateUserFields[] = "address = ?";
-                $updateUserParams[] = $data['address'];
-            }
-
-            if (!empty($updateUserFields)) {
-                $updateUserParams[] = $userId;
-                $sqlUser = "UPDATE users SET " . implode(", ", $updateUserFields) . " WHERE id = ?";
-                $stmtUpdate = $pdo->prepare($sqlUser);
-                $stmtUpdate->execute($updateUserParams);
-            }
-        }
+        // Always update the user's profile with the latest phone and address used for delivery
+        $updateUserStmt = $pdo->prepare("UPDATE users SET phone = ?, address = ? WHERE id = ?");
+        $updateUserStmt->execute([$phone, $data['address'], $userId]);
     }
     // --------------------------------------------
 

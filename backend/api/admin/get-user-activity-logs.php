@@ -1,26 +1,32 @@
 <?php
-/**
- * Admin API: Get All Activity Logs
- * Aggregates activities from orders, products, users, and reviews with details.
- */
-
 ini_set('display_errors', 0);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
-ob_start();
+require_once '../../config/database.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../../config/database.php';
+
+if (!isset($_GET['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'User ID required']);
+    exit;
+}
+
+$userId = $_GET['user_id'];
 
 register_shutdown_function(function () {
     $error = error_get_last();
     if ($error !== null && $error['type'] === E_ERROR) {
-        file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "FATAL ERROR in get-all-activity.php: " . print_r($error, true) . "\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "FATAL ERROR in get-user-activity-logs.php: " . print_r($error, true) . "\n", FILE_APPEND);
     }
 });
 
 try {
     $pdo = getDBConnection();
+
+    // Complex Union Query filtered by User ID
+    // We check both customer_id and farmer_id where applicable to capture all interactions
     $stmt = $pdo->prepare("
         (SELECT 
             'order' as type,
@@ -39,15 +45,14 @@ try {
                 WHEN ot.status = 'rejected' THEN 'rejected the order'
                 ELSE CONCAT('updated order status to ', ot.status)
             END as action,
-            CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name) as details,
+            CONCAT(p.product_name, ' (', o.quantity, ' ', p.unit, ')') as details,
             o.id as reference_id,
             o.total_price as amount
         FROM order_tracking ot
         JOIN orders o ON ot.order_id = o.id
         JOIN users u ON o.customer_id = u.id
         JOIN products p ON o.product_id = p.id
-        JOIN users f ON o.farmer_id = f.id
-        WHERE u.email != 'admin@gmail.com')
+        WHERE o.customer_id = ? OR o.farmer_id = ?)
 
         UNION ALL
 
@@ -57,30 +62,13 @@ try {
             u.full_name as user_name,
             u.role as user_role,
             CASE WHEN pt.action = 'listed' THEN 'listed a new product' ELSE 'updated product details' END as action,
-            CASE 
-                WHEN pt.action = 'listed' THEN CONCAT(p.product_name, ' in ', pt.category, ' - ', 0 + pt.quantity, ' ', pt.unit, ' @ ', pt.price, '/', pt.unit)
-                ELSE CONCAT(p.product_name, ' (', 0 + pt.quantity, ' ', pt.unit, ') @ ', pt.price, '/', pt.unit)
-            END as details,
-            pt.id as reference_id,
-            pt.price as amount
+            p.product_name as details,
+            p.id as reference_id,
+            p.price as amount
         FROM product_tracking pt
         JOIN products p ON pt.product_id = p.id
         JOIN users u ON p.farmer_id = u.id
-        WHERE u.email != 'admin@gmail.com')
-
-        UNION ALL
-
-        (SELECT 
-            'user' as type,
-            created_at as timestamp,
-            full_name as user_name,
-            role as user_role,
-            CONCAT('registered as a ', role) as action,
-            CONCAT('Email: ', email) as details,
-            id as reference_id,
-            0 as amount
-        FROM users
-        WHERE role != 'admin' AND email != 'admin@gmail.com')
+        WHERE p.farmer_id = ?)
 
         UNION ALL
 
@@ -90,75 +78,80 @@ try {
             u.full_name as user_name,
             u.role as user_role,
             'wrote a review' as action,
-            CONCAT('On ', p.product_name, ': \"', LEFT(r.review_text, 50), '...\" (', r.rating, '/5 stars)') as details,
+            CONCAT('On ', p.product_name, ': ', LEFT(r.review_text, 30), '...') as details,
             r.id as reference_id,
             CAST(r.rating AS DECIMAL(10,2)) as amount
         FROM reviews r
         JOIN users u ON r.customer_id = u.id
         JOIN products p ON r.product_id = p.id
-        WHERE u.email != 'admin@gmail.com')
-
-
+        WHERE r.customer_id = ? OR p.farmer_id = ?)
 
         UNION ALL
 
+        /* Auctions: Start */
         (SELECT 
             'auction' as type,
             a.start_time as timestamp,
             u.full_name as user_name,
             u.role as user_role,
             'started an auction' as action,
-            CONCAT(a.product_name, ' - Starting Price: ', a.starting_price) as details,
+            CONCAT(a.product_name) as details,
             a.id as reference_id,
             a.starting_price as amount
         FROM auctions a
         JOIN users u ON a.farmer_id = u.id
-        WHERE u.email != 'admin@gmail.com')
+        WHERE a.farmer_id = ?)
 
         UNION ALL
 
+        /* Auctions: Completed */
         (SELECT 
             'auction' as type,
             a.end_time as timestamp,
             u.full_name as user_name,
             u.role as user_role,
             'auction completed' as action,
-            CONCAT(a.product_name, ' - Winning Bid: ', a.current_bid) as details,
+            CONCAT(a.product_name, ' won') as details,
             a.id as reference_id,
             a.current_bid as amount
         FROM auctions a
         JOIN users u ON a.farmer_id = u.id
-        WHERE a.status IN ('completed', 'shipped', 'paid', 'delivered') AND a.winner_id IS NOT NULL AND u.email != 'admin@gmail.com')
+        WHERE (a.farmer_id = ? OR a.winner_id = ?) 
+          AND a.status IN ('completed', 'shipped', 'paid') AND a.winner_id IS NOT NULL)
 
         UNION ALL
 
+        /* Auctions: Paid */
         (SELECT 
             'auction' as type,
             a.updated_at as timestamp,
             u.full_name as user_name,
             u.role as user_role,
             'payment confirmed' as action,
-            CONCAT(a.product_name, ' paid by winner') as details,
+            CONCAT(a.product_name, ' paid') as details,
             a.id as reference_id,
             a.current_bid as amount
         FROM auctions a
         JOIN users u ON a.winner_id = u.id
-        WHERE a.payment_status = 'paid' AND u.email != 'admin@gmail.com')
+        WHERE (a.farmer_id = ? OR a.winner_id = ?)
+          AND a.payment_status = 'paid')
 
         UNION ALL
 
+        /* Auctions: Shipped */
         (SELECT 
             'auction' as type,
             a.shipped_at as timestamp,
             u.full_name as user_name,
             u.role as user_role,
             'shipped auction item' as action,
-            CONCAT(a.product_name, ' shipped to winner') as details,
+            CONCAT(a.product_name) as details,
             a.id as reference_id,
             a.current_bid as amount
         FROM auctions a
         JOIN users u ON a.farmer_id = u.id
-        WHERE a.shipping_status = 'shipped' AND a.shipped_at IS NOT NULL AND u.email != 'admin@gmail.com')
+        WHERE (a.farmer_id = ? OR a.winner_id = ?)
+          AND a.shipping_status = 'shipped' AND a.shipped_at IS NOT NULL)
 
         UNION ALL
 
@@ -174,7 +167,7 @@ try {
         FROM bids b
         JOIN users u ON b.customer_id = u.id
         JOIN auctions a ON b.auction_id = a.id
-        WHERE u.email != 'admin@gmail.com')
+        WHERE b.customer_id = ?)
 
         UNION ALL
 
@@ -189,20 +182,49 @@ try {
             0 as amount
         FROM admin_logs al
         JOIN users u ON al.admin_id = u.id
-        WHERE al.action_type = 'product_deleted' AND u.email != 'admin@gmail.com')
+        WHERE al.action_type = 'product_deleted' AND al.admin_id = ?)
 
         ORDER BY timestamp DESC
-        LIMIT 100
+        LIMIT 50
     ");
 
-    $stmt->execute();
+    /*
+    Param mapping:
+    1,2: Orders (cust, farm)
+    3: Products (farm)
+    4: Users (id)
+    5,6: Reviews (cust, farm)
+    7: Product Tracking (farm)
+    8: Auction Start (farm)
+    9,10: Auction End (farm, win)
+    11,12: Auction Pay (farm, win)
+    13,14: Auction Ship (farm, win)
+    15: Bids (cust)
+    */
+
+    $stmt->execute([
+        $userId,
+        $userId, // Orders (2)
+        $userId, // Product Tracking (1)
+        $userId,
+        $userId, // Reviews (2)
+        $userId, // Auction Start (1)
+        $userId,
+        $userId, // Auction End (2)
+        $userId,
+        $userId, // Auction Pay (2)
+        $userId,
+        $userId, // Auction Ship (2)
+        $userId, // Bids (1)
+        $userId  // Product Deletion (1)
+    ]);
+
     $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode(['success' => true, 'data' => $logs]);
 
 } catch (Exception $e) {
-    ob_end_clean();
-    file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "get-all-activity.php Error: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
+    file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "get-user-activity-logs.php Error: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }

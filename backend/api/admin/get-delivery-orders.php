@@ -25,25 +25,48 @@ try {
 
     $sql = "
         SELECT 
+            'order' as type,
             o.id, 
             o.status, 
             o.delivery_address,
             o.delivery_agent_id,
             c.full_name as customer_name,
             c.phone as customer_phone,
-            da.full_name as agent_name
+            da.full_name as agent_name,
+            p.product_name,
+            p.image_url as product_image
         FROM orders o
         JOIN users c ON o.customer_id = c.id
+        JOIN products p ON o.product_id = p.id
         LEFT JOIN users da ON o.delivery_agent_id = da.id
         WHERE o.status IN ('shipped', 'delivered')
-        ORDER BY o.updated_at DESC
+        
+        UNION ALL
+        
+        SELECT 
+            'auction' as type,
+            a.id, 
+            a.shipping_status as status, 
+            a.shipping_address as delivery_address,
+            a.delivery_agent_id,
+            u.full_name as customer_name,
+            u.phone as customer_phone,
+            da2.full_name as agent_name,
+            a.product_name,
+            a.image_url as product_image
+        FROM auctions a
+        JOIN users u ON a.winner_id = u.id
+        LEFT JOIN users da2 ON a.delivery_agent_id = da2.id
+        WHERE a.shipping_status IN ('shipped', 'delivered')
+        
+        ORDER BY id DESC
     ";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
-    $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode(['success' => true, 'data' => $orders]);
+    echo json_encode(['success' => true, 'data' => $items]);
 
 } catch (Exception $e) {
     http_response_code(500);
