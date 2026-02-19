@@ -66,12 +66,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Orders
             </a>
-            <a href="exports.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
-                Exports
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -390,7 +384,10 @@
                                         <img src="${icon}" width="18" alt="">
                                     </div>
                                     <div style="overflow: hidden;">
-                                        <p style="font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${activity.product_name} • ${activity.customer_name}</p>
+                                        <p style="font-size: 13px; font-weight: 700; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <span class="text-primary font-bold mr-1">${(activity.type === 'auction' ? 'AUC' : 'ORD')}-${activity.id.toString().padStart(5, '0')}</span> • 
+                                            ${activity.product_name} • ${activity.customer_name}
+                                        </p>
                                         <p style="font-size: 11px; color: #1c1917; margin-top: 2px;">${date} • ${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(activity.total_price, activity.exchange_rate, activity.currency) : (window.formatMoney ? window.formatMoney(activity.total_price, activity.currency) : '$' + activity.total_price))}</p>
                                     </div>
                                 </div>`;
@@ -451,7 +448,10 @@
                                     </div>
                                     <div style="text-align: right;">
                                         <p style="font-size: 12px; font-weight: 700; color: ${badgeColor};">${badgeText}</p>
-                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(a.current_bid, a.exchange_rate, a.base_currency || 'USD') : (window.formatMoney ? window.formatMoney(a.current_bid, a.base_currency) : '$' + a.current_bid))}</p>
+                                        <p style="font-size: 11px; font-weight: 700; color: #1c1917;">
+                                            <span class="text-stone-400 font-bold mr-2">AUC-${a.id.toString().padStart(5, '0')}</span>
+                                            ${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(a.current_bid, a.exchange_rate, a.base_currency || 'USD') : (window.formatMoney ? window.formatMoney(a.current_bid, a.base_currency) : '$' + a.current_bid))}
+                                        </p>
                                     </div>
                                 </div>`;
                         });

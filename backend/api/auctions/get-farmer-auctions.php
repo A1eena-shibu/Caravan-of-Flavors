@@ -20,7 +20,12 @@ $targetSymbol = $_SESSION['user_currency_symbol'] ?? '$';
 try {
     // Fetch auctions with winner names
     $stmt = $pdo->prepare("
-        SELECT a.*, u.full_name as winner_name
+        SELECT a.*, u.full_name as winner_name,
+               CASE 
+                 WHEN a.shipping_status = 'delivered' THEN 'delivered'
+                 WHEN a.shipping_status = 'shipped' THEN 'shipped'
+                 ELSE a.status 
+               END as status
         FROM auctions a
         LEFT JOIN users u ON a.winner_id = u.id
         WHERE a.farmer_id = ?

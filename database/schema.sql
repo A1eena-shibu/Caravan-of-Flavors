@@ -13,7 +13,8 @@ CREATE TABLE users (
     country VARCHAR(100),
     currency_code VARCHAR(10),
     currency_symbol VARCHAR(10),
-    role ENUM('farmer', 'customer', 'admin', 'delivery_agent') NOT NULL DEFAULT 'customer',
+    role ENUM('farmer', 'customer', 'admin', 'delivery_agent', 'delivery_staff') NOT NULL DEFAULT 'customer',
+    hub_id INT DEFAULT NULL, 
     phone VARCHAR(20),
     address TEXT,
     google_id VARCHAR(255) UNIQUE, 
@@ -23,10 +24,13 @@ CREATE TABLE users (
     admin_access ENUM('all', 'delivery_only') DEFAULT 'all',
     revenue_target DECIMAL(12, 6) DEFAULT 50000,
     low_stock_threshold INT DEFAULT 100,
+    reset_token VARCHAR(255) DEFAULT NULL,
+    reset_token_sent_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
-    INDEX idx_role (role)
+    INDEX idx_role (role),
+    FOREIGN KEY (hub_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- Products table (for farmers to add their spices)
@@ -66,24 +70,27 @@ CREATE TABLE orders (
     total_price DECIMAL(12, 6) NOT NULL,
     currency_code VARCHAR(10) DEFAULT 'INR',
     exchange_rate DECIMAL(10, 6) DEFAULT 1.000000,
-    status ENUM('ordered', 'shipped', 'delivered', 'cancelled') DEFAULT 'ordered',
+    status ENUM('ordered', 'shipped', 'delivered', 'cancelled', 'shipped_pending') DEFAULT 'ordered',
     delivery_address TEXT NOT NULL,
     delivery_agent_id INT NULL DEFAULT NULL,
+    delivery_staff_id INT NULL DEFAULT NULL,
     payment_method VARCHAR(50),
     payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
     shipped_at TIMESTAMP NULL,
     delivered_at TIMESTAMP NULL,
+    delivery_otp VARCHAR(4) DEFAULT NULL,
+    delivery_otp_sent_at TIMESTAMP NULL DEFAULT NULL,
     notes TEXT,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (delivery_agent_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (delivery_staff_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_customer (customer_id),
     INDEX idx_farmer (farmer_id),
     INDEX idx_status (status),
     INDEX idx_order_date (order_date),
-    INDEX idx_delivery_agent (delivery_agent_id)
+    INDEX idx_delivery_agent (delivery_agent_id),
+    INDEX idx_delivery_staff (delivery_staff_id)
 ) ENGINE=InnoDB;
 
 -- Inventory table (for tracking stock)
@@ -123,11 +130,13 @@ CREATE TABLE order_tracking (
     id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT NOT NULL,
     status VARCHAR(50) NOT NULL,
+    type ENUM('order', 'auction') DEFAULT 'order',
     location VARCHAR(255),
     comment TEXT,
+    created_by INT NULL DEFAULT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    INDEX idx_order (order_id)
+    INDEX idx_order_type (order_id, type),
+    INDEX idx_created_by (created_by)
 ) ENGINE=InnoDB;
 
 -- Product Tracking History
@@ -188,20 +197,26 @@ CREATE TABLE auctions (
     winner_id INT, 
     payment_status ENUM('pending', 'paid') DEFAULT 'pending',
     paid_at TIMESTAMP NULL,
-    shipping_status ENUM('pending', 'shipped', 'delivered') DEFAULT 'pending',
+    shipping_status ENUM('pending', 'shipped', 'delivered', 'shipped_pending') DEFAULT 'pending',
     shipping_address TEXT,
     phone VARCHAR(20),
     delivery_agent_id INT NULL DEFAULT NULL,
+    delivery_staff_id INT NULL DEFAULT NULL,
     tracking_number VARCHAR(100),
+    delivery_otp VARCHAR(4) DEFAULT NULL,
+    delivery_otp_sent_at TIMESTAMP NULL DEFAULT NULL,
     shipped_at TIMESTAMP NULL,
+    delivered_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (winner_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (delivery_agent_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (delivery_staff_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_farmer (farmer_id),
     INDEX idx_status (status),
-    INDEX idx_delivery_agent (delivery_agent_id)
+    INDEX idx_delivery_agent (delivery_agent_id),
+    INDEX idx_delivery_staff (delivery_staff_id)
 ) ENGINE=InnoDB;
 
 -- Bids table
@@ -217,39 +232,6 @@ CREATE TABLE bids (
     INDEX idx_customer (customer_id)
 ) ENGINE=InnoDB;
 
--- Exports table
-CREATE TABLE exports (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    farmer_id INT NOT NULL,
-    product_name VARCHAR(255) NOT NULL,
-    destination_country VARCHAR(100) NOT NULL,
-    quantity DECIMAL(10, 2) NOT NULL,
-    unit VARCHAR(20) DEFAULT 'kg',
-    status ENUM('pending', 'packaged', 'customs', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
-    tracking_number VARCHAR(100),
-    shipping_carrier VARCHAR(100),
-    shipment_date DATE,
-    estimated_arrival DATE,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (farmer_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_farmer (farmer_id),
-    INDEX idx_status (status),
-    INDEX idx_tracking (tracking_number)
-) ENGINE=InnoDB;
-
--- Export Documents table
-CREATE TABLE export_documents (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    export_id INT NOT NULL,
-    document_name VARCHAR(255) NOT NULL,
-    document_type ENUM('invoice', 'packing_list', 'phytosanitary', 'origin_certificate', 'bill_of_lading', 'other') NOT NULL,
-    file_path VARCHAR(500) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (export_id) REFERENCES exports(id) ON DELETE CASCADE,
-    INDEX idx_export (export_id)
-) ENGINE=InnoDB;
 
 -- Cart table
 CREATE TABLE cart (
@@ -268,29 +250,29 @@ CREATE TABLE cart (
 
 -- Sample products for farmer@gmail.com (Farmer ID: 2)
 INSERT INTO products (farmer_id, product_name, category, price, quantity, unit, image_url, is_featured, is_organic) VALUES
-(2, 'Black Pepper', 'Whole Spices', 1500, 250.00, 'kg', 'uploads/products/black_pepper.webp', TRUE, TRUE),
-(2, 'Turmeric Powder', 'Ground Spices', 550, 85.00, 'kg', 'uploads/products/turmeric_powder.jpg', TRUE, TRUE),
-(2, 'Cardamom', 'Whole Spices', 2750, 15.00, 'kg', 'uploads/products/cardamom.jpg', FALSE, FALSE),
-(2, 'Cinnamon Quills', 'Whole Spices', 1600, 500.00, 'kg', 'uploads/products/cinnamon.jpg', TRUE, FALSE),
-(2, 'Star Anise', 'Whole Spices', 750, 0.00, 'kg', 'uploads/products/star_anise.jpg', FALSE, TRUE),
-(2, 'Red Chili Flakes', 'Ground Spices', 230, 120.00, 'kg', 'uploads/products/red_chili.jpg', FALSE, FALSE),
-(2, 'Ginger Powder', 'Ground Spices', 500, 45.00, 'kg', 'uploads/products/ginger.jpg', FALSE, TRUE),
-(2, 'Clove Buds', 'Whole Spices', 1300, 200.00, 'kg', 'uploads/products/clove.jpg', TRUE, TRUE),
-(2, 'Cumin Seeds', 'Whole Spices', 230, 10.00, 'kg', 'uploads/products/cumin.jpg', FALSE, FALSE),
-(2, 'Saffron Threads', 'Luxury Spices', 300000, 0.50, 'kg', 'uploads/products/saffron.jpg', TRUE, TRUE);
+(2, 'Black Pepper', 'Spices', 1500, 250.00, 'kg', 'uploads/products/black_pepper.webp', TRUE, TRUE),
+(2, 'Turmeric Powder', 'Spices', 550, 85.00, 'kg', 'uploads/products/turmeric_powder.jpg', TRUE, TRUE),
+(2, 'Cardamom', 'Spices', 2750, 15.00, 'kg', 'uploads/products/cardamom.jpg', FALSE, FALSE),
+(2, 'Cinnamon Quills', 'Spices', 1600, 500.00, 'kg', 'uploads/products/cinnamon.jpg', TRUE, FALSE),
+(2, 'Star Anise', 'Spices', 750, 0.00, 'kg', 'uploads/products/star_anise.jpg', FALSE, TRUE),
+(2, 'Red Chili Flakes', 'Spices', 230, 120.00, 'kg', 'uploads/products/red_chili.jpg', FALSE, FALSE),
+(2, 'Ginger Powder', 'Spices', 500, 45.00, 'kg', 'uploads/products/ginger.jpg', FALSE, TRUE),
+(2, 'Clove Buds', 'Spices', 1300, 200.00, 'kg', 'uploads/products/clove.jpg', TRUE, TRUE),
+(2, 'Cumin Seeds', 'Spices', 230, 10.00, 'kg', 'uploads/products/cumin.jpg', FALSE, FALSE),
+(2, 'Saffron Threads', 'Spices', 300000, 0.50, 'kg', 'uploads/products/saffron.jpg', TRUE, TRUE);
 
 -- Activity logs for hardcoded products
 INSERT INTO product_tracking (product_id, action, quantity, price, unit, category, comment) VALUES
-(1, 'listed', 250.00, 1500, 'kg', 'Whole Spices', 'Initial stock listing'),
-(2, 'listed', 85.00, 550, 'kg', 'Ground Spices', 'Initial stock listing'),
-(3, 'listed', 15.00, 2750, 'kg', 'Whole Spices', 'Initial stock listing'),
-(4, 'listed', 500.00, 1600, 'kg', 'Whole Spices', 'Initial stock listing'),
-(5, 'listed', 0.00, 750, 'kg', 'Whole Spices', 'Initial stock listing'),
-(6, 'listed', 120.00, 230, 'kg', 'Ground Spices', 'Initial stock listing'),
-(7, 'listed', 45.00, 500, 'kg', 'Ground Spices', 'Initial stock listing'),
-(8, 'listed', 200.00, 1300, 'kg', 'Whole Spices', 'Initial stock listing'),
-(9, 'listed', 10.00, 230, 'kg', 'Whole Spices', 'Initial stock listing'),
-(10, 'listed', 0.50, 300000, 'kg', 'Luxury Spices', 'Initial stock listing');
+(1, 'listed', 250.00, 1500, 'kg', 'Spices', 'Initial stock listing'),
+(2, 'listed', 85.00, 550, 'kg', 'Spices', 'Initial stock listing'),
+(3, 'listed', 15.00, 2750, 'kg', 'Spices', 'Initial stock listing'),
+(4, 'listed', 500.00, 1600, 'kg', 'Spices', 'Initial stock listing'),
+(5, 'listed', 0.00, 750, 'kg', 'Spices', 'Initial stock listing'),
+(6, 'listed', 120.00, 230, 'kg', 'Spices', 'Initial stock listing'),
+(7, 'listed', 45.00, 500, 'kg', 'Spices', 'Initial stock listing'),
+(8, 'listed', 200.00, 1300, 'kg', 'Spices', 'Initial stock listing'),
+(9, 'listed', 10.00, 230, 'kg', 'Spices', 'Initial stock listing'),
+(10, 'listed', 0.50, 300000, 'kg', 'Spices', 'Initial stock listing');
 
 -- Reviews table
 CREATE TABLE reviews (

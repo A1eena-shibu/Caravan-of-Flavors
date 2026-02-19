@@ -13,12 +13,7 @@ require_once '../../config/database.php';
 // Strict Admin Check
 require_role('admin');
 
-register_shutdown_function(function () {
-    $error = error_get_last();
-    if ($error !== null && $error['type'] === E_ERROR) {
-        file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "FATAL ERROR in get-admin-analytics.php: " . print_r($error, true) . "\n", FILE_APPEND);
-    }
-});
+
 
 try {
     $pdo = getDBConnection();
@@ -88,11 +83,12 @@ try {
             UNION ALL
             SELECT 
                 CASE 
+                    WHEN shipping_status = 'delivered' THEN 'delivered'
                     WHEN shipping_status = 'shipped' THEN 'shipped'
                     ELSE status 
                 END as status
             FROM auctions 
-            WHERE status IN ('completed', 'shipped', 'paid') AND winner_id IS NOT NULL
+            WHERE (status IN ('completed', 'shipped', 'paid', 'delivered') OR shipping_status IN ('shipped', 'delivered')) AND winner_id IS NOT NULL
         ) as combined_statuses
         GROUP BY status
         ORDER BY count DESC
@@ -113,7 +109,6 @@ try {
 
 } catch (Exception $e) {
     ob_end_clean();
-    file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "get-admin-analytics.php Error: " . $e->getMessage() . "\n", FILE_APPEND);
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }

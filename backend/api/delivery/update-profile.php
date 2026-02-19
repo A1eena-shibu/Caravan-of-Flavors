@@ -23,8 +23,6 @@ try {
     $user_id = $_SESSION['user_id'];
     $full_name = trim($data['full_name'] ?? '');
     $email = trim($data['email'] ?? '');
-    $phone = trim($data['phone'] ?? '');
-    $address = trim($data['address'] ?? '');
 
     if (empty($full_name) || empty($email)) {
         throw new Exception('Name and Email are required');
@@ -39,13 +37,32 @@ try {
         throw new Exception('Email is already in use by another account');
     }
 
+    // Build dynamic update query
+    $updateFields = ['full_name = ?', 'email = ?'];
+    $params = [$full_name, $email];
+
+    // Only update phone if provided
+    if (isset($data['phone'])) {
+        $updateFields[] = 'phone = ?';
+        $params[] = trim($data['phone']);
+    }
+
+    // Only update address if provided
+    if (isset($data['address'])) {
+        $updateFields[] = 'address = ?';
+        $params[] = trim($data['address']);
+    }
+
+    $updateFields[] = 'updated_at = CURRENT_TIMESTAMP';
+    $params[] = $user_id;
+
     $stmt = $pdo->prepare("
         UPDATE users 
-        SET full_name = ?, email = ?, phone = ?, address = ?, updated_at = CURRENT_TIMESTAMP 
+        SET " . implode(', ', $updateFields) . "
         WHERE id = ?
     ");
 
-    if ($stmt->execute([$full_name, $email, $phone, $address, $user_id])) {
+    if ($stmt->execute($params)) {
         // Update session
         $_SESSION['user_name'] = $full_name;
         $_SESSION['user_email'] = $email;

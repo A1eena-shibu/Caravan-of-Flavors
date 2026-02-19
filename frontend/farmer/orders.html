@@ -59,12 +59,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=white" width="18" alt="">
                 Orders
             </a>
-            <a href="exports.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
-                Exports
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -129,9 +123,62 @@
                 </p>
             </div>
         </div>
+
+        <!-- Delivery Agent Selection Modal -->
+        <div id="agent-modal"
+            class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div class="bg-white rounded-[32px] p-8 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-stone-900">Ship Order</h3>
+                    <button onclick="closeAgentModal()"
+                        class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors">
+                        <img src="https://api.iconify.design/lucide:x.svg?color=%231c1917" width="20">
+                    </button>
+                </div>
+
+                <p class="text-stone-500 text-sm mb-6 font-medium">Select a delivery agent to fulfill this order. Search
+                    by name or location.</p>
+
+                <div class="relative mb-6">
+                    <input type="text" id="agent-search" oninput="searchAgents(this.value)"
+                        placeholder="Search agents by name or place..."
+                        class="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                        <img src="https://api.iconify.design/lucide:search.svg?color=%23FF7E21" width="20">
+                    </div>
+                </div>
+
+                <div id="agent-list" class="max-h-[300px] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                    <div class="text-center py-8 text-stone-400 font-medium">Start typing to search agents...</div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-stone-100 flex gap-3">
+                    <button onclick="closeAgentModal()"
+                        class="flex-1 py-4 rounded-2xl border-2 border-stone-100 text-stone-500 font-bold text-sm hover:bg-stone-50 transition-all uppercase tracking-wider">CANCEL</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f5f5f4;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e7e5e4;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d6d3d1;
+        }
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -247,6 +294,7 @@
                     const statusMap = {
                         'ordered': 'New Order',
                         'shipped': 'Shipped',
+                        'shipped_pending': 'Shipping Pending',
                         'delivered': 'Delivered',
                         'cancelled': 'Cancelled'
                     };
@@ -330,14 +378,16 @@
 
             if (statusKey === 'ordered') {
                 if (isPaid) {
-                    return `<button onclick="updateStatus('${order.id}', 'shipped')" class="bg-primary hover:bg-stone-900 text-white action-btn uppercase shadow-lg shadow-orange-100 hover:shadow-none">SHIP NOW</button>`;
+                    return `<button onclick="openAgentModal('${order.id}')" class="bg-primary hover:bg-stone-900 text-white action-btn uppercase shadow-lg shadow-orange-100 hover:shadow-none">SHIP NOW</button>`;
                 } else {
                     return '<span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest px-6 py-3 bg-amber-50 rounded-xl border border-amber-100">Awaiting Payment</span>';
                 }
             } else if (statusKey === 'shipped') {
                 return '<span class="text-[10px] font-bold text-yellow-700 uppercase tracking-widest px-6 py-3 bg-yellow-50 rounded-xl border border-yellow-100">Delivery Pending</span>';
+            } else if (statusKey === 'shipped_pending') {
+                return '<span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest px-6 py-3 bg-orange-50 rounded-xl border border-orange-100">Agent Approval Pending</span>';
             } else if (statusKey === 'delivered') {
-                return '<span class="text-[10px] font-bold text-green-600 uppercase tracking-widest px-6 py-3 bg-green-50 rounded-xl border border-green-100">Fulfillment Complete</span>';
+                return '<span class="text-[10px] font-bold text-green-600 uppercase tracking-widest px-6 py-3 bg-green-50 rounded-xl border border-green-100">Delivered</span>';
             } else if (statusKey === 'cancelled') {
                 return '<span class="text-[10px] font-bold text-red-600 uppercase tracking-widest px-6 py-3 bg-red-50 rounded-xl border border-red-100">Cancelled</span>';
             }
@@ -366,6 +416,97 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+                showToast('Connection error', 'error');
+            }
+        }
+
+        let currentOrderId = null;
+
+        function openAgentModal(orderId) {
+            currentOrderId = orderId;
+            document.getElementById('agent-modal').classList.remove('hidden');
+            document.getElementById('agent-search').value = '';
+            document.getElementById('agent-list').innerHTML = '<div class="text-center py-8 text-stone-400 font-medium">Start typing to search agents...</div>';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAgentModal() {
+            document.getElementById('agent-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentOrderId = null;
+        }
+
+        async function searchAgents(query) {
+            const list = document.getElementById('agent-list');
+
+            if (!query.trim()) {
+                list.innerHTML = '<div class="text-center py-8 text-stone-400 font-medium">Start typing to search agents...</div>';
+                return;
+            }
+
+            try {
+                const projectRoot = window.getProjectRoot ? window.getProjectRoot() : '';
+                const response = await fetch(`${projectRoot}/backend/api/delivery/search-agents.php?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    if (result.agents.length > 0) {
+                        list.innerHTML = result.agents.map(agent => `
+                            <button onclick="assignAgent('${agent.id}', '${agent.full_name}')" 
+                                class="w-full text-left p-4 rounded-2xl bg-stone-50 border border-stone-100 hover:border-primary/50 hover:bg-white transition-all group">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-orange-100 text-primary flex items-center justify-center font-bold">
+                                        ${agent.full_name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div class="flex-grow min-w-0">
+                                        <div class="font-bold text-stone-900 group-hover:text-primary transition-colors truncate">${agent.full_name}</div>
+                                        <div class="text-[11px] text-stone-400 font-medium truncate">
+                                            ${(() => {
+                                const addr = agent.address || '';
+                                const country = agent.country || '';
+                                if (!country || addr.toLowerCase().includes(country.toLowerCase())) return addr;
+                                return addr ? `${addr}, ${country}` : country;
+                            })()}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </button>
+                        `).join('');
+                    } else {
+                        list.innerHTML = `<div class="text-center py-8 text-stone-400 font-medium">No agents found.</div>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error searching agents:', error);
+                list.innerHTML = `<div class="text-center py-8 text-rose-500 font-medium text-xs">Search failed. Try again.</div>`;
+            }
+        }
+
+        async function assignAgent(agentId, agentName) {
+            if (!currentOrderId) return;
+            if (!await window.showConfirm(`Assign <b>${agentName}</b> to this order and mark as SHIPPED?`)) return;
+
+            try {
+                const projectRoot = window.getProjectRoot ? window.getProjectRoot() : '';
+                const response = await fetch(`${projectRoot}/backend/api/delivery/assign-agent-farmer.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: currentOrderId,
+                        agent_id: agentId
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast(`Order shipped with ${agentName}.`, 'success');
+                    closeAgentModal();
+                    loadOrders();
+                } else {
+                    showToast(result.message || 'Assignment failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error assigning agent:', error);
                 showToast('Connection error', 'error');
             }
         }

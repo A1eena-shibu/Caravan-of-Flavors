@@ -35,18 +35,22 @@ try {
     $updateFields = ["full_name = ?"];
     $params = [$full_name];
 
-    // Allow updating phone even if empty (clearing it)
-    $phone = $_POST['phone'] ?? '';
-    // Basic format validation only if NOT empty
-    // if (!empty($phone) && !preg_match('/^\+?[0-9]{8,15}$/', $phone)) { throw new Exception('Invalid phone number format.'); }
+    // Only update phone if explicitly provided in POST
+    if (isset($_POST['phone'])) {
+        $phone = $_POST['phone'];
+        // Basic format validation only if NOT empty
+        // if (!empty($phone) && !preg_match('/^\+?[0-9]{8,15}$/', $phone)) { throw new Exception('Invalid phone number format.'); }
 
-    $updateFields[] = "phone = ?";
-    $params[] = $phone;
+        $updateFields[] = "phone = ?";
+        $params[] = $phone;
+    }
 
-    // Allow updating address even if empty
-    $address = $_POST['address'] ?? '';
-    $updateFields[] = "address = ?";
-    $params[] = $address;
+    // Only update address if explicitly provided in POST
+    if (isset($_POST['address'])) {
+        $address = $_POST['address'];
+        $updateFields[] = "address = ?";
+        $params[] = $address;
+    }
 
     $country = $_POST['country'] ?? '';
     // Dynamic currency handling

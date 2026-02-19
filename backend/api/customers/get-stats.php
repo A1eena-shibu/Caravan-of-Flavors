@@ -22,7 +22,7 @@ try {
         SELECT (
             SELECT COALESCE(SUM(total_price), 0) FROM orders WHERE customer_id = ? AND status != 'cancelled' AND payment_status = 'paid'
         ) + (
-            SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE winner_id = ? AND status IN ('completed', 'shipped') AND payment_status = 'paid'
+            SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE winner_id = ? AND shipping_status != 'cancelled' AND payment_status = 'paid'
         ) as total
     ");
     $stmtSpent->execute([$customer_id, $customer_id]);
@@ -39,25 +39,25 @@ try {
     $stmtActive->execute([$customer_id, $customer_id]);
     $activeShipments = $stmtActive->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
-    // 3. Active Orders List (Catalog only)
+    // 3. Active Orders List (Catalog Only)
     $stmtActiveList = $pdo->prepare("
         SELECT o.id, o.status, o.total_price, o.currency_code, o.exchange_rate, o.order_date, o.quantity, p.product_name, p.image_url, 'catalog' as source
         FROM orders o 
         JOIN products p ON o.product_id = p.id 
         WHERE o.customer_id = ? AND o.status NOT IN ('delivered', 'cancelled')
-        ORDER BY o.order_date DESC 
+        ORDER BY order_date DESC 
         LIMIT 2
     ");
     $stmtActiveList->execute([$customer_id]);
     $activeOrdersList = $stmtActiveList->fetchAll(PDO::FETCH_ASSOC);
 
-    // 4. Transaction History (Catalog only)
+    // 4. Transaction History (Catalog Only)
     $stmtHistory = $pdo->prepare("
         SELECT o.id, o.status, o.total_price, o.currency_code, o.exchange_rate, o.order_date, o.quantity, p.product_name, 'catalog' as source
         FROM orders o 
         JOIN products p ON o.product_id = p.id 
         WHERE o.customer_id = ?
-        ORDER BY o.order_date DESC 
+        ORDER BY order_date DESC 
         LIMIT 5
     ");
     $stmtHistory->execute([$customer_id]);

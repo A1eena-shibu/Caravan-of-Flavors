@@ -30,12 +30,9 @@ require_once __DIR__ . '/../../config/database.php';
 // we might skip strict check or assume a specific role. 
 // However, looking at other files, we should check for role.
 if (!isset($_SESSION['user_id']) || (isset($_SESSION['user_role']) && $_SESSION['user_role'] !== 'admin')) {
-    // If you want to bypass for testing since I don't see admin login flow yet, comment out
-    // But for "perfect" implementation, we should secure it.
-    // Let's assume there is an admin role.
-    // http_response_code(401);
-    // echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    // exit;
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
 }
 
 try {
@@ -54,7 +51,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT 
             (SELECT COALESCE(SUM(total_price), 0) FROM orders WHERE status != 'cancelled' AND payment_status = 'paid') +
-            (SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE status IN ('completed', 'shipped', 'paid') AND payment_status = 'paid')
+            (SELECT COALESCE(SUM(current_bid), 0) FROM auctions WHERE status IN ('completed', 'shipped', 'paid', 'delivered') AND payment_status = 'paid')
         as total_revenue
     ");
     $stmt->execute();
@@ -72,35 +69,21 @@ try {
         (SELECT 
             'order' as type,
             ot.updated_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
             CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.full_name, 'Unknown Agent')
-                WHEN ot.status = 'shipped' THEN COALESCE(actor.full_name, inferred_actor.full_name, da.full_name, 'Unknown Agent')
-                ELSE u.full_name 
-            END as user_name,
-            CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.role, 'delivery_agent')
-                WHEN ot.status = 'shipped' THEN COALESCE(actor.role, inferred_actor.role, da.role, 'delivery_agent')
-                ELSE u.role 
-            END as user_role,
-            CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN 'task transferred'
                 WHEN ot.status = 'ordered' THEN 'ordered an item'
                 WHEN ot.status = 'pending' THEN 'placed a new order'
                 WHEN ot.status = 'confirmed' THEN 'confirmed the order'
                 WHEN ot.status = 'paid' THEN 'payment confirmed'
                 WHEN ot.status = 'processing' THEN 'processing the order'
-                WHEN ot.status = 'shipped' THEN 'shipment confirmed'
+                WHEN ot.status = 'shipped' THEN 'shipped the order'
                 WHEN ot.status = 'delivered' THEN 'delivered the order'
                 WHEN ot.status = 'cancelled' THEN 'cancelled the order'
                 WHEN ot.status = 'rejected' THEN 'rejected the order'
-                WHEN ot.status = 'shipped_pending' THEN 'reassigned order task'
                 ELSE CONCAT('updated order status to ', ot.status)
             END as action,
-            CASE 
-                WHEN ot.status = 'shipped' AND ot.comment IS NOT NULL THEN REPLACE(ot.comment, 'receipt of the item', 'shipment of the item')
-                WHEN ot.comment IS NOT NULL AND ot.comment != '' THEN ot.comment
-                ELSE CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name)
-            END as details,
+            CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name) as details,
             o.id as reference_id,
             o.total_price as amount
         FROM order_tracking ot
@@ -108,79 +91,7 @@ try {
         JOIN users u ON o.customer_id = u.id
         JOIN products p ON o.product_id = p.id
         JOIN users f ON o.farmer_id = f.id
-        LEFT JOIN users da ON o.delivery_agent_id = da.id
-        LEFT JOIN users actor ON ot.created_by = actor.id
-        LEFT JOIN users inferred_actor ON inferred_actor.id = (
-            SELECT created_by FROM order_tracking
-            WHERE order_id = ot.order_id
-            AND id > ot.id
-            AND (comment LIKE 'Task transferred%' OR comment LIKE 'Task reassigned%')
-            ORDER BY id ASC LIMIT 1
-        )
-        WHERE u.email != 'admin@gmail.com' AND (ot.type IS NULL OR ot.type = 'order') AND ot.status NOT IN ('shipped_pending', 'delivered'))
-
-        UNION ALL
-
-        (SELECT 
-            'order' as type,
-            ot.updated_at as timestamp,
-            COALESCE(f.full_name, 'Unknown Farmer') as user_name,
-            COALESCE(f.role, 'farmer') as user_role,
-            'assigned order task' as action,
-            CASE 
-                WHEN ot.comment IS NOT NULL AND ot.comment != '' THEN REPLACE(ot.comment, 'receipt confirmation', 'confirmation')
-                ELSE CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ')')
-            END as details,
-            o.id as reference_id,
-            o.total_price as amount
-        FROM order_tracking ot
-        JOIN orders o ON ot.order_id = o.id
-        LEFT JOIN users f ON o.farmer_id = f.id
-        JOIN products p ON o.product_id = p.id
-        WHERE (ot.type IS NULL OR ot.type = 'order') AND ot.status = 'shipped_pending')
-
-        UNION ALL
-
-        (SELECT 
-            'auction' as type,
-            ot.updated_at as timestamp,
-            CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.full_name, 'Unknown Agent')
-                WHEN ot.status = 'shipped' THEN COALESCE(actor.full_name, inferred_actor.full_name, da.full_name, 'Unknown Agent')
-                ELSE u.full_name 
-            END as user_name,
-            CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.role, 'delivery_agent')
-                WHEN ot.status = 'shipped' THEN COALESCE(actor.role, inferred_actor.role, da.role, 'delivery_agent')
-                ELSE u.role 
-            END as user_role,
-            CASE 
-                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN 'task transferred'
-                WHEN ot.status = 'shipped_pending' THEN 'assigned auction task'
-                WHEN ot.status = 'shipped' THEN 'shipment confirmed'
-                ELSE CONCAT('updated auction status to ', ot.status)
-            END as action,
-            CASE 
-                WHEN ot.status = 'shipped_pending' AND ot.comment IS NOT NULL THEN REPLACE(ot.comment, 'receipt confirmation', 'confirmation')
-                WHEN ot.status = 'shipped' AND ot.comment IS NOT NULL THEN REPLACE(ot.comment, 'receipt of the item', 'shipment of the item')
-                WHEN ot.comment IS NOT NULL AND ot.comment != '' THEN ot.comment
-                ELSE CONCAT(a.product_name, ' (Auction ID: ', a.id, ')')
-            END as details,
-            a.id as reference_id,
-            a.current_bid as amount
-        FROM order_tracking ot
-        JOIN auctions a ON ot.order_id = a.id
-        LEFT JOIN users u ON u.id = a.farmer_id
-        LEFT JOIN users da ON a.delivery_agent_id = da.id
-        LEFT JOIN users actor ON ot.created_by = actor.id
-        LEFT JOIN users inferred_actor ON inferred_actor.id = (
-            SELECT created_by FROM order_tracking
-            WHERE order_id = ot.order_id
-            AND id > ot.id
-            AND (comment LIKE 'Task transferred%' OR comment LIKE 'Task reassigned%')
-            ORDER BY id ASC LIMIT 1
-        )
-        WHERE (ot.type = 'auction') AND u.email != 'admin@gmail.com' AND ot.status != 'delivered')
+        WHERE u.email != 'admin@gmail.com' AND (ot.type IS NULL OR ot.type = 'order'))
 
         UNION ALL
 
@@ -276,8 +187,36 @@ try {
         JOIN users u ON a.winner_id = u.id
         WHERE a.payment_status = 'paid' AND a.paid_at IS NOT NULL AND u.email != 'admin@gmail.com')
 
-        /* RECENT ACTIVITY: AUCTION DELIVERED LOG REMOVED */
-        
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.shipped_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'shipped auction item' as action,
+            CONCAT(a.product_name, ' shipped to winner') as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM auctions a
+        JOIN users u ON a.farmer_id = u.id
+        WHERE a.shipping_status = 'shipped' AND a.shipped_at IS NOT NULL AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            a.delivered_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'delivered auction item' as action,
+            CONCAT(a.product_name, ' delivered to winner') as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM auctions a
+        JOIN users u ON a.farmer_id = u.id
+        WHERE a.shipping_status = 'delivered' AND a.delivered_at IS NOT NULL AND u.email != 'admin@gmail.com')
+
         UNION ALL
 
         (SELECT 
@@ -542,30 +481,46 @@ try {
     $stmt->execute();
     $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 8. Order Status Distribution Global (Ensure all statuses show)
+    // 8. Order Status Distribution Global (Combined Orders + Auctions - Breakdown)
     $stmt = $pdo->prepare("
-        SELECT s.status, COUNT(combined.status) as count 
+        SELECT 
+            status, 
+            SUM(count) as count,
+            SUM(order_count) as order_count,
+            SUM(auction_count) as auction_count
         FROM (
-            SELECT 'awaiting_payment' as status 
-            UNION SELECT 'processing' 
-            UNION SELECT 'shipped' 
-            UNION SELECT 'delivered' 
-            UNION SELECT 'cancelled'
-        ) s
-        LEFT JOIN (
-            SELECT status FROM orders
+            SELECT 
+                o.status, 
+                COUNT(*) as count,
+                COUNT(*) as order_count,
+                0 as auction_count
+            FROM orders o
+            WHERE o.status IN ('awaiting_payment', 'processing', 'shipped', 'delivered', 'cancelled')
+            GROUP BY o.status
+            
             UNION ALL
+            
             SELECT 
                 CASE 
-                    WHEN shipping_status = 'delivered' THEN 'delivered'
-                    WHEN shipping_status = 'shipped' THEN 'shipped'
-                    WHEN status = 'paid' THEN 'processing'
-                    ELSE status 
-                END as status
-            FROM auctions 
-            WHERE status IN ('completed', 'shipped', 'paid', 'delivered') OR shipping_status IN ('shipped', 'delivered')
-        ) combined ON s.status = combined.status
-        GROUP BY s.status
+                    WHEN a.shipping_status = 'delivered' THEN 'delivered'
+                    WHEN a.shipping_status = 'shipped' THEN 'shipped'
+                    WHEN a.status = 'paid' THEN 'processing'
+                    ELSE a.status
+                END as status,
+                COUNT(*) as count,
+                0 as order_count,
+                COUNT(*) as auction_count
+            FROM auctions a
+            WHERE (a.status IN ('completed', 'shipped', 'paid', 'delivered') OR a.shipping_status IN ('shipped', 'delivered')) AND a.winner_id IS NOT NULL
+            GROUP BY 
+                CASE 
+                    WHEN a.shipping_status = 'delivered' THEN 'delivered'
+                    WHEN a.shipping_status = 'shipped' THEN 'shipped'
+                    WHEN a.status = 'completed' AND (a.shipping_status IS NULL OR a.shipping_status = '') THEN 'completed'
+                    ELSE a.status
+                END
+        ) combined
+        GROUP BY status
     ");
     $stmt->execute();
     $statusDist = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -636,13 +591,21 @@ try {
         'top_products' => $topProducts,
         'top_farmers' => $topFarmers,
         'recent_registrations' => $recentRegistrations,
-        'status_distribution' => $statusDist,
+        'status_distribution' => array_map(function ($item) {
+            return [
+                'status' => $item['status'],
+                'count' => (int) $item['count'],
+                'order_count' => (int) ($item['order_count'] ?? 0),
+                'auction_count' => (int) ($item['auction_count'] ?? 0)
+            ];
+        }, $statusDist),
         'growth' => round($growthPercentage, 1),
         'inventory' => $inventoryStats
     ]);
 
 } catch (Exception $e) {
     ob_clean();
+
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }

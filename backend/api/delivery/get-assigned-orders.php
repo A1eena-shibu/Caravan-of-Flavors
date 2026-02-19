@@ -35,11 +35,16 @@ try {
             o.order_date,
             u.full_name as customer_name,
             u.phone as customer_phone,
-            'order' as type
+            o.delivery_agent_id,
+            o.delivery_staff_id,
+            s.full_name as staff_name,
+            'order' as type,
+            (SELECT comment FROM order_tracking WHERE order_id = o.id AND (type = 'order' OR type IS NULL) ORDER BY id DESC LIMIT 1) as latest_comment
         FROM orders o
         JOIN users u ON o.customer_id = u.id
         JOIN products p ON o.product_id = p.id
-        WHERE o.delivery_agent_id = ? AND o.status IN ('ordered', 'shipped')
+        LEFT JOIN users s ON o.delivery_staff_id = s.id
+        WHERE o.delivery_agent_id = ? AND o.status IN ('ordered', 'shipped', 'shipped_pending')
 
         UNION ALL
 
@@ -55,10 +60,15 @@ try {
             a.end_time as order_date,
             u.full_name as customer_name,
             u.phone as customer_phone,
-            'auction' as type
+            a.delivery_agent_id,
+            a.delivery_staff_id,
+            s.full_name as staff_name,
+            'auction' as type,
+            (SELECT comment FROM order_tracking WHERE order_id = a.id AND type = 'auction' ORDER BY id DESC LIMIT 1) as latest_comment
         FROM auctions a
         JOIN users u ON a.winner_id = u.id
-        WHERE a.delivery_agent_id = ? AND a.shipping_status IN ('shipped', 'delivered')
+        LEFT JOIN users s ON a.delivery_staff_id = s.id
+        WHERE a.delivery_agent_id = ? AND a.shipping_status IN ('shipped', 'shipped_pending')
 
         ORDER BY order_date DESC
     ";

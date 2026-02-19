@@ -65,12 +65,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Orders
             </a>
-            <a href="exports.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
-                Exports
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -119,6 +113,10 @@
                     <!-- Threshold Settings Panel -->
                     <div id="threshold-panel"
                         class="hidden absolute right-0 mt-2 w-72 bg-white border border-[#e7e5e4] rounded-24 shadow-2xl p-6 z-50">
+                        <button onclick="toggleThresholdSettings()"
+                            class="absolute top-4 right-4 text-stone-400 hover:text-stone-600 transition-colors">
+                            <img src="https://api.iconify.design/lucide:x.svg?color=%23a8a29e" width="16" alt="Close">
+                        </button>
                         <h3 class="text-sm font-bold text-[#1c1917] mb-2 uppercase tracking-wider">Low Stock
                             Notification</h3>
                         <p class="text-xs text-stone-500 mb-4">Set the quantity level that triggers a "Low Stock"
@@ -728,7 +726,7 @@
 
             // Convert Price for Display with magnitude-aware snapping
             const rate = (window.CurrencyManager && window.CurrencyManager.settings && window.CurrencyManager.settings.rate) ? window.CurrencyManager.settings.rate : 1;
-            let val = window.CurrencyManager.snap(parseFloat(product.price) * rate);
+            let val = (parseFloat(product.price) * rate);
 
             form.price.value = parseFloat(val.toFixed(2));
 
@@ -865,6 +863,10 @@
                 });
                 const result = await response.json();
                 if (result.success) {
+                    // Instant Sync: Update local currency rates immediately from the response
+                    if (result.rates && window.CurrencyManager) {
+                        window.CurrencyManager.updateRates(result.rates);
+                    }
                     closeProductModal();
                     loadProducts();
                 } else {

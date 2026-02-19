@@ -237,6 +237,22 @@ const CurrencyManager = {
         return this.settings;
     },
 
+    // Update rates dynamically from external sources (e.g. after a save)
+    updateRates(newRates) {
+        if (!newRates || typeof newRates !== 'object') return;
+        this.rates = { ...this.rates, ...newRates };
+        sessionStorage.setItem('exchange_rates', JSON.stringify(this.rates));
+
+        // Also update local settings rate if code exists
+        if (this.settings && this.settings.code) {
+            this.settings.rate = this.rates[this.settings.code] || 1;
+            sessionStorage.setItem('user_currency_settings', JSON.stringify(this.settings));
+        }
+
+        this.applyToStaticMarkers();
+        this.refreshUI();
+    },
+
     // central method to update settings and trigger UI refresh
     updateSettings(newSettings) {
         this.settings = { ...this.settings, ...newSettings };
@@ -272,7 +288,7 @@ const CurrencyManager = {
         // snap to 300,000 before they just get rounded to the nearest (ugly) integer.
         if (val > 1000) {
             const tolerances = [10000, 5000, 1000, 500, 100, 50];
-            const threshold = val * 0.0005; // 0.05% tolerance (e.g. ±150 for 300k)
+            const threshold = val * 0.0002; // Reduced tolerance to 0.02% (e.g. ±60 for 300k, ±0.6 for 3k)
 
             for (const t of tolerances) {
                 if (t > val / 2) continue;
@@ -286,7 +302,7 @@ const CurrencyManager = {
         // 2. Basic rounding to nearest integer (Magnitude-aware)
         // Increased tolerance to 0.15 to handle cases like 250.12
         let rounded = Math.round(val);
-        if (Math.abs(val - rounded) < Math.max(0.15, val * 0.001)) return rounded;
+        if (Math.abs(val - rounded) < Math.max(0.15, val * 0.0002)) return rounded;
 
         return val;
     },

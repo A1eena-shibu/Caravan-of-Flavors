@@ -75,12 +75,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Cart
             </a>
-            <a href="bulk-orders.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:boxes.svg?color=%231c1917" width="18" alt="">
-                Bulk Order
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -216,7 +210,7 @@
                 <!-- Description section removed -->
 
                 <div class="space-y-4 pt-4">
-                    <div class="grid grid-cols-[1.4fr_1fr] gap-4 items-end">
+                    <div class="grid grid-cols-[1.4fr_1fr] gap-4 items-end pt-4">
                         <div class="space-y-2">
                             <label class="block text-[10px] font-bold text-stone-400 uppercase tracking-widest">Order
                                 Quantity</label>
@@ -273,6 +267,27 @@
                     </div>
                     <p class="text-[9px] text-stone-400 text-center font-bold uppercase tracking-widest">Protected by
                         Caravan buyer guarantee</p>
+
+                    <!-- Reviews Section -->
+                    <div class="pt-6 border-t border-stone-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-stone-900 uppercase tracking-widest">Customer Feedback
+                            </h3>
+                            <div class="flex items-center gap-1.5" id="modal-rating-header">
+                                <!-- Rating badge injected here -->
+                            </div>
+                        </div>
+                        <div id="modal-reviews-list" class="space-y-4 max-h-96 overflow-y-auto no-scrollbar pr-2">
+                            <!-- Reviews injected here -->
+                            <p class="text-xs text-stone-400 italic">No reviews yet for this harvest.</p>
+                        </div>
+                        <div id="view-all-reviews-container" class="mt-4 hidden text-center">
+                            <button onclick="expandReviews()"
+                                class="text-xs font-bold text-primary hover:text-primary-hover uppercase tracking-widest transition-all">
+                                View All
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -350,7 +365,9 @@
                             </div>
                             
                             <div class="flex items-center justify-between pt-6 border-t border-stone-50">
-                                <span class="text-[11px] font-bold ${stockText} ${stockBg} px-3 py-1 rounded-full uppercase tracking-widest">${stockLabel}</span>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[11px] font-bold ${stockText} ${stockBg} px-3 py-1 rounded-full uppercase tracking-widest inline-block">${stockLabel}</span>
+                                </div>
                                 <button class="flex items-center gap-2 text-stone-300 group-hover:text-primary transition-colors cursor-pointer outline-none border-none bg-transparent p-0" onclick="event.stopPropagation(); openProductModal(${product.id})">
                                      <span class="text-[11px] font-bold uppercase tracking-widest">Explore</span>
                                      <img src="https://api.iconify.design/lucide:arrow-right.svg" width="16">
@@ -431,6 +448,9 @@
 
                 document.getElementById('order-qty').value = (currentUnit === 'g') ? 100 : 1;
                 updateOrderTotal();
+
+                // Load Reviews
+                loadProductReviews(id);
 
                 document.getElementById('productModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
@@ -579,6 +599,75 @@
                     showToast(result.message, 'error');
                 }
             } catch (error) { console.error(error); }
+        }
+
+        let allModalReviews = [];
+
+        async function loadProductReviews(productId) {
+            const container = document.getElementById('modal-reviews-list');
+            const ratingHeader = document.getElementById('modal-rating-header');
+            const viewAllContainer = document.getElementById('view-all-reviews-container');
+
+            container.innerHTML = '<div class="py-10 text-center"><img src="https://api.iconify.design/lucide:loader-2.svg" class="w-6 h-6 animate-spin mx-auto text-stone-200"></div>';
+            viewAllContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch(`../../backend/api/products/get-product-reviews.php?product_id=${productId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    allModalReviews = result.reviews || [];
+
+                    // Update Rating Header
+                    const avg = parseFloat(selectedProduct.average_rating) || 0;
+                    ratingHeader.innerHTML = `
+                        <div class="flex items-center gap-1.5 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-100 shadow-sm">
+                            <img src="https://api.iconify.design/lucide:star.svg?color=%23FF7E21" class="w-3.5 h-3.5">
+                            <span class="text-[13px] font-black text-orange-600">${avg > 0 ? avg.toFixed(1) : 'New'}</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-stone-400 ml-1">${selectedProduct.review_count} Reviews</span>
+                    `;
+
+                    if (allModalReviews.length > 0) {
+                        const reviewsToShow = allModalReviews.slice(0, 2);
+                        container.innerHTML = reviewsToShow.map(renderReviewHtml).join('');
+
+                        if (allModalReviews.length > 2) {
+                            viewAllContainer.classList.remove('hidden');
+                        }
+                    } else {
+                        container.innerHTML = '<p class="text-xs text-stone-400 italic py-4">This product has not been reviewed yet.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<p class="text-xs text-red-400">Error loading reviews.</p>';
+            }
+        }
+
+        function renderReviewHtml(review) {
+            return `
+                <div class="bg-white p-6 rounded-[32px] border border-stone-100 shadow-sm transition-all hover:shadow-md hover:border-stone-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-bold text-stone-900">${review.customer_name}</span>
+                        <div class="flex gap-0.5">
+                            ${Array.from({ length: 5 }).map((_, i) => `
+                                <img src="https://api.iconify.design/lucide:star.svg?color=${i < review.rating ? '%23FF7E21' : '%23d6d3d1'}" class="w-3.5 h-3.5 ${i < review.rating ? 'fill-orange-500' : ''}">
+                            `).join('')}
+                        </div>
+                    </div>
+                    <p class="text-[13px] text-stone-600 font-medium leading-relaxed mb-4">${review.comment || 'Perfect harvest, great quality!'}</p>
+                    <span class="text-[10px] font-bold text-stone-300 uppercase tracking-widest block">${new Date(review.created_at).toLocaleDateString()}</span>
+                </div>
+            `;
+        }
+
+        function expandReviews() {
+            const container = document.getElementById('modal-reviews-list');
+            const viewAllContainer = document.getElementById('view-all-reviews-container');
+
+            container.innerHTML = allModalReviews.map(renderReviewHtml).join('');
+            viewAllContainer.classList.add('hidden');
         }
 
         async function placeOrder() {

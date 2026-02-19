@@ -148,15 +148,15 @@ try {
 
     // 5. Recent Activity (Last 5 orders or paid auctions)
     $stmt = $pdo->prepare("
-        SELECT id, status, total_price, order_date, customer_name, product_name, currency, exchange_rate
+        SELECT id, status, total_price, order_date, customer_name, product_name, currency, exchange_rate, type
         FROM (
-            SELECT o.id, o.status, o.total_price, o.order_date, u.full_name as customer_name, p.product_name, o.currency_code as currency, o.exchange_rate
+            SELECT o.id, o.status, o.total_price, o.order_date, u.full_name as customer_name, p.product_name, o.currency_code as currency, o.exchange_rate, 'order' as type
             FROM orders o
             JOIN users u ON o.customer_id = u.id
             JOIN products p ON o.product_id = p.id
             WHERE o.farmer_id = ?
             UNION ALL
-            SELECT a.id, 'delivered' as status, a.current_bid as total_price, a.updated_at as order_date, u.full_name as customer_name, a.product_name, a.base_currency as currency, 1.0 as exchange_rate
+            SELECT a.id, a.shipping_status as status, a.current_bid as total_price, a.updated_at as order_date, u.full_name as customer_name, a.product_name, a.base_currency as currency, 1.0 as exchange_rate, 'auction' as type
             FROM auctions a
             JOIN users u ON a.winner_id = u.id
             WHERE a.farmer_id = ? AND a.payment_status = 'paid'
@@ -238,9 +238,18 @@ try {
         ];
     }
 
-    // 9. Order Status Distribution
-    $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM orders WHERE farmer_id = ? GROUP BY status");
-    $stmt->execute([$farmer_id]);
+    // 9. Order Status Distribution (Unified Orders + Paid Auctions)
+    $stmt = $pdo->prepare("
+        SELECT status, COUNT(*) as count 
+        FROM (
+            SELECT status FROM orders WHERE farmer_id = ?
+            UNION ALL
+            SELECT shipping_status as status FROM auctions 
+            WHERE farmer_id = ? AND winner_id IS NOT NULL AND payment_status = 'paid'
+        ) as combined_statuses
+        GROUP BY status
+    ");
+    $stmt->execute([$farmer_id, $farmer_id]);
     $statusDist = $stmt->fetchAll();
 
     // 10. Rating Distribution (Customer Satisfaction)

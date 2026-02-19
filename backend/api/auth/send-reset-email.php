@@ -53,7 +53,11 @@ try {
     $host = $_SERVER['HTTP_HOST'];
     $localResetLink = $protocol . "://" . $host . "/Caravan%20of%20Flavours/frontend/auth/reset-password.html?oobCode=" . $oobCode;
 
-    // 4. Send Custom Email via PHPMailer
+    // 4. Store token and timestamp in MySQL
+    $stmt = $db->prepare("UPDATE users SET reset_token = :token, reset_token_sent_at = CURRENT_TIMESTAMP WHERE email = :email");
+    $stmt->execute([':token' => $oobCode, ':email' => $email]);
+
+    // 5. Send Custom Email via PHPMailer
     $mail = new PHPMailer(true);
 
     // Server settings
@@ -101,7 +105,7 @@ try {
                 <div class="button-container">
                     <a href="' . $localResetLink . '" class="button">RESET PASSWORD</a>
                 </div>
-                <p>If you did not request a password reset, you can safely ignore this email. This link will expire in 1 hour.</p>
+                <p>If you did not request a password reset, you can safely ignore this email. This link will expire in 10 minutes.</p>
             </div>
             <div class="footer">
                 &copy; ' . date("Y") . ' Caravan of Flavours. All rights reserved.

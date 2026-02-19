@@ -93,12 +93,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Orders
             </a>
-            <a href="exports.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:ship.svg?color=%231c1917" width="18" alt="">
-                Exports
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -348,11 +342,24 @@
                     if (result.status_distribution && result.status_distribution.length > 0) {
                         statusDist.innerHTML = '';
                         const total = result.status_distribution.reduce((acc, curr) => acc + parseInt(curr.count), 0);
+                        const statusMap = {
+                            'ordered': 'Ordered',
+                            'processing': 'Processing',
+                            'shipped': 'Shipped',
+                            'shipped_pending': 'Shipping Pending',
+                            'delivered': 'Delivered',
+                            'cancelled': 'Cancelled',
+                            'awaiting_payment': 'Awaiting Payment'
+                        };
+
                         result.status_distribution.forEach(s => {
+                            const rawStatus = s.status || s.STATUS;
+                            const statusKey = window.normalizeStatus(rawStatus);
+                            const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
                             const percentage = Math.round((s.count / total) * 100);
                             statusDist.innerHTML += `
                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div style="width: 100px; font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase;">${s.status}</div>
+                                    <div style="width: 140px; font-size: 12px; font-weight: 700; color: #1c1917; text-transform: uppercase; white-space: nowrap;">${displayStatus}</div>
                                     <div style="flex: 1; height: 12px; background: #f5f5f4; border-radius: 6px; overflow: hidden;">
                                         <div style="width: ${percentage}%; height: 100%; background: ${getStatusColor(s.status)};"></div>
                                     </div>
@@ -470,11 +477,14 @@
 
         function getStatusColor(status) {
             const colors = {
-                'confirmed': '#10B981',
+                'ordered': '#FF7E21',
+                'processing': '#F97316',
                 'pending': '#FACC15',
+                'awaiting_payment': '#78716C',
                 'shipped': '#3B82F6',
-                'cancelled': '#EF4444',
-                'delivered': '#10B981'
+                'confirmed': '#10B981',
+                'delivered': '#10B981',
+                'cancelled': '#EF4444'
             };
             return colors[status] || '#a8a29e';
         }

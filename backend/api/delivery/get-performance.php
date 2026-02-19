@@ -26,8 +26,8 @@ try {
             
             UNION ALL
             
-            SELECT DATE(shipped_at) as date FROM auctions 
-            WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND shipped_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+            SELECT DATE(delivered_at) as date FROM auctions 
+            WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND delivered_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
         ) as combined_deliveries
         GROUP BY date
         ORDER BY date ASC

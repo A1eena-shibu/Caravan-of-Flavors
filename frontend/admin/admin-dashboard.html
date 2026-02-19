@@ -176,11 +176,6 @@
                 <img src="https://api.iconify.design/lucide:activity.svg?color=%2394a3b8" width="18" alt="">
                 Activity Logs
             </a>
-            <a href="#" onclick="switchView('exports')" id="nav-exports"
-                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
-                <img src="https://api.iconify.design/lucide:file-text.svg?color=%2394a3b8" width="18" alt="">
-                Export Logs
-            </a>
             <a href="#" onclick="switchView('analysis')" id="nav-analysis"
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:pie-chart.svg?color=%2394a3b8" width="18" alt="">
@@ -209,7 +204,7 @@
         </div>
     </aside>
 
-    <main style="margin-left: 240px; padding: 24px 40px;">
+    <main style="margin-left: 240px; padding: 24px 20px;">
         <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
             <div>
                 <h1 id="dashboard-title" style="font-size: 28px; font-weight: 700; margin: 0;">System Overview</h1>
@@ -317,7 +312,7 @@
 
             <!-- Recent User Activity -->
             <div
-                style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+                style="background: white; border-radius: 20px; padding: 32px 20px; border: 1px solid #e2e8f0; margin-bottom: 32px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Recent User Activity</h3>
                     <button id="view-all-logs-btn" onclick="switchView('activity')"
@@ -357,7 +352,7 @@
         <!-- Manage Users Section (Hidden by Default) -->
         <div id="manage-users-view" style="display: none;">
             <!-- User Stats Section -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; margin-bottom: 24px;">
                 <!-- Total Users -->
                 <div
                     style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
@@ -407,9 +402,21 @@
                         <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-agents">0</div>
                     </div>
                 </div>
+                <!-- Delivery Staff -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px;">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: #f5f3ff; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://api.iconify.design/lucide:shield-check.svg?color=%237c3aed" width="24">
+                    </div>
+                    <div>
+                        <div style="font-size: 13px; color: #64748b; font-weight: 600;">Delivery Staff</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #1e293b;" id="stat-total-staff">0</div>
+                    </div>
+                </div>
             </div>
 
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+            <div style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">User Management</h2>
                     <input type="text" id="user-search-input" placeholder="Search users..." onkeyup="filterUsers()"
@@ -437,7 +444,7 @@
 
         <!-- Delivery Section (Hidden by Default) -->
         <div id="delivery-view" style="display: none;">
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+            <div style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">Delivery Management</h2>
                     <div style="display: flex; gap: 12px;">
@@ -477,7 +484,7 @@
 
             <!-- Delivery Agents Section -->
             <div id="delivery-agents-list"
-                style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; margin-top: 32px;">
+                style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0; margin-top: 32px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">Delivery Agents</h2>
                     <button onclick="loadAllDeliveryAgents()"
@@ -504,7 +511,7 @@
 
         <!-- Transactions View -->
         <div id="transactions-view" style="display: none;">
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+            <div style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0;">
                 <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px;">Global Transactions</h2>
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
                     <thead>
@@ -529,7 +536,7 @@
 
         <!-- Auctions View (New Dedicated Section) -->
         <div id="auctions-view" style="display: none;">
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+            <div style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0;">
                 <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px;">Auctions Management</h2>
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
                     <thead>
@@ -556,33 +563,11 @@
             </div>
         </div>
 
-        <!-- Export Logs View -->
-        <div id="exports-view" style="display: none;">
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
-                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 24px;">Export Log Book</h2>
-                <table style="width: 100%; text-align: left; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #f1f5f9;">
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">ID</th>
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">Product</th>
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">Farmer</th>
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">Destination
-                            </th>
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">Qty</th>
-                            <th style="padding: 12px; font-size: 13px; color: #64748b; text-align: center;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="exports-table-body">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
 
         <!-- Activity Logs View -->
         <div id="activity-view" style="display: none;">
-            <div style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0;">
+            <div style="background: white; border-radius: 16px; padding: 24px 16px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700;">User Activity Logs</h2>
                     <button onclick="loadActivityLogs()"
@@ -615,7 +600,7 @@
         <!-- Add Admins View -->
         <div id="add-admins-view" style="display: none;">
             <div
-                style="background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%;">
+                style="background: white; border-radius: 20px; padding: 40px 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%;">
                 <h3
                     style="font-size: 20px; font-weight: 700; margin-bottom: 24px; color: #1e293b; display: flex; align-items: center; gap: 10px;">
                     <img src="https://api.iconify.design/lucide:user-plus.svg?color=%23ff7e21" width="24">
@@ -744,7 +729,7 @@
 
             <!-- Existing Admins List Section -->
             <div
-                style="background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; margin: 32px 0 0;">
+                style="background: white; border-radius: 20px; padding: 40px 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; margin: 32px 0 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">Existing Administrators <span
                             id="existing-admins-count"
@@ -784,7 +769,7 @@
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 32px;">
                 <!-- User Growth Trend -->
                 <div
-                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    style="background: white; border-radius: 20px; padding: 32px 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                     <h3
                         style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                         <img src="https://api.iconify.design/lucide:trending-up.svg?color=%233b82f6" width="20">
@@ -797,7 +782,7 @@
 
                 <!-- Order Success / Status Funnel -->
                 <div
-                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    style="background: white; border-radius: 20px; padding: 32px 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                     <h3
                         style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                         <img src="https://api.iconify.design/lucide:filter.svg?color=%238b5cf6" width="20">
@@ -812,7 +797,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
                 <!-- Farmer Leaderboard -->
                 <div
-                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    style="background: white; border-radius: 20px; padding: 32px 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                     <h3
                         style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                         <img src="https://api.iconify.design/lucide:award.svg?color=%23f59e0b" width="20">
@@ -825,7 +810,7 @@
 
                 <!-- Revenue Trend -->
                 <div
-                    style="background: white; border-radius: 20px; padding: 32px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    style="background: white; border-radius: 20px; padding: 32px 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                     <h3
                         style="font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
                         <img src="https://api.iconify.design/lucide:dollar-sign.svg?color=%2310b981" width="20">
@@ -843,7 +828,7 @@
         <div id="profile-view" style="display: none;">
             <div style="width: 100%;">
                 <div
-                    style="background: white; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%;">
+                    style="background: white; border-radius: 20px; padding: 40px 24px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%;">
                     <div
                         style="display: flex; align-items: center; gap: 32px; border-bottom: 2px solid #f1f5f9; padding-bottom: 32px; margin-bottom: 32px;">
                         <div style="width: 100px; height: 100px; background: #ff7e21; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700;"
@@ -923,7 +908,8 @@
                             <div>
                                 <label
                                     style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Address</label>
-                                <input type="text" id="profile-address" placeholder="Enter Address"
+                                <input type="text" id="profile-address"
+                                    placeholder="e.g. Country, State, District, City, Street Name, House Name/House No..."
                                     style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-weight: 500; outline: none;">
                             </div>
                         </div>
@@ -1065,22 +1051,21 @@
                         </div>
                     </div>
 
+                    <div class="p-4 bg-stone-50 rounded-xl">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Address</p>
+                        <p class="text-sm font-semibold text-stone-700 leading-relaxed" id="modal-user-address">--</p>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="p-4 bg-stone-50 rounded-xl">
-                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Address
-                            </p>
-                            <p class="text-sm font-semibold text-stone-700" id="modal-user-address">--</p>
-                        </div>
                         <div class="p-4 bg-stone-50 rounded-xl">
                             <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">
                                 Country/Currency</p>
                             <p class="text-sm font-semibold text-stone-700" id="modal-user-country-currency">--</p>
                         </div>
-                    </div>
-
-                    <div class="p-4 bg-stone-50 rounded-xl flex justify-between items-center">
-                        <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Joined On</p>
-                        <p class="text-sm font-semibold text-stone-700" id="modal-user-joined">--</p>
+                        <div class="p-4 bg-stone-50 rounded-xl">
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Joined On</p>
+                            <p class="text-sm font-semibold text-stone-700" id="modal-user-joined">--</p>
+                        </div>
                     </div>
 
                     <!-- Dynamic Stats Container -->
@@ -1241,7 +1226,6 @@
                     delivery: document.getElementById('delivery-view'),
                     transactions: document.getElementById('transactions-view'),
                     auctions: document.getElementById('auctions-view'),
-                    exports: document.getElementById('exports-view'),
                     activity: document.getElementById('activity-view'),
                     analysis: document.getElementById('analysis-view'),
                     'add-admins': document.getElementById('add-admins-view'),
@@ -1255,7 +1239,6 @@
                     delivery: document.getElementById('nav-delivery'),
                     transactions: document.getElementById('nav-transactions'),
                     auctions: document.getElementById('nav-auctions'),
-                    exports: document.getElementById('nav-exports'),
                     activity: document.getElementById('nav-activity'),
                     analysis: document.getElementById('nav-analysis'),
                     'add-admins': document.getElementById('nav-add-admins'),
@@ -1277,7 +1260,6 @@
                         delivery: 'Delivery Management',
                         transactions: 'Global Transactions',
                         auctions: 'Auctions Management',
-                        exports: 'Export Logs',
                         activity: 'User Activity Logs',
                         analysis: 'Platform Analysis',
                         'add-admins': 'Add New Administrator',
@@ -1313,7 +1295,6 @@
                 }
                 if (viewName === 'transactions') loadTransactions();
                 if (viewName === 'auctions') loadAdminAuctions();
-                if (viewName === 'exports') loadExports();
                 if (viewName === 'activity') loadActivityLogs();
                 if (viewName === 'analysis') loadAnalysisData();
                 if (viewName === 'profile') loadAdminProfile();
@@ -1410,20 +1391,43 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="bg-stone-50 sticky top-0">
                                     <tr>
-                                        <th class="p-2 text-[10px] font-bold text-stone-500">Time</th>
-                                        <th class="p-2 text-[10px] font-bold text-stone-500">Action</th>
+                                        <th class="p-2 text-[10px] font-bold text-stone-500 text-center">Time</th>
+                                        <th class="p-2 text-[10px] font-bold text-stone-500 text-center">Action</th>
+                                        <th class="p-2 text-[10px] font-bold text-stone-500 text-center">Type</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     `;
                         result.data.forEach(log => {
                             const date = new Date(log.timestamp).toLocaleString();
+                            let typeBadge = '';
+                            let typeColor = '';
+                            if (log.action.includes('login')) {
+                                typeBadge = 'Auth';
+                                typeColor = 'bg-blue-100 text-blue-600';
+                            } else if (log.action.includes('created')) {
+                                typeBadge = 'Creation';
+                                typeColor = 'bg-green-100 text-green-600';
+                            } else if (log.action.includes('updated')) {
+                                typeBadge = 'Update';
+                                typeColor = 'bg-yellow-100 text-yellow-600';
+                            } else if (log.action.includes('deleted') || log.action.includes('removed')) {
+                                typeBadge = 'Deletion';
+                                typeColor = 'bg-red-100 text-red-600';
+                            } else {
+                                typeBadge = 'General';
+                                typeColor = 'bg-stone-100 text-stone-600';
+                            }
+
                             html += `
                                     <tr class="border-b border-stone-50">
-                                        <td class="p-2 text-[10px] text-stone-500 whitespace-nowrap">${date}</td>
+                                        <td class="p-2 text-[10px] text-stone-500 whitespace-nowrap text-center">${date}</td>
                                         <td class="p-2">
                                             <div class="text-xs font-bold text-stone-700">${log.action}</div>
-                                            <div class="text-[10px] text-stone-500 truncate max-w-[200px]">${log.details}</div>
+                                            <div class="text-[10px] text-stone-500">${log.details}</div>
+                                        </td>
+                                        <td class="p-2 text-center">
+                                            <span class="px-2 py-1 rounded-md text-[9px] font-bold ${typeColor}">${typeBadge}</span>
                                         </td>
                                     </tr>
                                     `;
@@ -1483,16 +1487,17 @@
                             </td>
                             <td style="padding: 16px; text-align: center; color:#64748b;">${new Date(admin.created_at).toLocaleDateString()}</td>
                             <td style="padding: 16px; text-align: center;">
+                                <div style="display: flex; gap: 12px; justify-content: center;">
                                     <button onclick='viewAdmin(${JSON.stringify(admin)})'
-                                        style="padding: 8px 16px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
+                                        style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
                                         View
                                     </button>
                                     <button onclick="toggleAdminStatus(${admin.id}, '${toggleAction}')"
-                                        style="padding: 8px 16px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; ${toggleBtnStyle}">
+                                        style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s; ${toggleBtnStyle}">
                                         ${toggleLabel}
                                     </button>
                                     <button onclick="deleteAdmin(${admin.id}, '${admin.email}')"
-                                        style="padding: 8px 16px; font-size: 13px; font-weight: 700; background: #fff1f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; color: #e11d48; transition: all 0.2s;">
+                                        style="padding: 5px 10px; font-size: 11px; font-weight: 700; background: #fff1f2; border: 1px solid #fecaca; border-radius: 8px; cursor: pointer; color: #e11d48; transition: all 0.2s;">
                                         Delete
                                     </button>
                                 </div>
@@ -1727,6 +1732,12 @@
                                 displayStatus = 'SHIPPED';
                             }
 
+                            // Check for delivered status for auctions
+                            if (order.type === 'auction' && s === 'delivered') {
+                                statusColor = 'bg-green-100 text-green-700';
+                                displayStatus = 'DELIVERED';
+                            }
+
                             // 3. Fix Image Path (uploads is in project root, so ../../uploads/...)
                             const imagePath = order.product_image ? `../../${order.product_image}` : 'https://placehold.co/100x100?text=No+Image';
 
@@ -1810,6 +1821,10 @@
                                     displayStatus = 'SHIPPED';
                                     statusColor = 'bg-cyan-100 text-cyan-700';
                                 }
+                                if (auction.shipping_status === 'delivered') {
+                                    displayStatus = 'DELIVERED';
+                                    statusColor = 'bg-green-100 text-green-700';
+                                }
                             } else if (auction.status === 'cancelled') {
                                 statusColor = 'bg-red-100 text-red-700';
                             }
@@ -1857,49 +1872,6 @@
             loadAdminAuctions();
             loadAdminProfile();
 
-            async function loadExports() {
-                const tbody = document.getElementById('exports-table-body');
-                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">Loading exports...</td></tr>';
-
-                try {
-                    const response = await fetch('../../backend/api/admin/get-export-logs.php');
-                    const result = await response.json();
-
-                    if (result.success) {
-                        tbody.innerHTML = '';
-                        if (!result.data || result.data.length === 0) {
-                            tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center;">No export logs found.</td></tr>';
-                            return;
-                        }
-
-                        result.data.forEach(log => {
-                            let statusColor = 'bg-stone-100 text-stone-600';
-                            if (log.status === 'delivered') statusColor = 'bg-green-100 text-green-700';
-                            else if (log.status === 'shipped') statusColor = 'bg-blue-100 text-blue-700';
-                            else if (log.status === 'customs') statusColor = 'bg-purple-100 text-purple-700';
-                            else if (log.status === 'packaged') statusColor = 'bg-orange-100 text-orange-700';
-
-                            tbody.innerHTML += `
-                            <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 16px; font-weight: 700; text-align: center;">#${log.id}</td>
-                                <td style="padding: 16px; font-weight: 600; color:#444; text-align: center;">${log.product_name}</td>
-                                <td style="padding: 16px; font-size: 13px; color: #57534e; text-align: center;">${log.farmer_name}</td>
-                                <td style="padding: 16px; font-size: 13px; font-weight:600; text-align: center;">${log.destination_country}</td>
-                                <td style="padding: 16px; text-align: center;">${parseFloat(log.quantity)} ${log.unit}</td>
-                                <td style="padding: 16px; text-align: center;">
-                                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${statusColor}">${log.status}</span>
-                                </td>
-                            </tr>
-                        `;
-                        });
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Failed: ' + result.message + '</td></tr>';
-                    }
-                } catch (error) {
-                    console.error(error);
-                    tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:red;">Connection Error</td></tr>';
-                }
-            }
 
             async function loadActivityLogs() {
                 const tbody = document.getElementById('all-activity-table-body');
@@ -1933,22 +1905,34 @@
                                 typeColor = '';
                                 typeStyle = 'background-color: #e0e7ff; color: #4338ca;'; // Indigo-100/700
                             }
+                            if (log.type === 'delivery') {
+                                typeColor = '';
+                                // Teal/Cyan for delivery logs
+                                typeStyle = 'background-color: #ccfbf1; color: #0f766e;';
+                            }
 
                             tbody.innerHTML += `
                             <tr style="border-bottom: 1px solid #f8fafc;">
                                 <td style="padding: 16px; font-size: 13px; color: #64748b; text-align: center;">${date}</td>
                                 <td style="padding: 16px; text-align: center;">
                                     <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
-                                    <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role.replace(/_/g, ' ')}</div>
+                                    <div style="font-size: 11px; color: ${log.user_role === 'farmer' ? '#22c55e' :
+                                    log.user_role === 'delivery_agent' ? '#f97316' :
+                                        log.user_role === 'delivery_staff' ? '#7c3aed' :
+                                            log.user_role === 'customer' ? '#3b82f6' : '#94a3b8'
+                                }; text-transform:uppercase; font-weight: 700;">${log.user_role.replace(/_/g, ' ')}</div>
                                 </td>
                                 <td style="padding: 16px; text-align: center;">
-                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/_/g, ' ')}</div>
+                                    <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/shipped_pending/g, 'shipping pending').replace(/_/g, ' ')}</div>
                                     <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
                                         ${log.details
+                                    .replace(/shipped_pending/g, 'shipping pending')
                                     .replace(/@\s*(\d+(\.\d+)?)\s*\//, (match, price) => `@ ${CurrencyManager.formatFrom(price, 'INR')}/`)
                                     .replace(/Starting Price:\s*(\d+(\.\d+)?)/, (match, price) => `Starting Price: ${CurrencyManager.formatFrom(price, 'INR')}`)
                                     .replace(/Winning Bid:\s*(\d+(\.\d+)?)/, (match, price) => `Winning Bid: ${CurrencyManager.formatFrom(price, 'INR')}`)
                                     .replace(/Bid\s*(\d+(\.\d+)?)\s*on/, (match, price) => `Bid ${CurrencyManager.formatFrom(price, 'INR')} on`)
+                                    .replace(/order #(\d+)/i, (match, id) => 'ORD-' + String(id).padStart(5, '0'))
+                                    .replace(/auction #(\d+)/i, (match, id) => 'AUC-' + String(id).padStart(5, '0'))
                                 }
                                     </div>
                                 </td>
@@ -1974,11 +1958,13 @@
                 const customers = users.filter(u => u.role === 'customer').length;
                 const farmers = users.filter(u => u.role === 'farmer').length;
                 const agents = users.filter(u => u.role === 'delivery_agent').length;
+                const staff = users.filter(u => u.role === 'delivery_staff').length;
 
                 document.getElementById('stat-total-users').textContent = total;
                 document.getElementById('stat-total-customers').textContent = customers;
                 document.getElementById('stat-total-farmers').textContent = farmers;
                 document.getElementById('stat-total-agents').textContent = agents;
+                document.getElementById('stat-total-staff').textContent = staff;
             }
 
             async function loadUsers() {
@@ -2252,9 +2238,9 @@
                                         ${item.delivery_agent_id ?
                                     `<div class="flex flex-col items-center">
                                                 <span class="text-sm font-bold text-stone-700">${item.agent_name || 'Assigned'}</span>
-                                                <button onclick="openAssignModal(${item.id}, '${item.type}')" class="text-[10px] text-orange-500 font-bold hover:underline mt-1">Reassign</button>
+                                                ${item.status !== 'delivered' ? `<button onclick="openAssignModal(${item.id}, '${item.type}')" class="text-[10px] text-orange-500 font-bold hover:underline mt-1">Reassign</button>` : ''}
                                             </div>` :
-                                    `<button onclick="openAssignModal(${item.id}, '${item.type}')" class="px-3 py-1.5 bg-stone-900 text-white text-xs font-bold rounded-lg hover:bg-black shadow-lg shadow-stone-900/10 transition-all">Assign Agent</button>`
+                                    `<button onclick="openAssignModal(${item.id}, '${item.type}')" class="px-2.5 py-1 bg-stone-900 text-white text-[11px] font-bold rounded-lg hover:bg-black shadow-lg shadow-stone-900/10 transition-all">Assign Agent</button>`
                                 }
                                     </td>
                                     <td style="padding: 16px; text-align: center;">
@@ -2294,6 +2280,7 @@
                     if (user.role === 'farmer') roleColor = '#22c55e';
                     else if (user.role === 'admin') roleColor = '#ff0000';
                     else if (user.role === 'delivery_agent') roleColor = '#f97316'; // Orange
+                    else if (user.role === 'delivery_staff') roleColor = '#7c3aed'; // Purple/Violet
 
                     const isActive = user.is_active == 1;
 
@@ -2301,14 +2288,16 @@
                     const userString = JSON.stringify(user).replace(/"/g, '&quot;');
 
                     const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                    const profileImageUrl = user.profile_image ? `../../${user.profile_image}` : null;
+                    const profileImageUrl = user.profile_image
+                        ? (user.profile_image.startsWith('http') ? user.profile_image : `../../${user.profile_image}`)
+                        : null;
 
                     tbody.innerHTML += `
                             <tr style="border-bottom: 1px solid #f8fafc; hover:background:#f1f5f9;">
                             <td style="padding: 16px;">
                                 <div style="display: flex; align-items: center; gap: 12px; width: 240px; margin: 0 auto;">
                                     ${profileImageUrl ?
-                            `<img src="${profileImageUrl}" alt="${user.full_name}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #e2e8f0;">` :
+                            `<img src="${profileImageUrl}" referrerpolicy="no-referrer" alt="${user.full_name}" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #e2e8f0;">` :
                             `<div style="width: 40px; height: 40px; background: ${roleColor}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">${initials}</div>`
                         }
                                     <div>
@@ -2322,14 +2311,17 @@
                             </td>
                             <td style="padding: 16px; color:#64748b; font-size:13px; text-align: center;">${new Date(user.created_at).toLocaleDateString()}</td>
                             <td style="padding: 16px;">
-                                <div class="flex gap-2" style="justify-content: center;">
-                                    <button onclick="viewUser(${userString})" style="background:#eff6ff; color:#3b82f6; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">View</button>
+                                <div class="flex gap-3" style="justify-content: center;">
+                                    <button onclick="viewUser(${userString})" style="background:#eff6ff; color:#3b82f6; border:none; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">View</button>
                                     
-                                    ${isSuperAdmin ? (isActive ?
-                            `<button onclick="updateUserStatus(${user.id}, 'block')" style="background:#fef2f2; color:#ef4444; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">Block</button>` :
-                            `<button onclick="updateUserStatus(${user.id}, 'unblock')" style="background:#f0fdf4; color:#22c55e; border:none; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">Unblock</button>`) : ''
-                        }
-                                </div>                            </td>
+                                    ${isSuperAdmin ? `
+                                        ${isActive ?
+                                `<button onclick="updateUserStatus(${user.id}, 'block')" style="background:#fef2f2; color:#ef4444; border:none; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">Block</button>` :
+                                `<button onclick="updateUserStatus(${user.id}, 'unblock')" style="background:#f0fdf4; color:#22c55e; border:none; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">Unblock</button>`}
+                                        <button onclick="deleteUser(${user.id}, '${user.email}')" style="background:#fff1f2; color:#e11d48; border:1px solid #fecaca; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">Delete</button>
+                                    ` : ''}
+                                </div>
+                            </td>
                         </tr>
                             `;
                 });
@@ -2398,6 +2390,33 @@
                 );
             }
 
+            function deleteUser(userId, email) {
+                showConfirmModal(
+                    'Delete User Account',
+                    `Are you sure you want to PERMANENTLY DELETE the user account for ${email}? This will remove all their data, including history, orders, and products. This action cannot be undone.`,
+                    true, // isDestructive
+                    async () => {
+                        try {
+                            const response = await fetch('../../backend/api/admin/delete-user.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ user_id: userId })
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                showToast(result.message, 'success');
+                                loadUsers(); // Refresh list
+                            } else {
+                                showToast(result.message, 'error');
+                            }
+                        } catch (error) {
+                            console.error('Delete user error:', error);
+                            showToast('Connection failed', 'error');
+                        }
+                    }
+                );
+            }
+
             async function viewUser(user) {
                 document.getElementById('modal-user-name').textContent = user.full_name;
                 document.getElementById('modal-user-email').textContent = user.email;
@@ -2427,30 +2446,37 @@
                 document.getElementById('user-modal').classList.remove('hidden');
 
                 try {
-                    // Parallel fetch: Stats + Activity Logs
-                    const [statsRes, logsRes] = await Promise.all([
-                        fetch(`../../backend/api/admin/get-user-history.php?id=${user.id}&role=${user.role}`),
-                        fetch(`../../backend/api/admin/get-user-activity-logs.php?user_id=${user.id}`)
-                    ]);
-
-                    const statsResult = await statsRes.json();
-                    const logsResult = await logsRes.json();
+                    const response = await fetch(`../../backend/api/admin/get-user-history.php?id=${user.id}&role=${user.role}`);
+                    const statsResult = await response.json();
 
                     if (statsResult.success && statsResult.data) {
                         const data = statsResult.data;
                         let html = '';
 
-                        // Render Stats Cards (Same as before)
+                        // Render Stats Cards
                         if (user.role === 'farmer') {
                             html += `
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="p-3 bg-green-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Earnings</p>
-                                    <p class="text-lg font-bold text-green-700">${CurrencyManager.formatFrom(data.total_earnings, 'INR')}</p>
+                                    <p class="text-lg font-bold text-green-700">${CurrencyManager.formatFrom(data.total_earnings || 0, 'INR')}</p>
                                 </div>
                                 <div class="p-3 bg-orange-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Products Listed</p>
-                                    <p class="text-lg font-bold text-orange-700">${data.total_products}</p>
+                                    <p class="text-lg font-bold text-orange-700">${data.total_products || 0}</p>
+                                </div>
+                            </div>
+                            `;
+                        } else if (user.role === 'delivery_agent' || user.role === 'delivery_staff') {
+                            html += `
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="p-3 bg-blue-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Total Deliveries</p>
+                                    <p class="text-lg font-bold text-blue-700">${data.total_deliveries || 0}</p>
+                                </div>
+                                <div class="p-3 bg-purple-50 rounded-lg">
+                                    <p class="text-[10px] text-stone-500 uppercase font-bold">Active Tasks</p>
+                                    <p class="text-lg font-bold text-purple-700">${data.active_tasks || 0}</p>
                                 </div>
                             </div>
                             `;
@@ -2459,75 +2485,14 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="p-3 bg-blue-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Spent</p>
-                                    <p class="text-lg font-bold text-blue-700">${CurrencyManager.formatFrom(data.total_spending, 'INR')}</p>
+                                    <p class="text-lg font-bold text-blue-700">${CurrencyManager.formatFrom(data.total_spending || 0, 'INR')}</p>
                                 </div>
                                 <div class="p-3 bg-purple-50 rounded-lg">
                                     <p class="text-[10px] text-stone-500 uppercase font-bold">Total Orders</p>
-                                    <p class="text-lg font-bold text-purple-700">${data.total_orders}</p>
+                                    <p class="text-lg font-bold text-purple-700">${data.total_orders || 0}</p>
                                 </div>
                             </div>
                             `;
-                        }
-
-                        // Render Activity Logs (Granular)
-                        html += `<h4 class="text-sm font-bold text-stone-900 mb-2">Recent Activity</h4>`;
-
-                        if (logsResult.success && logsResult.data && logsResult.data.length > 0) {
-                            html += `
-                            <div class="overflow-y-auto max-h-40 border rounded-lg border-stone-100">
-                                <table class="w-full text-left border-collapse">
-                                    <thead class="bg-stone-50 sticky top-0">
-                                        <tr>
-                                            <th class="p-2 text-[10px] font-bold text-stone-500">Time</th>
-                                            <th class="p-2 text-[10px] font-bold text-stone-500">Action</th>
-                                            <th class="p-2 text-[10px] font-bold text-stone-500">Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        `;
-
-                            logsResult.data.forEach(log => {
-                                const date = new Date(log.timestamp).toLocaleString();
-                                let typeColor = 'bg-gray-100 text-gray-600';
-                                let typeStyle = '';
-
-                                if (log.type === 'order') typeColor = 'bg-blue-50 text-blue-600';
-                                if (log.type === 'product') typeColor = 'bg-orange-50 text-orange-600';
-                                if (log.type === 'user') typeColor = 'bg-green-50 text-green-600';
-                                if (log.type === 'review') typeColor = 'bg-purple-50 text-purple-600';
-
-                                if (log.type === 'auction') {
-                                    typeColor = '';
-                                    typeStyle = 'background-color: #fce7f3; color: #be185d;';
-                                }
-                                if (log.type === 'bid') {
-                                    typeColor = '';
-                                    typeStyle = 'background-color: #e0e7ff; color: #4338ca;';
-                                }
-
-                                html += `
-                                        <tr class="border-b border-stone-50">
-                                            <td class="p-2 text-[10px] text-stone-500 whitespace-nowrap">${date}</td>
-                                            <td class="p-2">
-                                                <div class="text-xs font-bold text-stone-700">${log.action}</div>
-                                                <div class="text-[10px] text-stone-500 truncate max-w-[150px]">
-                                                    ${log.details
-                                        .replace(/@\s*(\d+(\.\d+)?)\s*\//, (match, price) => `@ ${CurrencyManager.formatFrom(price, 'INR')}/`)
-                                        .replace(/Starting Price:\s*(\d+(\.\d+)?)/, (match, price) => `Starting Price: ${CurrencyManager.formatFrom(price, 'INR')}`)
-                                        .replace(/Winning Bid:\s*(\d+(\.\d+)?)/, (match, price) => `Winning Bid: ${CurrencyManager.formatFrom(price, 'INR')}`)
-                                        .replace(/Bid\s*(\d+(\.\d+)?)\s*on/, (match, price) => `Bid ${CurrencyManager.formatFrom(price, 'INR')} on`)
-                                    }
-                                                </div>
-                                            </td>
-                                            <td class="p-2 text-center">
-                                                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${typeColor}" style="${typeStyle}">${log.type}</span>
-                                            </td>
-                                        </tr>
-                                        `;
-                            });
-                            html += `</tbody></table></div>`;
-                        } else {
-                            html += `<p class="text-xs text-stone-500 italic">No recent activity found.</p>`;
                         }
 
                         statsContainer.innerHTML = html;
@@ -2640,14 +2605,18 @@
                             recentRegList.innerHTML = '';
                             if (result.recent_registrations && result.recent_registrations.length > 0) {
                                 result.recent_registrations.forEach(user => {
-                                    const roleColor = user.role === 'farmer' ? '#22c55e' : '#3b82f6';
+                                    let roleColor = '#3b82f6'; // Customer
+                                    if (user.role === 'farmer') roleColor = '#22c55e';
+                                    else if (user.role === 'delivery_agent') roleColor = '#f97316';
+                                    else if (user.role === 'delivery_staff') roleColor = '#7c3aed';
+
                                     const timeAgo = new Date(user.created_at).toLocaleDateString();
 
                                     recentRegList.innerHTML += `
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <div style="width: 6px; height: 6px; border-radius: 50%; background: ${roleColor};"></div>
-                                            <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">${user.full_name} <span style="color: #64748b; font-size: 10px; margin-left: 4px;">${user.role.replace(/_/g, ' ').toUpperCase()}</span></span>
+                                             <span style="font-size: 12px; font-weight: 500; color: #cbd5e1;">${user.full_name} <span style="color: ${roleColor}; font-size: 10px; margin-left: 4px;">${user.role.replace(/_/g, ' ').toUpperCase()}</span></span>
                                         </div>
                                         <span style="font-size: 10px; color: #64748b;">${timeAgo}</span>
                                     </div>
@@ -2686,22 +2655,33 @@
                                         typeColor = '';
                                         typeStyle = 'background-color: #e0e7ff; color: #4338ca;'; // Indigo-100/700
                                     }
+                                    if (log.type === 'delivery') {
+                                        typeColor = '';
+                                        typeStyle = 'background-color: #ccfbf1; color: #0f766e;'; // Teal/Cyan
+                                    }
 
                                     activityList.innerHTML += `
                                     <tr style="border-bottom: 1px solid #f8fafc;">
                                         <td style="padding: 16px; font-size: 13px; color: #64748b; text-align: center;">${date}</td>
                                         <td style="padding: 16px; text-align: center;">
                                             <div style="font-weight: 600; font-size: 13px;">${log.user_name}</div>
-                                            <div style="font-size: 11px; color: #94a3b8; text-transform:uppercase;">${log.user_role.replace(/_/g, ' ')}</div>
+                                            <div style="font-size: 11px; color: ${log.user_role === 'farmer' ? '#22c55e' :
+                                            log.user_role === 'delivery_agent' ? '#f97316' :
+                                                log.user_role === 'delivery_staff' ? '#7c3aed' :
+                                                    log.user_role === 'customer' ? '#3b82f6' : '#94a3b8'
+                                        }; text-transform:uppercase; font-weight: 700;">${log.user_role.replace(/_/g, ' ')}</div>
                                         </td>
                                         <td style="padding: 16px; text-align: center;">
-                                            <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/_/g, ' ')}</div>
+                                            <div style="font-size: 13px; font-weight: 600; color: #1f2937;">${log.action.replace(/shipped_pending/g, 'shipping pending').replace(/_/g, ' ')}</div>
                                             <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
                                                 ${log.details
+                                            .replace(/shipped_pending/g, 'shipping pending')
                                             .replace(/@\s*(\d+(\.\d+)?)\s*\//, (match, price) => `@ ${CurrencyManager.formatFrom(price, 'INR')}/`)
                                             .replace(/Starting Price:\s*(\d+(\.\d+)?)/, (match, price) => `Starting Price: ${CurrencyManager.formatFrom(price, 'INR')}`)
                                             .replace(/Winning Bid:\s*(\d+(\.\d+)?)/, (match, price) => `Winning Bid: ${CurrencyManager.formatFrom(price, 'INR')}`)
                                             .replace(/Bid\s*(\d+(\.\d+)?)\s*on/, (match, price) => `Bid ${CurrencyManager.formatFrom(price, 'INR')} on`)
+                                            .replace(/order #(\d+)/i, (match, id) => 'ORD-' + String(id).padStart(5, '0'))
+                                            .replace(/auction #(\d+)/i, (match, id) => 'AUC-' + String(id).padStart(5, '0'))
                                         }
                                             </div>
                                         </td>
@@ -2861,12 +2841,13 @@
                                 'paid': 'Payment Confirmed',
                                 'processing': 'Processing',
                                 'shipped': 'Shipped',
-                                'delivered': 'Completed',
+                                'shipped_pending': 'Shipping Pending',
+                                'delivered': 'Delivered',
                                 'cancelled': 'Cancelled',
                                 'rejected': 'Rejected'
                             };
                             const statusKey = window.normalizeStatus(i.status || i.STATUS);
-                            const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
+                            const displayStatus = statusMap[statusKey] || statusKey.replace(/_/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                             return `${displayStatus} (${i.count || i.COUNT || 0})`;
                         }),
                         datasets: [{
@@ -2986,11 +2967,31 @@
                             addAdminsNav.style.display = isSuperAdmin ? 'flex' : 'none';
                         }
 
-                        // Set Avatar Initial
-                        if (user.full_name) {
+                        // Set Avatar Initial or Image
+                        const avatarEl = document.getElementById('header-avatar');
+                        const largeAvatarEl = document.getElementById('profile-avatar-large');
+
+                        if (user.profile_image) {
+                            const imgPath = user.profile_image.startsWith('http') ? user.profile_image : '../../' + user.profile_image;
+                            const imgHtml = `<img src="${imgPath}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 12px; object-fit: cover;">`;
+
+                            avatarEl.innerHTML = imgHtml;
+                            avatarEl.style.background = 'transparent';
+                            avatarEl.textContent = '';
+
+                            largeAvatarEl.innerHTML = `<img src="${imgPath}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                            largeAvatarEl.style.background = 'transparent';
+                            largeAvatarEl.textContent = '';
+                        } else if (user.full_name) {
+                            // Reset to initials if no image
                             const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                            document.getElementById('profile-avatar-large').textContent = initials;
-                            document.getElementById('header-avatar').textContent = initials;
+
+                            avatarEl.innerHTML = initials;
+                            avatarEl.style.background = '#ff7e21';
+
+                            largeAvatarEl.innerHTML = initials;
+                            largeAvatarEl.style.background = '#ff7e21';
+                            largeAvatarEl.style.color = 'white';
                         }
 
                         // Set Country/Currency inputs

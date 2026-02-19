@@ -98,7 +98,11 @@ try {
         $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, quantity, price, unit, category, comment) VALUES (?, 'updated', ?, ?, ?, ?, 'Product details updated by farmer')");
         $trackStmt->execute([$product_id, $quantity, $priceVal, $unit, $category]);
 
-        echo json_encode(['success' => true, 'message' => 'Product updated successfully!']);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Product updated successfully!',
+            'rates' => CurrencyService::getExchangeRates()
+        ]);
     } else {
         throw new Exception('Failed to update product.');
     }

@@ -65,12 +65,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Cart
             </a>
-            <a href="bulk-orders.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:boxes.svg?color=%231c1917" width="18" alt="">
-                Bulk Order
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -222,7 +216,7 @@
 
     <script>
         let currentReviewData = null;
-        let currentRating = 5;
+        let currentRating = 0;
         let allOrders = [];
         let currentFilter = 'all';
 
@@ -232,12 +226,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    allOrders = result.orders;
+                    allOrders = result.orders || [];
                     filterOrders(currentFilter);
                 } else {
-                    renderOrders([]); // Show empty state on error/unauthorized
+                    const container = document.getElementById('orders-list');
+                    if (container) container.innerHTML = `<div class="py-20 text-center font-bold text-red-500">Error: ${result.message || 'Failed to load orders'}</div>`;
                 }
-            } catch (error) { console.error(error); }
+            } catch (error) {
+                const container = document.getElementById('orders-list');
+                if (container) container.innerHTML = `<div class="py-20 text-center font-bold text-red-500">Connection Error. Please check your network.</div>`;
+            }
         }
 
         function filterOrders(status) {
@@ -266,30 +264,32 @@
         function renderOrders(orders) {
             const container = document.getElementById('orders-list');
             if (orders.length > 0) {
-                container.innerHTML = orders.map(order => {
-                    const date = new Date(order.order_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                    // Normalize status (check both lower and upper case keys for robustness)
-                    const statusKey = window.normalizeStatus(order.status || order.STATUS);
+                try {
+                    container.innerHTML = orders.map(order => {
+                        const date = new Date(order.order_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                        // Normalize status (check both lower and upper case keys for robustness)
+                        const statusKey = window.normalizeStatus(order.status || order.STATUS);
 
-                    // Map statuses to literal labels as requested
-                    const statusMap = {
-                        'ordered': 'Ordered',
-                        'shipped': 'Shipped',
-                        'delivered': 'Delivered',
-                        'cancelled': 'Cancelled'
-                    };
-                    const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
+                        // Map statuses to literal labels as requested
+                        const statusMap = {
+                            'ordered': 'Ordered',
+                            'shipped': 'Shipped',
+                            'shipped_pending': 'Shipping Pending',
+                            'delivered': 'Delivered',
+                            'cancelled': 'Cancelled'
+                        };
+                        const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
 
-                    const statusColors = {
-                        'ordered': 'bg-blue-100 text-blue-700',
-                        'shipped': 'bg-indigo-100 text-indigo-700',
-                        'delivered': 'bg-emerald-100 text-emerald-700',
-                        'cancelled': 'bg-rose-100 text-rose-700'
-                    };
+                        const statusColors = {
+                            'ordered': 'bg-blue-100 text-blue-700',
+                            'shipped': 'bg-indigo-100 text-indigo-700',
+                            'delivered': 'bg-emerald-100 text-emerald-700',
+                            'cancelled': 'bg-rose-100 text-rose-700'
+                        };
 
-                    const orderJson = encodeURIComponent(JSON.stringify(order));
+                        const orderJson = encodeURIComponent(JSON.stringify(order));
 
-                    return `
+                        return `
                         <div class="bg-white border border-stone-200 rounded-[40px] p-8 hover:shadow-xl transition-all duration-300 group">
                             <div class="flex flex-col md:flex-row gap-8 items-center">
                                 <!-- Image -->
@@ -312,6 +312,8 @@
                                     
                                     <p class="text-[10px] font-bold text-stone-300 uppercase tracking-widest flex items-center gap-2">
                                         ORDERED ON <span class="text-stone-400">${date.toUpperCase()}</span>
+                                        <span class="mx-2 text-stone-200">|</span>
+                                        ID: <span class="text-stone-400">${order.source === 'auction' ? 'AUC' : 'ORD'}-${order.id.toString().padStart(5, '0')}</span>
                                     </p>
                                 </div>
 
@@ -326,13 +328,13 @@
                                     <!-- Track Button (Right Side, Colored) -->
                                     <div class="flex items-center gap-3">
                                         ${order.payment_status === 'pending' ?
-                            `<a href="payment.html?order_id=${order.id}" class="px-8 py-3.5 bg-primary text-white font-bold text-[11px] rounded-[24px] hover:bg-primary-hover transition-all uppercase tracking-[0.2em] shadow-lg shadow-orange-100">
+                                `<a href="payment.html?order_id=${order.id}" class="px-8 py-3.5 bg-primary text-white font-bold text-[11px] rounded-[24px] hover:bg-primary-hover transition-all uppercase tracking-[0.2em] shadow-lg shadow-orange-100">
                                                 PAY NOW
                                             </a>`
-                            : `
-                                            ${(statusKey === 'delivered') ?
-                                `<button onclick="openReviewModal('${order.id}', '${order.product_id}', '${order.product_name}')" class="px-5 py-3 bg-stone-900 text-white font-bold text-[10px] rounded-xl hover:bg-black transition-all uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-0.5">Rate</button>`
-                                : ''}
+                                : `
+                                            ${(statusKey === 'delivered' && !order.is_rated) ?
+                                    `<button onclick="openReviewModal('${order.id}', '${order.product_id}', '${order.product_name}')" class="px-5 py-3 bg-stone-900 text-white font-bold text-[10px] rounded-xl hover:bg-black transition-all uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-0.5">Rate</button>`
+                                    : ''}
                                                 
                                             ${statusKey === 'cancelled' ? `
                                                 <div class="px-10 py-3.5 bg-rose-50 text-rose-600 font-bold text-[11px] rounded-[24px] uppercase tracking-[0.2em] text-center border border-rose-100 cursor-default">
@@ -345,17 +347,20 @@
                                             `}
 
                                             ${(statusKey === 'ordered') ?
-                                `<button onclick="cancelOrder('${order.id}', ${order.total_price}, ${order.exchange_rate}, '${order.currency_code}')" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
+                                    `<button onclick="cancelOrder('${order.id}', ${order.total_price}, ${order.exchange_rate}, '${order.currency_code}')" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
                                                 CANCEL
                                             </button>`
-                                : ''}
+                                    : ''}
                                         `}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
-                }).join('');
+                    }).join('');
+                } catch (e) {
+                    container.innerHTML = `<div class="py-20 text-center font-bold text-red-500">Rendering Error: Please try refreshing the page.</div>`;
+                }
             } else {
                 container.innerHTML = `
                     <div class="py-40 text-center">
@@ -374,7 +379,7 @@
 
         function openTrackModal(orderJson) {
             const order = JSON.parse(decodeURIComponent(orderJson));
-            document.getElementById('track-order-id').innerText = `ORD-${order.id.toString().padStart(5, '0')}`;
+            document.getElementById('track-order-id').innerText = `${order.source === 'auction' ? 'AUC' : 'ORD'}-${order.id.toString().padStart(5, '0')}`;
             document.getElementById('trackModal').classList.remove('hidden');
 
             const timeline = document.getElementById('track-timeline');
@@ -407,7 +412,9 @@
 
         function openReviewModal(orderId, productId, name) {
             currentReviewData = { order_id: orderId, product_id: productId };
+            currentRating = 0; // Reset to 0 on open
             document.getElementById('review-product-name').innerText = name;
+            document.getElementById('review-text').value = ''; // Clear text
             document.getElementById('reviewModal').classList.remove('hidden');
             initStars();
         }
@@ -422,7 +429,7 @@
             for (let i = 1; i <= 5; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'star-btn transition-all transform hover:scale-110';
-                btn.innerHTML = `<img src="https://api.iconify.design/lucide:star.svg?color=${i <= currentRating ? '%23FF7E21' : '%23d6d3d1'}" width="36" class="star-icon">`;
+                btn.innerHTML = `<img src="https://api.iconify.design/lucide:star.svg?color=${(i <= currentRating && currentRating > 0) ? '%23FF7E21' : '%23d6d3d1'}" width="36" class="star-icon">`;
                 btn.onclick = () => {
                     currentRating = i;
                     updateStars();
@@ -439,6 +446,10 @@
         }
 
         async function submitReview() {
+            if (currentRating === 0) {
+                showToast('Please select at least one star to submit your review.', 'error');
+                return;
+            }
             const btn = document.getElementById('submit-review-btn');
             const text = document.getElementById('review-text').value;
 

@@ -34,7 +34,8 @@ try {
             c.phone as customer_phone,
             da.full_name as agent_name,
             p.product_name,
-            p.image_url as product_image
+            p.image_url as product_image,
+            o.order_date as created_at
         FROM orders o
         JOIN users c ON o.customer_id = c.id
         JOIN products p ON o.product_id = p.id
@@ -53,13 +54,14 @@ try {
             u.phone as customer_phone,
             da2.full_name as agent_name,
             a.product_name,
-            a.image_url as product_image
+            a.image_url as product_image,
+            a.updated_at as created_at
         FROM auctions a
         JOIN users u ON a.winner_id = u.id
         LEFT JOIN users da2 ON a.delivery_agent_id = da2.id
         WHERE a.shipping_status IN ('shipped', 'delivered')
         
-        ORDER BY id DESC
+        ORDER BY created_at DESC
     ";
 
     $stmt = $pdo->prepare($sql);

@@ -48,10 +48,11 @@ try {
 
             SELECT 
                 a.id, 
-                a.updated_at as order_date, 
+                COALESCE(a.paid_at, a.updated_at) as order_date, 
                 a.quantity, 
                 a.current_bid as total_price, 
                 CASE 
+                    WHEN a.shipping_status = 'delivered' THEN 'delivered'
                     WHEN a.shipping_status = 'shipped' THEN 'shipped'
                     ELSE a.status 
                 END as status, 
@@ -65,7 +66,7 @@ try {
             FROM auctions a
             JOIN users c ON a.winner_id = c.id
             JOIN users f ON a.farmer_id = f.id
-            WHERE a.status IN ('completed', 'shipped', 'paid') AND a.winner_id IS NOT NULL
+            WHERE a.status IN ('completed', 'shipped', 'paid', 'delivered') AND a.winner_id IS NOT NULL
         ) as combined_transactions
         ORDER BY order_date DESC
     ";

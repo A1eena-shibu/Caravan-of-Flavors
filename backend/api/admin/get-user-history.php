@@ -35,12 +35,12 @@ try {
                 (SELECT IFNULL(SUM(current_bid), 0) FROM auctions WHERE farmer_id = ? AND payment_status = 'paid')
         ");
         $stmt->execute([$userId, $userId]);
-        $data['total_earnings'] = $stmt->fetchColumn() ?: 0;
+        $data['total_earnings'] = (float) ($stmt->fetchColumn() ?: 0);
 
         // 2. Total Products Listed
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE farmer_id = ?");
         $stmt->execute([$userId]);
-        $data['total_products'] = $stmt->fetchColumn() ?: 0;
+        $data['total_products'] = (int) ($stmt->fetchColumn() ?: 0);
 
         // 3. Top Products (Unified)
         $stmt = $pdo->prepare("
@@ -88,7 +88,6 @@ try {
         $data['history'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     } elseif ($role === 'customer') {
-        // 1. Total Spending
         // 1. Total Spending (Unified)
         $stmt = $pdo->prepare("
             SELECT 
@@ -96,12 +95,12 @@ try {
                 (SELECT IFNULL(SUM(current_bid), 0) FROM auctions WHERE winner_id = ? AND payment_status = 'paid')
         ");
         $stmt->execute([$userId, $userId]);
-        $data['total_spending'] = $stmt->fetchColumn() ?: 0;
+        $data['total_spending'] = (float) ($stmt->fetchColumn() ?: 0);
 
-        // 2. Total Orders (Orders Specific Only as requested)
+        // 2. Total Orders
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE customer_id = ? AND status != 'cancelled'");
         $stmt->execute([$userId]);
-        $data['total_orders'] = $stmt->fetchColumn() ?: 0;
+        $data['total_orders'] = (int) ($stmt->fetchColumn() ?: 0);
 
         // 3. Recent Purchases (Unified)
         $stmt = $pdo->prepare("
@@ -125,6 +124,36 @@ try {
         ");
         $stmt->execute([$userId, $userId]);
         $data['history'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } elseif ($role === 'delivery_agent' || $role === 'delivery_staff') {
+        // 1. Total Deliveries Assigned / Completed
+        $stmt = $pdo->prepare("
+            SELECT 
+                (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered') +
+                (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'delivered')
+        ");
+        $stmt->execute([$userId, $userId]);
+        $data['total_deliveries'] = (int) ($stmt->fetchColumn() ?: 0);
+
+        // 2. Active Tasks
+        $stmt = $pdo->prepare("
+            SELECT 
+                (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status IN ('ordered', 'shipped')) +
+                (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'shipped')
+        ");
+        $stmt->execute([$userId, $userId]);
+        $data['active_tasks'] = (int) ($stmt->fetchColumn() ?: 0);
+
+        // Recent History for agents
+        $data['history'] = [];
+    } else {
+        // Default empty state for other roles
+        $data = [
+            'total_earnings' => 0,
+            'total_products' => 0,
+            'total_spending' => 0,
+            'total_orders' => 0,
+            'history' => []
+        ];
     }
 
     echo json_encode(['success' => true, 'data' => $data]);

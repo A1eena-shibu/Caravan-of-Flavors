@@ -67,12 +67,6 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Cart
             </a>
-            <a href="bulk-orders.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
-                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
-                <img src="https://api.iconify.design/lucide:boxes.svg?color=%231c1917" width="18" alt="">
-                Bulk Order
-            </a>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -228,6 +222,7 @@
                         const statusMap = {
                             'ordered': 'Ordered',
                             'shipped': 'Shipped',
+                            'shipped_pending': 'Shipping Pending',
                             'delivered': 'Delivered',
                             'cancelled': 'Cancelled',
                             'awaiting_payment': 'Awaiting Payment',

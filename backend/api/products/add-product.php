@@ -101,7 +101,7 @@ try {
         $priceVal = CurrencyService::convert($priceVal, $base_currency, CurrencyService::BASE_CURRENCY);
     }
 
-    // Always store as INR
+    // Always store as INR (Base Currency) to ensure consistency across analytics and orders
     if ($stmt->execute([$farmer_id, $product_name, $category, $priceVal, CurrencyService::BASE_CURRENCY, $farmer_country, $quantity, $unit, $image_url])) {
         $product_id = $pdo->lastInsertId();
 
@@ -109,7 +109,11 @@ try {
         $trackStmt = $pdo->prepare("INSERT INTO product_tracking (product_id, action, quantity, price, unit, category, comment) VALUES (?, 'listed', ?, ?, ?, ?, 'Product initially listed')");
         $trackStmt->execute([$product_id, $quantity, $priceVal, $unit, $category]);
 
-        echo json_encode(['success' => true, 'message' => 'Product added successfully!']);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Product added successfully!',
+            'rates' => CurrencyService::getExchangeRates()
+        ]);
     } else {
         throw new Exception('Failed to save product to database.');
     }

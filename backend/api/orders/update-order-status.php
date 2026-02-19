@@ -94,8 +94,8 @@ try {
         if (isset($reason))
             $comment .= ". Reason: $reason";
 
-        $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment) VALUES (?, ?, ?)");
-        $trackStmt->execute([$order_id, $new_status, $comment]);
+        $trackStmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment, created_by) VALUES (?, ?, ?, ?)");
+        $trackStmt->execute([$order_id, $new_status, $comment, $farmer_id]);
         // -----------------------------
 
         echo json_encode(['success' => true, 'message' => "Order status updated to $new_status."]);

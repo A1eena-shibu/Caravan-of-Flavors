@@ -38,7 +38,22 @@ try {
         throw new Exception("Failed to verify reset code. It may have expired.");
     }
 
-    // 3. Update Password in MySQL Database
+    // 3. Verify Local Token and Expiry (10 minutes)
+    $db = getDBConnection();
+    $stmt = $db->prepare("SELECT reset_token, reset_token_sent_at FROM users WHERE email = :email");
+    $stmt->execute([':email' => $email]);
+    $user = $stmt->fetch();
+
+    if (!$user || $user['reset_token'] !== $data->oobCode) {
+        throw new Exception("Security mismatch: Reset link is no longer valid.");
+    }
+
+    $sentAt = strtotime($user['reset_token_sent_at']);
+    if (time() - $sentAt > 600) {
+        throw new Exception("Reset link has expired (10 min limit).");
+    }
+
+    // 4. Update Password in MySQL Database
     // We use the same hashing algorithm as in register.php (Argon2id)
     $db = getDBConnection();
     $password_hash = password_hash($data->password, PASSWORD_ARGON2ID);

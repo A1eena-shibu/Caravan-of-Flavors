@@ -35,7 +35,7 @@ const CustomUI = {
         document.body.appendChild(overlay);
     },
 
-    showToast(message, type = 'default') {
+    showToast(message, type = 'default', duration = 4000) {
         this.init();
         const container = document.getElementById('custom-ui-container');
 
@@ -85,10 +85,14 @@ const CustomUI = {
             toast.classList.remove('-translate-y-4', 'opacity-0');
         });
 
-        setTimeout(() => {
-            toast.classList.add('-translate-y-4', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
+        if (duration > 0) {
+            setTimeout(() => {
+                toast.classList.add('-translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        return toast;
     },
 
     showConfirm(message) {
@@ -128,14 +132,20 @@ const CustomUI = {
                 cancelBtn.classList.add('hidden');
             }
 
+            overlay.classList.add('hidden');
+            overlay.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+
             overlay.classList.remove('hidden');
 
+            // Force reflow
+            overlay.offsetWidth;
+
             requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    overlay.classList.remove('opacity-0');
-                    box.classList.remove('scale-95');
-                    box.classList.add('scale-100');
-                });
+                overlay.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
             });
 
             const cleanup = () => {
@@ -166,6 +176,6 @@ const CustomUI = {
 };
 
 // Expose global helpers
-window.showToast = (msg, type) => CustomUI.showToast(msg, type);
+window.showToast = (msg, type, duration) => CustomUI.showToast(msg, type, duration);
 window.showConfirm = (msg) => CustomUI.showConfirm(msg);
 window.showAlert = (msg, title) => CustomUI.showAlert(msg, title);

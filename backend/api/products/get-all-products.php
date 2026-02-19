@@ -14,10 +14,16 @@ $pdo = getDBConnection();
 
 try {
     $stmt = $pdo->prepare("
-        SELECT p.*, u.full_name as farmer_name
+        SELECT 
+            p.*, 
+            u.full_name as farmer_name,
+            COALESCE(AVG(r.rating), 0) as average_rating,
+            COUNT(r.id) as review_count
         FROM products p
         JOIN users u ON p.farmer_id = u.id
+        LEFT JOIN reviews r ON p.id = r.product_id
         WHERE p.is_available = TRUE
+        GROUP BY p.id
         ORDER BY p.id DESC
     ");
     $stmt->execute();

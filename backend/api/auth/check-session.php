@@ -10,7 +10,8 @@ if (isset($_SESSION['user_id'])) {
         'farmer' => '../farmer/farmer-dashboard.html',
         'customer' => '../customer/customer-dashboard.html',
         'admin' => '../admin/admin-dashboard.html',
-        'delivery_agent' => '../delivery/delivery-dashboard.html'
+        'delivery_agent' => '../delivery/delivery-dashboard.html',
+        'delivery_staff' => '../delivery/staff-dashboard.html'
     ];
     $redirect = $redirectMap[$role] ?? '../customer/customer-dashboard.html';
 

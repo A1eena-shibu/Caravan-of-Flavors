@@ -30,11 +30,6 @@ try {
 
     $fullName = trim($data['full_name'] ?? '');
     $email = trim($data['email'] ?? '');
-    $phone = trim($data['phone'] ?? '');
-    $address = trim($data['address'] ?? '');
-    $country = trim($data['country'] ?? '');
-    $currency_code = trim($data['currency_code'] ?? '');
-    $currency_symbol = trim($data['currency_symbol'] ?? '');
 
     if (empty($fullName) || empty($email)) {
         throw new Exception('Full name and email are required');
@@ -47,12 +42,47 @@ try {
         throw new Exception('Email address is already in use by another account');
     }
 
+    // Build dynamic update query
+    $updateFields = ['full_name = ?', 'email = ?'];
+    $params = [$fullName, $email];
+
+    // Only update phone if provided
+    if (isset($data['phone'])) {
+        $updateFields[] = 'phone = ?';
+        $params[] = trim($data['phone']);
+    }
+
+    // Only update address if provided
+    if (isset($data['address'])) {
+        $updateFields[] = 'address = ?';
+        $params[] = trim($data['address']);
+    }
+
+    // Only update country if provided
+    if (isset($data['country'])) {
+        $updateFields[] = 'country = ?';
+        $params[] = trim($data['country']);
+        $_SESSION['user_country'] = trim($data['country']);
+    }
+
+    // Only update currency if provided
+    if (isset($data['currency_code']) && isset($data['currency_symbol'])) {
+        $updateFields[] = 'currency_code = ?';
+        $params[] = trim($data['currency_code']);
+        $updateFields[] = 'currency_symbol = ?';
+        $params[] = trim($data['currency_symbol']);
+        $_SESSION['user_currency_code'] = trim($data['currency_code']);
+        $_SESSION['user_currency_symbol'] = trim($data['currency_symbol']);
+    }
+
+    $params[] = $userId;
+
     $stmt = $pdo->prepare("
         UPDATE users 
-        SET full_name = ?, email = ?, phone = ?, address = ?, country = ?, currency_code = ?, currency_symbol = ?
+        SET " . implode(', ', $updateFields) . "
         WHERE id = ? AND role = 'admin'
     ");
-    $result = $stmt->execute([$fullName, $email, $phone, $address, $country, $currency_code, $currency_symbol, $userId]);
+    $result = $stmt->execute($params);
 
     if ($result) {
         // Update Session Immediately

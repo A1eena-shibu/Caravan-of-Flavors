@@ -43,6 +43,20 @@ try {
     $result = $stmt->execute([$agent_id, $id]);
 
     if ($result) {
+        // Log the assignment
+        $admin_id = $_SESSION['user_id'];
+        $logStmt = $pdo->prepare("INSERT INTO admin_logs (admin_id, action_type, target_table, target_id, description) VALUES (?, 'agent_assigned', ?, ?, ?)");
+        $targetTable = ($type === 'auction') ? 'auctions' : 'orders';
+
+        // Fetch agent name
+        $agentNameStmt = $pdo->prepare("SELECT full_name FROM users WHERE id = ?");
+        $agentNameStmt->execute([$agent_id]);
+        $agentName = $agentNameStmt->fetchColumn();
+
+        $formattedId = ($type === 'auction') ? 'AUC-' . str_pad($id, 5, '0', STR_PAD_LEFT) : 'ORD-' . str_pad($id, 5, '0', STR_PAD_LEFT);
+        $description = "Assigned agent {$agentName} to {$formattedId}";
+        $logStmt->execute([$admin_id, $targetTable, $id, $description]);
+
         echo json_encode(['success' => true, 'message' => 'Agent assigned successfully to ' . $type]);
     } else {
         throw new Exception('Failed to update ' . $type);

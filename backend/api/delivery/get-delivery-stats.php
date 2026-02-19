@@ -30,8 +30,8 @@ try {
     // Pending Deliveries (Orders + Auctions) - For auctions, 'shipped' implies pending delivery
     $stmt = $pdo->prepare("
         SELECT 
-            (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status IN ('ordered', 'shipped')) +
-            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'shipped')
+            (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status IN ('ordered', 'shipped', 'shipped_pending')) +
+            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status IN ('shipped', 'ordered', 'pending', 'shipped_pending'))
     ");
     $stmt->execute([$agent_id, $agent_id]);
     $pendingCount = $stmt->fetchColumn();
@@ -43,10 +43,26 @@ try {
     $stmt = $pdo->prepare("
         SELECT 
             (SELECT COUNT(*) FROM orders WHERE delivery_agent_id = ? AND status = 'delivered' AND DATE(delivered_at) = CURRENT_DATE) +
-            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND DATE(shipped_at) = CURRENT_DATE)
+            (SELECT COUNT(*) FROM auctions WHERE delivery_agent_id = ? AND shipping_status = 'delivered' AND DATE(delivered_at) = CURRENT_DATE)
     ");
     $stmt->execute([$agent_id, $agent_id]);
     $todayCompleted = $stmt->fetchColumn();
+
+    // Recent Activity
+    $activityLimit = 6;
+
+    // Agent sees everything in their hub (Created Staff, Assigned Staff, Staff Status Changes, Staff Deletions, Deliveries)
+    // We fetch logs where the admin_id is either the current agent OR a staff member in their hub
+    $stmt = $pdo->prepare("
+        SELECT action_type, description, created_at, target_id, target_table
+        FROM admin_logs
+        WHERE admin_id = ? 
+        OR admin_id IN (SELECT id FROM users WHERE hub_id = ?)
+        ORDER BY created_at DESC
+        LIMIT $activityLimit
+    ");
+    $stmt->execute([$agent_id, $agent_id]);
+    $recentActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
         'success' => true,
@@ -55,7 +71,8 @@ try {
             'pending' => (int) $pendingCount,
             'monthly_revenue' => (float) $monthlyRevenue,
             'today_completed' => (int) $todayCompleted
-        ]
+        ],
+        'recent_activity' => $recentActivity
     ]);
 
 } catch (Exception $e) {

@@ -12,12 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once '../../config/database.php';
 
-register_shutdown_function(function () {
-    $error = error_get_last();
-    if ($error !== null && $error['type'] === E_ERROR) {
-        file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "FATAL ERROR in get-all-activity.php: " . print_r($error, true) . "\n", FILE_APPEND);
-    }
-});
+
 
 try {
     $pdo = getDBConnection();
@@ -25,21 +20,33 @@ try {
         (SELECT 
             'order' as type,
             ot.updated_at as timestamp,
-            u.full_name as user_name,
-            u.role as user_role,
             CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.full_name, 'Unknown Agent')
+                WHEN ot.status = 'shipped' THEN COALESCE(actor.full_name, inferred_actor.full_name, da.full_name, 'Unknown Agent')
+                ELSE u.full_name 
+            END as user_name,
+            CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.role, 'delivery_agent')
+                WHEN ot.status = 'shipped' THEN COALESCE(actor.role, inferred_actor.role, da.role, 'delivery_agent')
+                ELSE u.role 
+            END as user_role,
+            CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN 'task transferred'
                 WHEN ot.status = 'ordered' THEN 'ordered an item'
                 WHEN ot.status = 'pending' THEN 'placed a new order'
                 WHEN ot.status = 'confirmed' THEN 'confirmed the order'
                 WHEN ot.status = 'paid' THEN 'payment confirmed'
                 WHEN ot.status = 'processing' THEN 'processing the order'
-                WHEN ot.status = 'shipped' THEN 'shipped the order'
+                WHEN ot.status = 'shipped' THEN 'shipment confirmed'
                 WHEN ot.status = 'delivered' THEN 'delivered the order'
                 WHEN ot.status = 'cancelled' THEN 'cancelled the order'
                 WHEN ot.status = 'rejected' THEN 'rejected the order'
                 ELSE CONCAT('updated order status to ', ot.status)
             END as action,
-            CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name) as details,
+            CASE 
+                WHEN ot.status = 'shipped' AND ot.comment IS NOT NULL THEN REPLACE(ot.comment, 'receipt of the item', 'shipment of the item')
+                ELSE CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ') from farmer ', f.full_name)
+            END as details,
             o.id as reference_id,
             o.total_price as amount
         FROM order_tracking ot
@@ -47,7 +54,81 @@ try {
         JOIN users u ON o.customer_id = u.id
         JOIN products p ON o.product_id = p.id
         JOIN users f ON o.farmer_id = f.id
-        WHERE u.email != 'admin@gmail.com')
+        LEFT JOIN users da ON o.delivery_agent_id = da.id
+        LEFT JOIN users actor ON ot.created_by = actor.id
+        LEFT JOIN users inferred_actor ON inferred_actor.id = (
+            SELECT created_by FROM order_tracking 
+            WHERE order_id = ot.order_id 
+            AND id > ot.id 
+            AND (comment LIKE 'Task transferred%' OR comment LIKE 'Task reassigned%') 
+            ORDER BY id ASC LIMIT 1
+        )
+        WHERE u.email != 'admin@gmail.com' AND (ot.type IS NULL OR ot.type = 'order') AND ot.status NOT IN ('shipped_pending', 'delivered'))
+
+        UNION ALL
+
+        (SELECT 
+            'order' as type,
+            ot.updated_at as timestamp,
+            CASE 
+                WHEN ot.comment LIKE 'Task reassigned%' OR ot.comment LIKE 'Task transferred%' THEN COALESCE(actor.full_name, f.full_name)
+                ELSE f.full_name 
+            END as user_name,
+            CASE 
+                WHEN ot.comment LIKE 'Task reassigned%' OR ot.comment LIKE 'Task transferred%' THEN COALESCE(actor.role, f.role)
+                ELSE f.role 
+            END as user_role,
+            CASE 
+                WHEN ot.comment LIKE 'Task reassigned%' OR ot.comment LIKE 'Task transferred%' THEN 'task transferred'
+                ELSE 'assigned order task' 
+            END as action,
+            CASE 
+                WHEN ot.comment IS NOT NULL AND ot.comment != '' THEN REPLACE(ot.comment, 'receipt confirmation', 'confirmation')
+                ELSE CONCAT(p.product_name, ' (', 0 + o.quantity, ' ', p.unit, ')')
+            END as details,
+            o.id as reference_id,
+            o.total_price as amount
+        FROM order_tracking ot
+        JOIN orders o ON ot.order_id = o.id
+        JOIN users f ON o.farmer_id = f.id
+        JOIN products p ON o.product_id = p.id
+        LEFT JOIN users actor ON ot.created_by = actor.id
+        WHERE (ot.type IS NULL OR ot.type = 'order') AND ot.status = 'shipped_pending')
+
+        UNION ALL
+
+        (SELECT 
+            'auction' as type,
+            ot.updated_at as timestamp,
+            CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.full_name, 'Unknown Agent')
+                WHEN ot.status = 'shipped' THEN COALESCE(actor.full_name, da.full_name, 'Unknown Agent')
+                ELSE u.full_name 
+            END as user_name,
+            CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN COALESCE(actor.role, 'delivery_agent')
+                WHEN ot.status = 'shipped' THEN COALESCE(actor.role, da.role, 'delivery_agent')
+                ELSE u.role 
+            END as user_role,
+            CASE 
+                WHEN ot.comment LIKE 'Task transferred%' OR ot.comment LIKE 'Task reassigned%' THEN 'task transferred'
+                WHEN ot.status = 'shipped_pending' THEN 'assigned auction task'
+                WHEN ot.status = 'shipped' THEN 'shipment confirmed'
+                ELSE CONCAT('updated auction status to ', ot.status)
+            END as action,
+            CASE 
+                WHEN ot.status = 'shipped' AND ot.comment IS NOT NULL THEN REPLACE(ot.comment, 'receipt of the item', 'shipment of the item')
+                WHEN ot.comment IS NOT NULL AND ot.comment != '' THEN ot.comment
+                ELSE CONCAT(a.product_name, ' (Auction ID: ', a.id, ')')
+            END as details,
+            a.id as reference_id,
+            a.current_bid as amount
+        FROM order_tracking ot
+        JOIN auctions a ON ot.order_id = a.id
+        LEFT JOIN users u ON u.id = a.farmer_id
+        LEFT JOIN users da ON a.delivery_agent_id = da.id
+        LEFT JOIN users actor ON ot.created_by = actor.id
+        WHERE (ot.type = 'auction') AND u.email != 'admin@gmail.com' AND ot.status != 'delivered')
 
         UNION ALL
 
@@ -134,7 +215,7 @@ try {
 
         (SELECT 
             'auction' as type,
-            a.updated_at as timestamp,
+            a.paid_at as timestamp,
             u.full_name as user_name,
             u.role as user_role,
             'payment confirmed' as action,
@@ -143,23 +224,10 @@ try {
             a.current_bid as amount
         FROM auctions a
         JOIN users u ON a.winner_id = u.id
-        WHERE a.payment_status = 'paid' AND u.email != 'admin@gmail.com')
+        WHERE a.payment_status = 'paid' AND a.paid_at IS NOT NULL AND u.email != 'admin@gmail.com')
 
-        UNION ALL
-
-        (SELECT 
-            'auction' as type,
-            a.shipped_at as timestamp,
-            u.full_name as user_name,
-            u.role as user_role,
-            'shipped auction item' as action,
-            CONCAT(a.product_name, ' shipped to winner') as details,
-            a.id as reference_id,
-            a.current_bid as amount
-        FROM auctions a
-        JOIN users u ON a.farmer_id = u.id
-        WHERE a.shipping_status = 'shipped' AND a.shipped_at IS NOT NULL AND u.email != 'admin@gmail.com')
-
+        /* RECENT ACTIVITY: AUCTION DELIVERED LOG REMOVED */
+        
         UNION ALL
 
         (SELECT 
@@ -191,6 +259,111 @@ try {
         JOIN users u ON al.admin_id = u.id
         WHERE al.action_type = 'product_deleted' AND u.email != 'admin@gmail.com')
 
+        UNION ALL
+
+        (SELECT 
+            'delivery' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'assigned staff' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'staff_assigned' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'delivery' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'assigned agent' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'agent_assigned' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'user' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'created agent' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'create_user' AND al.description LIKE '%delivery agent%' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'user' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'created staff' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'staff_created' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'user' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'updated staff status' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'staff_status_updated' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'user' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'deleted staff' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'staff_deleted' AND u.email != 'admin@gmail.com')
+
+        UNION ALL
+
+        (SELECT 
+            'delivery' as type,
+            al.created_at as timestamp,
+            u.full_name as user_name,
+            u.role as user_role,
+            'completed delivery' as action,
+            al.description as details,
+            al.target_id as reference_id,
+            0 as amount
+        FROM admin_logs al
+        JOIN users u ON al.admin_id = u.id
+        WHERE al.action_type = 'delivery_completed' AND u.email != 'admin@gmail.com')
+
         ORDER BY timestamp DESC
         LIMIT 100
     ");
@@ -202,8 +375,6 @@ try {
 
 } catch (Exception $e) {
     ob_end_clean();
-    file_put_contents(__DIR__ . '/../../admin_debug.log', date('[Y-m-d H:i:s] ') . "get-all-activity.php Error: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
-    http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
 ?>

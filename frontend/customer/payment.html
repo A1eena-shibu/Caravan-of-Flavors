@@ -495,7 +495,7 @@
 
                 const finalAmount = finalAmountValue.toFixed(2);
 
-                const logoUrl = encodeURI(window.location.origin + window.getProjectRoot() + "/frontend/assets/images/logo.png");
+                const logoUrl = "https://drive.google.com/uc?export=download&id=1LQxhdXT5kIBNEg3SsOdrTo7ETVauaE6H";
                 console.log("Razorpay Logo URL:", logoUrl);
 
                 var options = {
@@ -504,7 +504,7 @@
                     "currency": currencyCode,
                     "name": "Caravan of Flavours",
                     "description": orderIds ? "Payment for Multiple Orders" : "Payment for Order #" + legacyOrderId,
-                    "image": encodeURI(window.location.origin + window.getProjectRoot() + "/frontend/assets/images/logo.png"),
+                    "image": logoUrl,
                     "handler": function (response) {
                         // Payment successful
                         completeOrder('Razorpay', {

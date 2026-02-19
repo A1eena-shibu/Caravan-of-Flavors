@@ -35,6 +35,12 @@ if (empty($product_name) || !isset($_POST['starting_price']) || $_POST['starting
     exit;
 }
 
+// Ensure image is uploaded
+if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+    echo json_encode(['success' => false, 'message' => 'Product image is required']);
+    exit;
+}
+
 // Handle Image Upload
 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
     // Use absolute path for upload directory (Root/uploads)

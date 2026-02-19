@@ -80,6 +80,8 @@ function getDashboardUrl($role)
         return '../admin/admin-dashboard.html';
     if ($role === 'delivery_agent')
         return '../delivery/delivery-dashboard.html';
+    if ($role === 'delivery_staff')
+        return '../delivery/staff-dashboard.html';
     return $role === 'farmer'
         ? '../farmer/farmer-dashboard.html'
         : '../customer/customer-dashboard.html';

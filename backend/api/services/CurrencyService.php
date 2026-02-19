@@ -11,17 +11,31 @@ class CurrencyService
 
     public static function getExchangeRates($baseCurrency = self::BASE_CURRENCY)
     {
+        $cacheFile = __DIR__ . '/../../data/exchange_rates.json';
+
+        // 1. Try to load from shared file cache first (synced with frontend)
+        if (file_exists($cacheFile)) {
+            $cachedData = json_decode(file_get_contents($cacheFile), true);
+            // Check if file is valid, has rates, and matches the requested base
+            if ($cachedData && isset($cachedData['rates']) && ($cachedData['base'] ?? '') === $baseCurrency) {
+                // If it's within 24 hours, use it
+                if (time() - filemtime($cacheFile) < 86400) {
+                    return $cachedData['rates'];
+                }
+            }
+        }
+
+        // 2. Fallback to session if file is old or missing
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
         $cacheKey = "rates_" . $baseCurrency;
-
-        // Cache in session for 1 hour
-        if (isset($_SESSION[$cacheKey]) && (time() - $_SESSION[$cacheKey . '_time'] < 3600)) {
+        if (isset($_SESSION[$cacheKey]) && (time() - $_SESSION[$cacheKey . '_time'] < 86400)) {
             return $_SESSION[$cacheKey];
         }
 
+        // 3. Last resort: Live API fetch
         try {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, self::$apiUrl . $baseCurrency);
@@ -49,7 +63,6 @@ class CurrencyService
             return $data['rates'];
         } catch (Exception $e) {
             error_log("CurrencyService Error: " . $e->getMessage());
-            // Fallback manual rates or return empty if system really needs live data
             return [];
         }
     }
@@ -59,19 +72,29 @@ class CurrencyService
         if ($fromCurrency === $toCurrency)
             return $amount;
 
-        $rates = self::getExchangeRates($fromCurrency);
+        // Unified Base: Always fetch rates with INR as base to ensure symmetry with frontend
+        $rates = self::getExchangeRates(self::BASE_CURRENCY);
 
-        if (empty($rates) || !isset($rates[$toCurrency])) {
-            // Fallback: If fromCurrency rates fail, try USD as base
-            $usdRates = self::getExchangeRates('USD');
-            if (!empty($usdRates) && isset($usdRates[$fromCurrency]) && isset($usdRates[$toCurrency])) {
-                $amountInUsd = $amount / $usdRates[$fromCurrency];
-                return $amountInUsd * $usdRates[$toCurrency];
-            }
-            return $amount; // Default to no conversion if all fails
+        if (empty($rates)) {
+            return $amount; // Default to no conversion if API fails
         }
 
-        return $amount * $rates[$toCurrency];
+        // 1. Convert source to INR
+        $amountInInr = $amount;
+        if ($fromCurrency !== self::BASE_CURRENCY) {
+            if (!isset($rates[$fromCurrency]))
+                return $amount;
+            $amountInInr = $amount / $rates[$fromCurrency];
+        }
+
+        // 2. Convert INR to destination
+        if ($toCurrency === self::BASE_CURRENCY) {
+            return $amountInInr;
+        }
+
+        if (!isset($rates[$toCurrency]))
+            return $amountInInr;
+        return $amountInInr * $rates[$toCurrency];
     }
 
     public static function formatPrice($amount, $currencySymbol, $currencyCode)

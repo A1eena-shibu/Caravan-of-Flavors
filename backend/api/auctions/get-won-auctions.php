@@ -5,6 +5,7 @@ header("Content-Type: application/json");
 
 require_once '../../config/database.php';
 require_once '../services/CurrencyService.php';
+require_once '../services/process-expired-auctions.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -18,13 +19,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'customer') {
 
 $user_id = $_SESSION['user_id'];
 $pdo = getDBConnection();
+processExpiredAuctions($pdo);
 
 try {
     $stmt = $pdo->prepare("
-        SELECT a.*, u.full_name as farmer_name
+        SELECT a.*, u.full_name as farmer_name,
+               CASE 
+                 WHEN a.shipping_status = 'delivered' THEN 'delivered'
+                 WHEN a.shipping_status = 'shipped' THEN 'shipped'
+                 ELSE a.status 
+               END as status
         FROM auctions a
         JOIN users u ON a.farmer_id = u.id
-        WHERE a.winner_id = ? AND a.status IN ('completed', 'shipped')
+        WHERE a.winner_id = ? AND (a.status IN ('completed', 'shipped', 'delivered') OR a.shipping_status IN ('shipped', 'delivered'))
         ORDER BY a.updated_at DESC
     ");
     $stmt->execute([$user_id]);
