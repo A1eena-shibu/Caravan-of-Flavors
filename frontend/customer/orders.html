@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders | Caravan of Flavours</title>
+    <title>Global Spice Trading Made Simple | My Orders</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -71,6 +71,12 @@
                 <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
                 Auctions
             </a>
+            <a href="export.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=%231c1917" width="18" alt="">
+                Export
+            </a>
             <a href="market-analytics.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -78,6 +84,24 @@
                 Analytics
             </a>
 
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+            <a href="returns.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%231c1917" width="18" alt="">
+                Returns
+            </a>
+            <a href="history.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:clock.svg?color=%231c1917" width="18" alt="">
+                History
+            </a>
             <a href="profile.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -266,11 +290,28 @@
             if (orders.length > 0) {
                 try {
                     container.innerHTML = orders.map(order => {
-                        const date = new Date(order.order_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                        // Normalize status (check both lower and upper case keys for robustness)
+                        // Safety: Handle missing product information (e.g. if product was deleted)
+                        const productName = order.product_name || 'Legacy Spice Harvest';
+                        const farmerName = order.farmer_name || 'Traditional Farm';
+                        const orderId = order.id || 0;
+                        const orderDateInput = order.order_date || '2020-01-01';
+                        const totalPrice = parseFloat(order.total_price) || 0;
+                        const exchangeRate = parseFloat(order.exchange_rate) || 1;
+                        const currencyCode = order.currency_code || 'INR';
+
+                        // Robust date formatting
+                        let date = 'Unknown Date';
+                        try {
+                            const dateObj = new Date(orderDateInput);
+                            if (!isNaN(dateObj.getTime())) {
+                                date = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                            }
+                        } catch (e) { console.error('Date error:', e); }
+
+                        // Normalize status
                         const statusKey = window.normalizeStatus(order.status || order.STATUS);
 
-                        // Map statuses to literal labels as requested
+                        // Map statuses to literal labels
                         const statusMap = {
                             'ordered': 'Ordered',
                             'shipped': 'Shipped',
@@ -278,7 +319,7 @@
                             'delivered': 'Delivered',
                             'cancelled': 'Cancelled'
                         };
-                        const displayStatus = statusMap[statusKey] || statusKey.charAt(0).toUpperCase() + statusKey.slice(1);
+                        const displayStatus = statusMap[statusKey] || (statusKey ? statusKey.charAt(0).toUpperCase() + statusKey.slice(1) : 'Processing');
 
                         const statusColors = {
                             'ordered': 'bg-blue-100 text-blue-700',
@@ -295,7 +336,9 @@
                                 <!-- Image -->
                                 <div class="w-full md:w-28 h-28 rounded-[24px] bg-stone-50 overflow-hidden flex-shrink-0 border border-stone-100 relative group-hover:shadow-lg transition-all">
                                     <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all z-10"></div>
-                                    <img src="${order.image_url ? '../../' + order.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=400&q=80'}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                                    <img src="${order.image_url ? '../../' + order.image_url : 'https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=400&q=80'}" 
+                                         class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                         onerror="this.src='https://images.unsplash.com/photo-1596040033229-a9821ebd05ed?auto=format&fit=crop&w=400&q=80'">
                                 </div>
                                 
                                 <!-- Middle Details -->
@@ -307,13 +350,13 @@
                                         </span>
                                     </div>
                                     
-                                    <h3 class="font-bold text-2xl text-stone-900 leading-none mb-2 tracking-tight">${order.product_name}</h3>
-                                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-4">Harvest from ${order.farmer_name}</p>
+                                    <h3 class="font-bold text-2xl text-stone-900 leading-none mb-2 tracking-tight">${productName}</h3>
+                                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-4">Harvest from ${farmerName}</p>
                                     
                                     <p class="text-[10px] font-bold text-stone-300 uppercase tracking-widest flex items-center gap-2">
                                         ORDERED ON <span class="text-stone-400">${date.toUpperCase()}</span>
                                         <span class="mx-2 text-stone-200">|</span>
-                                        ID: <span class="text-stone-400">${order.source === 'auction' ? 'AUC' : 'ORD'}-${order.id.toString().padStart(5, '0')}</span>
+                                        ID: <span class="text-stone-400">${order.source === 'auction' ? 'AUC' : 'ORD'}-${orderId.toString().padStart(5, '0')}</span>
                                     </p>
                                 </div>
 
@@ -321,19 +364,19 @@
                                 <div class="flex items-center gap-10 self-center h-full pl-8 border-l border-stone-100/50 md:border-l-0">
                                     <!-- Price Block (Left of Button) -->
                                     <div class="text-right flex flex-col justify-center h-full">
-                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(order.total_price, order.exchange_rate, order.currency_code) : (window.CurrencyManager.format(order.total_price)))}</p>
+                                        <p class="font-bold text-3xl text-stone-900 leading-none mb-1">${(window.CurrencyManager.formatHistorical ? window.CurrencyManager.formatHistorical(totalPrice, exchangeRate, currencyCode) : (window.CurrencyManager.format(totalPrice)))}</p>
                                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest text-right">${order.quantity} ${order.unit || 'kg'}</p>
                                     </div>
                                     
                                     <!-- Track Button (Right Side, Colored) -->
                                     <div class="flex items-center gap-3">
                                         ${order.payment_status === 'pending' ?
-                                `<a href="payment.html?order_id=${order.id}" class="px-8 py-3.5 bg-primary text-white font-bold text-[11px] rounded-[24px] hover:bg-primary-hover transition-all uppercase tracking-[0.2em] shadow-lg shadow-orange-100">
+                                `<a href="payment.html?order_id=${orderId}" class="px-8 py-3.5 bg-primary text-white font-bold text-[11px] rounded-[24px] hover:bg-primary-hover transition-all uppercase tracking-[0.2em] shadow-lg shadow-orange-100">
                                                 PAY NOW
                                             </a>`
                                 : `
                                             ${(statusKey === 'delivered' && !order.is_rated) ?
-                                    `<button onclick="openReviewModal('${order.id}', '${order.product_id}', '${order.product_name}')" class="px-5 py-3 bg-stone-900 text-white font-bold text-[10px] rounded-xl hover:bg-black transition-all uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-0.5">Rate</button>`
+                                    `<button onclick="openReviewModal('${orderId}', '${order.product_id}', '${productName.replace(/'/g, "\\'")}')" class="px-5 py-3 bg-stone-900 text-white font-bold text-[10px] rounded-xl hover:bg-black transition-all uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-0.5">Rate</button>`
                                     : ''}
                                                 
                                             ${statusKey === 'cancelled' ? `
@@ -346,8 +389,31 @@
                                                 </button>
                                             `}
 
+                                            ${(statusKey === 'delivered') ? (() => {
+                                    const deliveredAt = order.delivered_at ? new Date(order.delivered_at) : null;
+                                    const daysSince = deliveredAt ? Math.floor((Date.now() - deliveredAt.getTime()) / 86400000) : 0;
+                                    const hasReturn = parseInt(order.has_return) === 1;
+                                    const retStatus = order.return_status || '';
+
+                                    // Map return statuses to badge display
+                                    const retBadgeMap = {
+                                        'requested': { label: '🔄 Return Requested', cls: 'bg-amber-50 border-amber-200 text-amber-700' },
+                                        'under_review': { label: '🔍 Under Review', cls: 'bg-blue-50 border-blue-200 text-blue-700' },
+                                        'approved': { label: '✅ Return Approved', cls: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
+                                        'refund_processing': { label: '💜 Refund Processing', cls: 'bg-purple-50 border-purple-200 text-purple-700' },
+                                        'refund_completed': { label: '💚 Refunded', cls: 'bg-green-50 border-green-200 text-green-700' },
+                                    };
+
+                                    if (hasReturn && retBadgeMap[retStatus]) {
+                                        const b = retBadgeMap[retStatus];
+                                        return `<div class="px-5 py-3 ${b.cls} border-2 font-bold text-[10px] rounded-xl uppercase tracking-widest text-center cursor-default">${b.label}</div>`;
+                                    }
+                                    const canReturn = daysSince <= 7 && !hasReturn;
+                                    return canReturn ? `<button onclick="openReturnModal(${orderId}, '${productName.replace(/'/g, "\\'")}', ${totalPrice}, '${currencyCode}', '${order.delivered_at || ''}')" class="px-5 py-3 bg-amber-50 border-2 border-amber-200 text-amber-700 font-bold text-[10px] rounded-xl hover:border-amber-400 transition-all uppercase tracking-widest">RETURN</button>` : '';
+                                })() : ''}
+
                                             ${(statusKey === 'ordered') ?
-                                    `<button onclick="cancelOrder('${order.id}', ${order.total_price}, ${order.exchange_rate}, '${order.currency_code}')" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
+                                    `<button onclick="cancelOrder('${orderId}', ${totalPrice}, ${exchangeRate}, '${currencyCode}')" class="px-10 py-3.5 bg-white border-2 border-red-100 text-red-500 font-bold text-[11px] rounded-[24px] hover:border-red-500 transition-all uppercase tracking-[0.2em] shadow-sm hover:shadow-md">
                                                 CANCEL
                                             </button>`
                                     : ''}
@@ -517,6 +583,173 @@
     </script>
 
     <script src="../assets/js/main.js"></script>
+
+    <!-- Return Request Modal -->
+    <div id="returnModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <div class="bg-white p-10 rounded-[40px] w-full max-w-lg relative shadow-2xl" onclick="event.stopPropagation()"
+            style="max-height:90vh;overflow-y:auto;">
+            <button onclick="closeReturnModal()" class="absolute top-8 right-8 text-stone-400 hover:text-stone-600">
+                <img src="https://api.iconify.design/lucide:x.svg" width="28">
+            </button>
+            <div class="mb-8">
+                <div class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center mb-4">
+                    <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%23d97706" width="28">
+                </div>
+                <h2 class="text-3xl font-bold text-stone-900 tracking-tight">Request Return</h2>
+                <p id="return-product-name"
+                    class="text-stone-500 mt-2 text-sm font-semibold uppercase tracking-widest text-primary"></p>
+                <p id="return-refund-amount" class="text-stone-700 mt-1 text-sm font-bold"></p>
+            </div>
+
+            <div class="space-y-5">
+                <!-- Reason -->
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Return
+                        Reason *</label>
+                    <select id="return-reason"
+                        class="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold">
+                        <option value="">Select a reason...</option>
+                        <option value="damaged">📦 Product Damaged</option>
+                        <option value="wrong_item">🔄 Wrong Item Delivered</option>
+                        <option value="expired">⏰ Expired Product</option>
+                        <option value="quality_issue">⚠️ Quality Issue</option>
+                        <option value="other">💬 Other</option>
+                    </select>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label
+                        class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Description</label>
+                    <textarea id="return-description" rows="3" placeholder="Describe the issue in detail..."
+                        class="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:border-primary outline-none transition-all text-sm font-semibold resize-none"></textarea>
+                </div>
+
+                <!-- Image Upload -->
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Upload
+                        Proof (Photo) <span class="text-stone-300">— Optional</span></label>
+                    <label for="return-image"
+                        class="flex items-center gap-4 px-5 py-4 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl cursor-pointer hover:border-primary transition-all">
+                        <img src="https://api.iconify.design/lucide:image-plus.svg?color=%23a8a29e" width="24">
+                        <div>
+                            <p id="return-image-label" class="text-sm font-bold text-stone-500">Click to upload image
+                            </p>
+                            <p class="text-[10px] text-stone-400">JPG, PNG or WebP · Max 5MB</p>
+                        </div>
+                    </label>
+                    <input type="file" id="return-image" accept="image/*" class="hidden"
+                        onchange="handleImageSelect(this)">
+                </div>
+
+                <!-- Refund Method -->
+                <div>
+                    <label class="block text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-2">Preferred
+                        Refund Method</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="refund_method" value="wallet" class="peer hidden" checked>
+                            <div
+                                class="bg-stone-50 border-2 border-stone-100 rounded-2xl p-4 text-center peer-checked:border-amber-400 peer-checked:bg-amber-50 transition-all">
+                                <div class="text-2xl mb-1">💰</div>
+                                <p class="font-bold text-sm text-stone-900">Wallet Credit</p>
+                                <p class="text-[10px] text-stone-400">Instant · Recommended</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="refund_method" value="original" class="peer hidden">
+                            <div
+                                class="bg-stone-50 border-2 border-stone-100 rounded-2xl p-4 text-center peer-checked:border-blue-400 peer-checked:bg-blue-50 transition-all">
+                                <div class="text-2xl mb-1">💳</div>
+                                <p class="font-bold text-sm text-stone-900">Original Method</p>
+                                <p class="text-[10px] text-stone-400">5-7 business days</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                    <p class="text-xs text-amber-700 font-semibold">⏰ Return window: <strong>7 days from
+                            delivery</strong>. Admin will review within 2-3 business days. For export orders, partial
+                        refunds may apply.</p>
+                </div>
+
+                <button onclick="submitReturn()" id="submit-return-btn"
+                    class="w-full bg-amber-500 hover:bg-amber-600 text-white py-5 rounded-[24px] font-bold text-sm tracking-widest shadow-xl transition-all transform hover:-translate-y-1">
+                    SUBMIT RETURN REQUEST
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentReturnData = null;
+
+        function openReturnModal(orderId, productName, amount, currency, deliveredAt) {
+            currentReturnData = { order_id: orderId, product_name: productName, amount, currency };
+            document.getElementById('return-product-name').innerText = productName;
+            document.getElementById('return-refund-amount').innerText = 'Refund amount: ' + (window.CurrencyManager ? window.CurrencyManager.formatFrom(amount, currency || 'INR') : '₹' + parseFloat(amount).toFixed(2));
+            document.getElementById('return-reason').value = '';
+            document.getElementById('return-description').value = '';
+            document.getElementById('return-image').value = '';
+            document.getElementById('return-image-label').innerText = 'Click to upload image';
+            document.getElementById('returnModal').classList.remove('hidden');
+        }
+
+        function closeReturnModal() {
+            document.getElementById('returnModal').classList.add('hidden');
+        }
+
+        function handleImageSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Image must be under 5MB.', 'error');
+                    input.value = '';
+                    return;
+                }
+                document.getElementById('return-image-label').innerText = '✅ ' + file.name;
+            }
+        }
+
+        async function submitReturn() {
+            const reason = document.getElementById('return-reason').value;
+            if (!reason) { showToast('Please select a return reason.', 'error'); return; }
+
+            const btn = document.getElementById('submit-return-btn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Submitting...';
+
+            try {
+                const formData = new FormData();
+                formData.append('order_id', currentReturnData.order_id);
+                formData.append('reason', reason);
+                formData.append('description', document.getElementById('return-description').value);
+                formData.append('refund_method', document.querySelector('input[name="refund_method"]:checked')?.value || 'wallet');
+                const imageFile = document.getElementById('return-image').files[0];
+                if (imageFile) formData.append('image', imageFile);
+
+                const res = await fetch('../../backend/api/returns/submit-return.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Return request submitted! We\'ll review within 2-3 business days. 📦', 'success');
+                    closeReturnModal();
+                    loadOrders();
+                } else {
+                    showToast(data.message || 'Failed to submit return.', 'error');
+                }
+            } catch (err) {
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'SUBMIT RETURN REQUEST';
+            }
+        }
+    </script>
 </body>
 
 </html>

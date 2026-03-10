@@ -85,6 +85,13 @@ try {
 
     $pdo = getDBConnection();
 
+    // Check if product name already exists (globally across all farmers)
+    $checkStmt = $pdo->prepare("SELECT id FROM products WHERE LOWER(product_name) = LOWER(?) LIMIT 1");
+    $checkStmt->execute([$product_name]);
+    if ($checkStmt->fetch()) {
+        throw new Exception("A product with the name '$product_name' already exists. Please use a unique name.");
+    }
+
     $stmt = $pdo->prepare("
         INSERT INTO products (farmer_id, product_name, category, price, base_currency, farmer_country, quantity, unit, image_url, is_available) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)

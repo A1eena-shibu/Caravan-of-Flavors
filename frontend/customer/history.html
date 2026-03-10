@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // Immediate Session Enforcement
+    (async () => {
+        const res = await fetch('../../backend/api/auth/check-session.php');
+        const data = await res.json();
+        if (!data.logged_in) window.location.href = '../auth/login.html';
+    })();
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity History | Caravan of Flavours</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                        'bg-dark': '#0C0A09',
+                        'bg-dashboard': '#14110F',
+                        'card-bg': '#1C1917',
+                        'border-color': '#292524',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="customer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18"> Dashboard
+            </a>
+            <a href="catalog.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:book-open.svg?color=%231c1917" width="18"> Catalog
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%231c1917" width="18"> Orders
+            </a>
+            <a href="history.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:clock.svg?color=white" width="18"> History
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18"> Profile
+            </a>
+        </nav>
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"> Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main style="margin-left: 200px; padding: 32px 40px;">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 28px; font-weight: 700; color: #1c1917;">Activity History</h1>
+            <p style="color: #78716c; font-size: 15px;">A comprehensive log of all your actions on Caravan of Flavours.
+            </p>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 32px;">
+            <!-- Filters & Stats -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 24px;">
+                    <h3
+                        style="font-size: 14px; font-weight: 700; color: #1c1917; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em;">
+                        Filter by Type</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="type-filters">
+                        <button onclick="filterActivity('all')" class="filter-btn active"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: none; background: #FF7E21; color: white; font-weight: 700; font-size: 13px; cursor: pointer;">All
+                            Activity</button>
+                        <button onclick="filterActivity('order')" class="filter-btn"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #1c1917; font-weight: 500; font-size: 13px; cursor: pointer;">Orders</button>
+                        <button onclick="filterActivity('return')" class="filter-btn"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #1c1917; font-weight: 500; font-size: 13px; cursor: pointer;">Returns</button>
+                        <button onclick="filterActivity('wallet')" class="filter-btn"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #1c1917; font-weight: 500; font-size: 13px; cursor: pointer;">Wallet</button>
+                        <button onclick="filterActivity('bid')" class="filter-btn"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #1c1917; font-weight: 500; font-size: 13px; cursor: pointer;">Auctions</button>
+                        <button onclick="filterActivity('export')" class="filter-btn"
+                            style="text-align: left; padding: 10px 14px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #1c1917; font-weight: 500; font-size: 13px; cursor: pointer;">Exports</button>
+                    </div>
+                </div>
+
+                <div
+                    style="background: linear-gradient(135deg, #1c1917, #3d2b1f); border-radius: 20px; padding: 24px; color: white;">
+                    <p style="font-size: 11px; font-weight: 700; opacity: 0.5; text-transform: uppercase;">Wallet
+                        Balance</p>
+                    <h2 style="font-size: 28px; font-weight: 800; margin: 8px 0;" id="wallet-balance">₹ 0.00</h2>
+                    <a href="returns.html"
+                        style="color: #FF7E21; font-size: 12px; font-weight: 700; text-decoration: none;">View Wallet
+                        Details →</a>
+                </div>
+            </div>
+
+            <!-- Activity List -->
+            <div style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; overflow: hidden;">
+                <div
+                    style="padding: 24px; border-bottom: 1px solid #e7e5e4; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 18px; font-weight: 700;" id="list-title">All Activity</h2>
+                    <span style="font-size: 12px; color: #a8a29e; font-weight: 600;" id="action-count">Showing latest
+                        actions</span>
+                </div>
+
+                <div id="activity-list">
+                    <div style="padding: 60px; text-align: center;">
+                        <img src="https://api.iconify.design/lucide:loader-2.svg"
+                            style="width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto 16px;">
+                        <p style="color: #a8a29e; font-weight: 500;">Loading history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allActivity = [];
+
+        async function loadData() {
+            try {
+                // Load Activity
+                const res = await fetch('../../backend/api/returns/get-customer-activity.php');
+                const data = await res.json();
+                if (data.success) {
+                    allActivity = data.activity;
+                    renderActivity('all');
+                }
+
+                // Load Wallet
+                const wRes = await fetch('../../backend/api/returns/get-wallet.php');
+                const wData = await wRes.json();
+                if (wData.success) {
+                    document.getElementById('wallet-balance').innerText = `₹ ${parseFloat(wData.balance).toFixed(2)}`;
+                }
+            } catch (e) {
+                console.error('Error loading history:', e);
+            }
+        }
+
+        const TYPE_MAP = {
+            order: { icon: '🛍️', label: 'Order', color: '#3b82f6', bg: '#eff6ff' },
+            return: { icon: '🔄', label: 'Return', color: '#f59e0b', bg: '#fffbeb' },
+            wallet: { icon: '💳', label: 'Wallet', color: '#10b981', bg: '#f0fdf4' },
+            bid: { icon: '🔨', label: 'Auction', color: '#8b5cf6', bg: '#f5f3ff' },
+            export: { icon: '🌍', label: 'Export', color: '#ec4899', bg: '#fdf2f8' }
+        };
+
+        function renderActivity(type = 'all') {
+            const container = document.getElementById('activity-list');
+            const filtered = type === 'all' ? allActivity : allActivity.filter(a => a.type === type);
+
+            document.getElementById('list-title').innerText = type === 'all' ? 'All Activity' : `${TYPE_MAP[type].label}s`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                <div style="padding: 80px 40px; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 16px;">📄</div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 8px;">No records found</h3>
+                    <p style="color: #a8a29e; font-size: 14px;">We couldn't find any history for this category.</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(a => {
+                const date = new Date(a.created_at).toLocaleDateString('en-IN', {
+                    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const config = TYPE_MAP[a.type] || { icon: '📝', label: a.type, color: '#78716c', bg: '#f5f5f4' };
+                const amountText = a.amount ? `₹${parseFloat(a.amount).toFixed(2)}` : '—';
+
+                return `
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f5f5f4; display: flex; align-items: flex-start; gap: 16px; transition: all 0.2s;" class="activity-item">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: ${config.bg}; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        ${config.icon}
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                            <h4 style="font-size: 15px; font-weight: 700; color: #1c1917;">${a.description || config.label}</h4>
+                            <span style="font-size: 14px; font-weight: 800; color: #1c1917;">${amountText}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: ${config.color};">${a.status}</span>
+                            <span style="color: #e7e5e4;">•</span>
+                            <span style="font-size: 12px; color: #a8a29e; font-weight: 500;">${date}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterActivity(type) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const isActive = btn.getAttribute('onclick').includes(`'${type}'`);
+                if (isActive) {
+                    btn.classList.add('active');
+                    btn.style.background = '#FF7E21';
+                    btn.style.color = 'white';
+                    btn.style.fontWeight = '700';
+                    btn.style.border = 'none';
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.background = 'white';
+                    btn.style.color = '#1c1917';
+                    btn.style.fontWeight = '500';
+                    btn.style.border = '1px solid #e7e5e4';
+                }
+            });
+            renderActivity(type);
+        }
+
+        async function logout() {
+            await fetch('../../backend/api/auth/logout.php');
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = loadData;
+    </script>
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .activity-item:hover {
+            background: #fafaf9;
+        }
+    </style>
+</body>
+
+</html>

@@ -48,6 +48,13 @@ try {
         throw new Exception('Product not found or unauthorized');
     }
 
+    // Check if new product name already exists (excluding current product)
+    $checkStmt = $pdo->prepare("SELECT id FROM products WHERE LOWER(product_name) = LOWER(?) AND id != ? LIMIT 1");
+    $checkStmt->execute([$product_name, $product_id]);
+    if ($checkStmt->fetch()) {
+        throw new Exception("A product with the name '$product_name' already exists. Please use a unique name.");
+    }
+
     $image_url = $existingProduct['image_url'];
 
     // Handle Image Upload if provided

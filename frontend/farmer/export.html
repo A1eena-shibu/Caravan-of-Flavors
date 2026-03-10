@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // Immediate Session Enforcement
+    (async () => {
+        const res = await fetch('../../backend/api/auth/check-session.php');
+        const data = await res.json();
+        if (!data.logged_in) window.location.href = '../auth/login.html';
+    })();
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Management | Caravan of Flavours</title>
+    <meta name="description"
+        content="Manage international spice export requests from global buyers. Review, approve, and track export shipments.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.8"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .export-card {
+            transition: all 0.3s ease;
+        }
+
+        .export-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .step-active {
+            background: #FF7E21;
+            color: white;
+        }
+
+        .step-done {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-pending {
+            background: #f5f5f4;
+            color: #a8a29e;
+        }
+
+        .detail-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .checklist-item.done {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .checklist-item.needed {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .checklist-item.not-needed {
+            background: #fafaf9;
+            color: #a8a29e;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <!-- Sidebar -->
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="farmer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="inventory.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="18" alt="">
+                Inventory
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="export.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=white" width="18" alt="">
+                Export
+            </a>
+            <a href="certificates.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shield-check.svg?color=%231c1917" width="18" alt="">
+                Certificates
+            </a>
+            <a href="analysis.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%231c1917" width="18" alt="">
+                Analysis
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main style="margin-left: 200px; padding: 32px 40px; min-height: 100vh;">
+        <!-- Header -->
+        <header style="margin-bottom: 32px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 style="font-size: 28px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">Export
+                        Management</h1>
+                    <p style="font-size: 14px; color: #78716c; margin-top: 6px;">Manage international buyer requests for
+                        your spice exports</p>
+                </div>
+                <!-- Export Guide Banner -->
+                <button onclick="openGuide()"
+                    style="display: flex; align-items: center; gap: 8px; padding: 10px 20px; background: linear-gradient(135deg, #FF7E21 0%, #e65c00 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(255,126,33,0.3);">
+                    <img src="https://api.iconify.design/lucide:book-open.svg?color=white" width="16" alt="">
+                    Export Guide
+                </button>
+            </div>
+        </header>
+
+        <!-- ✅/🔒 Farmer Verification Status Banner -->
+        <div id="cert-verify-banner"
+            style="display:none; border-radius:16px; padding:16px 22px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        </div>
+
+        <!-- Stats Row -->
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px;"
+            id="stats-row">
+            <div class="stat-card"
+                style="background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px;">
+                <div
+                    style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                    TOTAL</div>
+                <div id="stat-total" style="font-size: 28px; font-weight: 700; color: #1c1917;">0</div>
+            </div>
+            <div class="stat-card"
+                style="background: white; border: 1px solid #fde68a; border-radius: 16px; padding: 20px;">
+                <div
+                    style="font-size: 11px; font-weight: 700; color: #a16207; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                    PENDING</div>
+                <div id="stat-pending" style="font-size: 28px; font-weight: 700; color: #a16207;">0</div>
+            </div>
+            <div class="stat-card"
+                style="background: white; border: 1px solid #bbf7d0; border-radius: 16px; padding: 20px;">
+                <div
+                    style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                    APPROVED</div>
+                <div id="stat-approved" style="font-size: 28px; font-weight: 700; color: #166534;">0</div>
+            </div>
+            <div class="stat-card"
+                style="background: white; border: 1px solid #bfdbfe; border-radius: 16px; padding: 20px;">
+                <div
+                    style="font-size: 11px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                    SHIPPED</div>
+                <div id="stat-shipped" style="font-size: 28px; font-weight: 700; color: #1e40af;">0</div>
+            </div>
+            <div class="stat-card"
+                style="background: white; border: 1px solid #d1fae5; border-radius: 16px; padding: 20px;">
+                <div
+                    style="font-size: 11px; font-weight: 700; color: #065f46; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                    DELIVERED</div>
+                <div id="stat-delivered" style="font-size: 28px; font-weight: 700; color: #065f46;">0</div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
+            <button onclick="filterRequests('all')" id="filter-all" class="filter-tab active-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: none; background: #1c1917; color: white; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">All
+                Requests</button>
+            <button onclick="filterRequests('pending')" id="filter-pending" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Pending</button>
+            <button onclick="filterRequests('under_review')" id="filter-under_review" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Under
+                Review</button>
+            <button onclick="filterRequests('approved')" id="filter-approved" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Approved</button>
+            <button onclick="filterRequests('quality_testing')" id="filter-quality_testing" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Quality
+                Testing</button>
+            <button onclick="filterRequests('documentation')" id="filter-documentation" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Documentation</button>
+            <button onclick="filterRequests('shipped')" id="filter-shipped" class="filter-tab"
+                style="padding: 8px 20px; border-radius: 20px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s;">Shipped</button>
+        </div>
+
+        <!-- ⚡ Bulk Action Toolbar (shown when rows selected) -->
+        <div id="farmer-bulk-bar"
+            style="display:none; align-items:center; gap:10px; background:#fff7ed; border:2px solid #fed7aa; border-radius:14px; padding:12px 18px; margin-bottom:14px; flex-wrap:wrap;">
+            <span style="font-size:13px;font-weight:700;color:#c2410c;flex-shrink:0;">⚡ Bulk Update</span>
+            <span id="farmer-bulk-count"
+                style="background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">0
+                selected</span>
+            <select id="farmer-bulk-status"
+                style="padding:8px 12px;border:1.5px solid #fed7aa;border-radius:8px;font-size:13px;font-weight:700;outline:none;background:white;color:#1c1917;cursor:pointer;">
+                <option value="under_review">🔍 Under Review</option>
+                <option value="approved">✅ Approve</option>
+                <option value="rejected">❌ Reject</option>
+                <option value="quality_testing">🔬 Quality Testing</option>
+                <option value="documentation">📑 Documentation</option>
+                <option value="shipped">🚢 Mark Shipped</option>
+            </select>
+            <input type="text" id="farmer-bulk-notes" placeholder="Note for all selected (optional)"
+                style="flex:1;min-width:160px;padding:8px 12px;border:1.5px solid #fed7aa;border-radius:8px;font-size:13px;outline:none;background:white;">
+            <button id="farmer-bulk-submit-btn" onclick="submitFarmerBulk()"
+                style="background:#FF7E21;color:white;border:none;padding:9px 20px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                ⚡ Update All
+            </button>
+            <button onclick="clearFarmerBulk()"
+                style="background:transparent;color:#78716c;border:1.5px solid #e7e5e4;padding:9px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0;">
+                Clear
+            </button>
+        </div>
+
+        <!-- Select All row -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:0 4px;">
+            <input type="checkbox" id="farmer-select-all" onchange="toggleFarmerSelectAll()"
+                style="width:16px;height:16px;accent-color:#FF7E21;cursor:pointer;">
+            <label for="farmer-select-all"
+                style="font-size:12px;font-weight:700;color:#78716c;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;">Select
+                All Visible</label>
+            <span style="font-size:11px;color:#a8a29e;font-weight:500;">(Tip: Filter by status first, then select
+                all)</span>
+        </div>
+
+        <!-- Export Requests List -->
+        <div id="requests-list">
+            <div style="text-align: center; padding: 80px 20px; color: #a8a29e;">
+                <img src="https://api.iconify.design/lucide:loader-2.svg"
+                    style="width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px;" alt="">
+                <p style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Loading
+                    export requests...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail / Update Modal -->
+    <div id="detailModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);">
+        <div style="background: white; border-radius: 28px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; position: relative;"
+            onclick="event.stopPropagation()">
+            <div style="padding: 32px 36px; border-bottom: 1px solid #f0ede9;">
+                <button onclick="closeDetailModal()"
+                    style="position: absolute; top: 24px; right: 28px; background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://api.iconify.design/lucide:x.svg" width="18" alt="">
+                </button>
+                <h2 style="font-size: 22px; font-weight: 700; color: #1c1917;">Export Request Details</h2>
+                <p id="modal-export-id"
+                    style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px;">
+                </p>
+                <!-- Status Pipeline Visual -->
+                <div id="modal-pipeline"
+                    style="display:flex; gap:3px; overflow-x:auto; padding-bottom:2px; margin-top:14px;"></div>
+            </div>
+
+            <div style="padding: 28px 36px; display: flex; flex-direction: column; gap: 20px;">
+                <!-- Buyer Info -->
+                <div id="modal-buyer-section" style="background: #fafaf9; border-radius: 14px; padding: 18px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">
+                        👤 Buyer Information</div>
+                    <div id="modal-buyer-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+                </div>
+
+                <!-- Product & Shipment -->
+                <div style="background: #fafaf9; border-radius: 14px; padding: 18px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">
+                        📦 Shipment Details</div>
+                    <div id="modal-shipment-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    </div>
+                </div>
+
+                <!-- Documentation Checklist -->
+                <div id="modal-checklist-section" style="background: #fafaf9; border-radius: 14px; padding: 18px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">
+                        📋 Required Documentation Checklist</div>
+                    <div id="modal-checklist"></div>
+                </div>
+
+                <!-- Special Notes -->
+                <div id="modal-notes-section"
+                    style="display:none; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 18px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #c2410c; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">
+                        💬 Buyer's Special Notes</div>
+                    <p id="modal-special-notes" style="font-size: 13px; color: #7c2d12; font-weight: 500;"></p>
+                </div>
+
+                <!-- Update Status Section -->
+                <div id="modal-update-section" style="border-top: 1px solid #f0ede9; padding-top: 20px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;">
+                        🔄 Update Status</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="modal-status-buttons">
+                            <!-- Injected based on current status -->
+                        </div>
+                        <textarea id="modal-farmer-notes" placeholder="Add a note for the buyer (optional)..." rows="3"
+                            style="width: 100%; border: 1px solid #e7e5e4; border-radius: 12px; padding: 12px 16px; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none; resize: none; background: #fafaf9; color: #1c1917;"></textarea>
+                        <button id="modal-update-btn" onclick="submitStatusUpdate()"
+                            style="background: #FF7E21; color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; align-self: flex-start;">
+                            Update Request
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status History Timeline -->
+                <div style="border-top: 1px solid #f0ede9; padding-top: 20px;">
+                    <div
+                        style="font-size: 11px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px;">
+                        📋 Status History</div>
+                    <div id="modal-timeline" style="max-height: 240px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Guide Modal -->
+    <div id="guideModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);">
+        <div style="background: white; border-radius: 28px; width: 100%; max-width: 860px; max-height: 90vh; overflow-y: auto;"
+            onclick="event.stopPropagation()">
+            <div
+                style="padding: 28px 36px; border-bottom: 1px solid #f0ede9; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; border-radius: 28px 28px 0 0;">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: #1c1917;">🌍 Spice Export Guide from India</h2>
+                    <p style="font-size: 13px; color: #78716c; margin-top: 4px;">Interactive step-by-step — select your
+                        spice & upload compliance documents</p>
+                </div>
+                <button onclick="document.getElementById('guideModal').style.display='none'"
+                    style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <img src="https://api.iconify.design/lucide:x.svg" width="18" alt="">
+                </button>
+            </div>
+            <div style="padding: 28px 36px; display: flex; flex-direction: column; gap: 12px;">
+                <div id="guide-steps">
+                    <div style="text-align:center;padding:40px;color:#a8a29e;">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .filter-tab:hover {
+            background: #fafaf9 !important;
+            color: #1c1917 !important;
+        }
+
+        .active-tab {
+            background: #1c1917 !important;
+            color: white !important;
+            border-color: transparent !important;
+        }
+    </style>
+
+    <script>
+        let allRequests = [];
+        let currentFilter = 'all';
+        let selectedExportId = null;
+        let selectedStatus = null;
+
+        const STATUS_CONFIG = {
+            'pending': { label: 'Pending Review', color: '#a16207', bg: '#fef9c3', border: '#fde68a' },
+            'under_review': { label: 'Under Review', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+            'approved': { label: 'Approved', color: '#166534', bg: '#f0fdf4', border: '#bbf7d0' },
+            'rejected': { label: 'Rejected', color: '#991b1b', bg: '#fef2f2', border: '#fecaca' },
+            'quality_testing': { label: 'Quality Testing', color: '#c2410c', bg: '#fff7ed', border: '#fed7aa' },
+            'documentation': { label: 'Documentation', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
+            'shipped': { label: 'Shipped', color: '#065f46', bg: '#ecfdf5', border: '#a7f3d0' },
+            'delivered': { label: 'Delivered', color: '#166534', bg: '#f0fdf4', border: '#bbf7d0' },
+            'cancelled': { label: 'Cancelled', color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb' }
+        };
+
+        const STATUS_TRANSITIONS = {
+            'pending': ['under_review', 'approved', 'rejected'],
+            'under_review': ['approved', 'rejected', 'quality_testing'],
+            'approved': ['quality_testing', 'documentation'],
+            'quality_testing': ['documentation', 'approved', 'rejected'],
+            'documentation': ['shipped', 'rejected'],
+            'shipped': []
+        };
+
+        let farmerProducts = [];
+        let uploadedDocs = {}; // keyed by doc_type
+
+        async function openGuide() {
+            document.getElementById('guideModal').style.display = 'flex';
+            // Load products + existing docs in parallel
+            await Promise.all([loadGuideProducts(), loadUploadedDocs()]);
+            renderGuide();
+        }
+
+        async function loadGuideProducts() {
+            try {
+                const res = await fetch('../../backend/api/products/get-farmer-products.php');
+                const data = await res.json();
+                if (data.success) farmerProducts = data.data || [];
+            } catch (e) { farmerProducts = []; }
+        }
+
+        async function loadUploadedDocs() {
+            try {
+                const res = await fetch('../../backend/api/export/get-farmer-export-docs.php');
+                const data = await res.json();
+                if (data.success) uploadedDocs = data.documents || {};
+            } catch (e) { uploadedDocs = {}; }
+        }
+
+        function buildUploadRow(docType, label) {
+            const uploaded = uploadedDocs[docType];
+            const fileBasename = uploaded ? uploaded.document_name.split('/').pop() : null;
+            return `
+                <div id="upload-row-${docType}" style="display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:${uploaded ? '#f0fdf4' : '#fafaf9'}; border:1px solid ${uploaded ? '#bbf7d0' : '#e7e5e4'}; margin-top:8px;">
+                    <span style="font-size:18px;">${uploaded ? '✅' : '📄'}</span>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:12px; font-weight:700; color:${uploaded ? '#166534' : '#1c1917'};">${label}</div>
+                        ${uploaded ? `<div style="font-size:11px;color:#78716c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${fileBasename}</div>` : '<div style="font-size:11px;color:#a8a29e;">Not yet uploaded</div>'}
+                    </div>
+                    <label style="display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border: 1.5px solid ${uploaded ? '#10b981' : '#FF7E21'}; background:white; color:${uploaded ? '#10b981' : '#FF7E21'}; font-weight:700; font-size:11px; cursor:pointer; white-space:nowrap; transition:all 0.2s;"
+                        onmouseover="this.style.background='${uploaded ? '#f0fdf4' : '#fff7ed'}'" onmouseout="this.style.background='white'">
+                        <img src="https://api.iconify.design/lucide:upload.svg?color=${uploaded ? '%2310b981' : '%23FF7E21'}" width="14" alt="">
+                        ${uploaded ? 'Replace' : 'Upload'}
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none;"
+                            onchange="uploadDoc(this,'${docType}','upload-row-${docType}')">
+                    </label>
+                </div>`;
+        }
+
+        async function uploadDoc(input, docType, rowId) {
+            const file = input.files[0];
+            if (!file) return;
+            const row = document.getElementById(rowId);
+            row.style.opacity = '0.6';
+            row.style.pointerEvents = 'none';
+
+            const fd = new FormData();
+            fd.append('document', file);
+            fd.append('doc_type', docType);
+
+            try {
+                const res = await fetch('../../backend/api/export/upload-export-document.php', {
+                    method: 'POST', body: fd
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ ' + (data.filename || file.name) + ' uploaded!', 'success');
+                    uploadedDocs[docType] = { document_name: data.path, document_type: docType };
+                    // Refresh just that row
+                    row.outerHTML = buildUploadRow(docType, row.querySelector('.upload-label-text')?.textContent || docType);
+                    // Re-render whole guide to refresh
+                    renderGuide();
+                } else {
+                    showToast(data.message || 'Upload failed', 'error');
+                    row.style.opacity = '1';
+                    row.style.pointerEvents = '';
+                }
+            } catch (e) {
+                showToast('Connection error during upload', 'error');
+                row.style.opacity = '1';
+                row.style.pointerEvents = '';
+            }
+        }
+
+        function renderGuide() {
+            const guideEl = document.getElementById('guide-steps');
+
+            // Step 1: Product Selector
+            const productGrid = farmerProducts.length
+                ? `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:10px; margin-top:10px;">
+                    ${farmerProducts.map(p => {
+                    const img = p.image_url ? '../../' + p.image_url : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200';
+                    return `<label style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border-radius:14px;border:2px solid #e7e5e4;cursor:pointer;transition:all 0.2s;background:white;"
+                            onmouseover="this.style.borderColor='#FF7E21';this.style.background='#fff7ed'"
+                            onmouseout="if(!this.querySelector('input').checked){this.style.borderColor='#e7e5e4';this.style.background='white'}">
+                            <input type="radio" name="guide-spice" value="${p.id}" style="display:none;" onchange="highlightSelectedSpice(this)">
+                            <img src="${img}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'">
+                            <div style="font-size:12px;font-weight:700;color:#1c1917;text-align:center;line-height:1.3;">${p.product_name}</div>
+                            <div style="font-size:11px;color:#78716c;">${p.quantity} ${p.unit || 'kg'} available</div>
+                        </label>`;
+                }).join('')}
+                   </div>`
+                : `<div style="text-align:center;padding:20px;color:#a8a29e;font-size:13px;">No products in inventory yet. <a href="inventory.html" style="color:#FF7E21;font-weight:700;">Add products →</a></div>`;
+
+            const steps = [
+                {
+                    num: '1', icon: '🌶️', title: 'Choose Your Spice & Target Country',
+                    desc: 'Select which spice from your inventory you want to export. Research demand, regulations, and quality standards in the target country.',
+                    extra: productGrid
+                },
+                {
+                    num: '2', icon: '🏢', title: 'Register Your Business',
+                    desc: 'Register as Sole Proprietorship, Partnership, or Pvt Ltd. Obtain GST Registration and PAN Card.'
+                },
+                {
+                    num: '3', icon: '📜', title: 'Get IEC (Import Export Code)',
+                    desc: 'Issued by DGFT — mandatory to export from India. Apply at dgft.gov.in.',
+                    uploads: [{ type: 'iec_certificate', label: 'IEC Certificate' }]
+                },
+                {
+                    num: '4', icon: '🏛️', title: 'Register with Spices Board India',
+                    desc: 'Obtain CRES (Certificate of Registration as Exporter of Spices). Head office in Kochi, Kerala.',
+                    uploads: [{ type: 'spices_board_cert', label: 'CRES / Spices Board Certificate' }]
+                },
+                {
+                    num: '5', icon: '🍽️', title: 'Get FSSAI License',
+                    desc: 'Food Safety and Standards Authority of India license — required for all food product exports.',
+                    uploads: [{ type: 'fssai_license', label: 'FSSAI License' }]
+                },
+                {
+                    num: '6', icon: '🔬', title: 'Quality Testing & Certification',
+                    desc: 'Pass moisture level, pesticide residue, and Aflatoxin tests. Spices Board provides lab testing in Kochi.',
+                    uploads: [{ type: 'quality_certificate', label: 'Quality Test Certificate' }]
+                },
+                {
+                    num: '7', icon: '🌐', title: 'Find International Buyers',
+                    desc: 'Use Alibaba, IndiaMART, trade fairs. Negotiate price, quantity, and payment terms (LC, Advance, DP, DA).'
+                },
+                {
+                    num: '8', icon: '📦', title: 'Packaging & Labeling',
+                    desc: 'Label with product name, net weight, country of origin (India), batch number, mfg & expiry date.'
+                },
+                {
+                    num: '9', icon: '📑', title: 'Export Documentation',
+                    desc: 'Prepare all required shipping documents for customs and the international buyer.',
+                    uploads: [
+                        { type: 'commercial_invoice', label: 'Commercial Invoice' },
+                        { type: 'packing_list', label: 'Packing List' },
+                        { type: 'bill_of_lading', label: 'Bill of Lading / Airway Bill' },
+                        { type: 'certificate_of_origin', label: 'Certificate of Origin' },
+                        { type: 'phytosanitary_certificate', label: 'Phytosanitary Certificate' },
+                        { type: 'insurance_certificate', label: 'Insurance Certificate' }
+                    ]
+                },
+                {
+                    num: '10', icon: '🛃', title: 'Customs Clearance',
+                    desc: 'File Shipping Bill, undergo customs inspection, pay applicable duties, get cleared for shipment.'
+                },
+                {
+                    num: '11', icon: '🚢', title: 'Shipment',
+                    desc: 'Sea freight for bulk spices or Air freight for premium/urgent spices. Ship via Cochin Port or nearest air cargo hub.'
+                }
+            ];
+
+            guideEl.innerHTML = steps.map(step => {
+                const hasUploads = step.uploads && step.uploads.length;
+                const allDone = hasUploads && step.uploads.every(u => uploadedDocs[u.type]);
+                const uploadRows = hasUploads
+                    ? step.uploads.map(u => buildUploadRow(u.type, u.label)).join('')
+                    : '';
+                const borderColor = allDone ? '#bbf7d0' : (hasUploads ? '#fed7aa' : '#e7e5e4');
+                const bgColor = allDone ? '#f0fdf4' : '#fafaf9';
+                const badgeHtml = allDone
+                    ? '<span style="margin-left:8px;background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">✓ Done</span>'
+                    : (hasUploads ? '<span style="margin-left:8px;background:#fff7ed;color:#c2410c;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">Upload needed</span>' : '');
+                return `
+                    <div style="border:1.5px solid ${borderColor};border-radius:16px;padding:18px 20px;background:${bgColor};transition:all 0.2s;">
+                        <div style="display:flex;gap:14px;align-items:flex-start;">
+                            <div style="width:42px;height:42px;background:linear-gradient(135deg,#FF7E21,#e65c00);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${step.icon}</div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:2px;">
+                                    <span style="font-size:10px;font-weight:700;color:#FF7E21;text-transform:uppercase;letter-spacing:0.08em;">Step ${step.num}</span>
+                                    ${badgeHtml}
+                                </div>
+                                <h4 style="font-size:14px;font-weight:700;color:#1c1917;margin-bottom:4px;">${step.title}</h4>
+                                <p style="font-size:12px;color:#78716c;line-height:1.6;">${step.desc}</p>
+                                ${step.extra || ''}
+                                ${uploadRows}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function highlightSelectedSpice(radio) {
+            document.querySelectorAll('[name="guide-spice"]').forEach(r => {
+                const lbl = r.closest('label');
+                lbl.style.borderColor = '#e7e5e4';
+                lbl.style.background = 'white';
+            });
+            const lbl = radio.closest('label');
+            lbl.style.borderColor = '#FF7E21';
+            lbl.style.background = '#fff7ed';
+        }
+
+        async function loadRequests() {
+            try {
+                const res = await fetch('../../backend/api/export/get-farmer-export-requests.php');
+                const data = await res.json();
+                if (data.success) {
+                    allRequests = data.requests;
+                    // Update stats
+                    const s = data.stats;
+                    document.getElementById('stat-total').textContent = s.total || 0;
+                    document.getElementById('stat-pending').textContent = s.pending || 0;
+                    document.getElementById('stat-approved').textContent = s.approved || 0;
+                    document.getElementById('stat-shipped').textContent = s.shipped || 0;
+                    document.getElementById('stat-delivered').textContent = s.delivered || 0;
+                    renderRequests(allRequests);
+                    // Clear any previous bulk selection after reload
+                    clearFarmerBulk(false);
+                } else {
+                    document.getElementById('requests-list').innerHTML = `<div style="text-align:center;padding:60px;color:#ef4444;font-weight:700;">⚠️ ${data.message || 'Failed to load export requests. Please refresh.'}</div>`;
+                }
+            } catch (e) {
+                document.getElementById('requests-list').innerHTML = '<div style="text-align:center;padding:60px;color:#ef4444;font-weight:700;">Failed to load export requests. Please refresh.</div>';
+            }
+        }
+
+        // Tracks which export IDs the farmer has selected
+        let selectedFarmerIds = new Set();
+
+
+        function filterRequests(status) {
+            currentFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(b => {
+                b.classList.remove('active-tab');
+                b.style.background = 'white';
+                b.style.color = '#78716c';
+                b.style.borderColor = '#e7e5e4';
+            });
+            const activeBtn = document.getElementById('filter-' + status);
+            if (activeBtn) {
+                activeBtn.classList.add('active-tab');
+                activeBtn.style.background = '#1c1917';
+                activeBtn.style.color = 'white';
+            }
+            const filtered = status === 'all' ? allRequests : allRequests.filter(r => r.status === status);
+            renderRequests(filtered);
+            // Clear selection when filter changes
+            clearFarmerBulk(false);
+            document.getElementById('farmer-select-all').checked = false;
+        }
+
+        // Global cert verification state
+        let farmerVerified = false;
+
+        // Quick-action config: for each status, what's the single best next step
+        const QUICK_ACTIONS = {
+            'pending': [{ status: 'under_review', label: '🔍 Start Review', color: '#7c3aed' }, { status: 'approved', label: '✅ Approve', color: '#10b981' }, { status: 'rejected', label: '❌ Reject', color: '#ef4444' }],
+            'under_review': [{ status: 'approved', label: '✅ Approve', color: '#10b981' }, { status: 'quality_testing', label: '🔬 Quality Test', color: '#f97316' }, { status: 'rejected', label: '❌ Reject', color: '#ef4444' }],
+            'approved': [{ status: 'quality_testing', label: '🔬 Quality Testing', color: '#f97316' }, { status: 'documentation', label: '📑 Documentation', color: '#1e40af' }],
+            'quality_testing': [{ status: 'documentation', label: '📑 Documentation', color: '#1e40af' }, { status: 'approved', label: '✅ Re-Approve', color: '#10b981' }, { status: 'rejected', label: '❌ Reject', color: '#ef4444' }],
+            'documentation': [{ status: 'shipped', label: '🚢 Mark Shipped', color: '#3b82f6' }, { status: 'rejected', label: '❌ Reject', color: '#ef4444' }],
+            'shipped': [],
+            'delivered': [],
+            'rejected': [],
+            'cancelled': []
+        };
+
+        function renderRequests(requests) {
+            const container = document.getElementById('requests-list');
+            if (!requests.length) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 80px 20px; background: white; border-radius: 20px; border: 1px solid #e7e5e4;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🌍</div>
+                        <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 8px;">No Export Requests ${currentFilter !== 'all' ? `(${currentFilter})` : ''}</h3>
+                        <p style="color: #a8a29e; font-size: 13px;">When international buyers request your spices, they will appear here.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = requests.map(r => {
+                const sc = STATUS_CONFIG[r.status] || STATUS_CONFIG['pending'];
+                const date = new Date(r.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                const shippingIcon = r.preferred_shipping_mode === 'air' ? '✈️' : '🚢';
+                const quickActions = QUICK_ACTIONS[r.status] || [];
+                const isChecked = selectedFarmerIds.has(r.id);
+
+                const quickBtns = quickActions.map(qa => {
+                    // Lock shipping if farmer is not verified
+                    if (qa.status === 'shipped' && !farmerVerified) {
+                        return `<button disabled
+                            style="padding: 7px 14px; border-radius: 20px; border: 2px solid #d1d5db; background: #f9fafb; color: #9ca3af; font-weight: 700; font-size: 11px; cursor: not-allowed; white-space: nowrap; opacity: 0.7;"
+                            title="Shipping locked: Upload and verify all 6 certificates first. Go to Certificates page.">
+                            🔒 Shipping Locked
+                        </button>`;
+                    }
+                    return `<button onclick="quickAction(${r.id}, '${qa.status}', event)"
+                        style="padding: 7px 14px; border-radius: 20px; border: 2px solid ${qa.color}; background: white; color: ${qa.color}; font-weight: 700; font-size: 11px; cursor: pointer; white-space: nowrap; transition: all 0.2s;"
+                        onmouseover="this.style.background='${qa.color}';this.style.color='white';"
+                        onmouseout="this.style.background='white';this.style.color='${qa.color}';"
+                        title="One-click: ${qa.label}">
+                        ${qa.label}
+                    </button>`;
+                }).join('');
+
+                return `
+                <div id="fexp-row-${r.id}" class="export-card"
+                    style="background: ${isChecked ? '#fff7ed' : 'white'}; border: ${isChecked ? '2px solid #fed7aa' : '1.5px solid ' + sc.border}; border-radius: 20px; padding: 22px 24px; margin-bottom: 14px; transition: all 0.2s;">
+
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <!-- Checkbox for bulk selection -->
+                        <input type="checkbox" class="farmer-exp-cb" data-id="${r.id}" ${isChecked ? 'checked' : ''}
+                            onchange="toggleFarmerSelect(${r.id}, this.checked)"
+                            style="width:17px;height:17px;accent-color:#FF7E21;cursor:pointer;flex-shrink:0;"
+                            onclick="event.stopPropagation()"
+                            title="Select for bulk update">
+
+                        <!-- Product Image -->
+                        <div style="width: 64px; height: 64px; border-radius: 13px; background: #f5f5f4; overflow: hidden; flex-shrink: 0;">
+                            <img src="${r.image_url ? '../../' + r.image_url : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'">
+                        </div>
+
+                        <!-- Info -->
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap;">
+                                <span style="background: ${sc.bg}; color: ${sc.color}; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;">${sc.label}</span>
+                                <span style="font-size: 11px; color: #a8a29e; font-weight: 600;">#EXP-${r.id.toString().padStart(5, '0')}</span>
+                                <span style="font-size: 11px; color: #a8a29e;">${date}</span>
+                            </div>
+                            <h3 style="font-size: 16px; font-weight: 700; color: #1c1917; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${r.product_name}</h3>
+                            <div style="display: flex; gap: 14px; font-size: 12px; color: #78716c; font-weight: 600; flex-wrap: wrap;">
+                                <span>👤 ${r.buyer_name}</span>
+                                <span>🎯 ${r.target_country}</span>
+                                <span>${shippingIcon} ${r.preferred_shipping_mode === 'air' ? 'Air' : 'Sea'}</span>
+                                ${r.offered_price ? `<span style="color:#10b981;">💰 ₹${parseFloat(r.offered_price).toLocaleString()}</span>` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Quantity + Full Detail -->
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
+                            <div style="font-size: 20px; font-weight: 700; color: #FF7E21;">${r.quantity} <span style="font-size: 13px;">${r.unit}</span></div>
+                            <button onclick="openDetailModal('${r.id}')" style="background: #f5f5f4; color: #78716c; border: 1px solid #e7e5e4; padding: 7px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='#1c1917';this.style.color='white';" onmouseout="this.style.background='#f5f5f4';this.style.color='#78716c';">
+                                Details →
+                            </button>
+                        </div>
+                    </div>
+
+                    ${quickActions.length ? `
+                    <!-- ⚡ Quick Action Shortcuts -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0ede9; align-items: center;">
+                        <span style="font-size: 10px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.08em; flex-shrink: 0;">⚡ Quick:</span>
+                        ${quickBtns}
+                    </div>` : ''}
+
+                    ${r.farmer_notes ? `<div style="margin-top: 10px; padding: 8px 12px; background: #f0fdf4; border-radius: 8px; font-size: 12px; color: #166534; font-weight: 600;">📝 Your note: ${r.farmer_notes}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        // ─── Bulk Selection Helpers ─────────────────────────────────────────────
+        function toggleFarmerSelect(id, checked) {
+            if (checked) selectedFarmerIds.add(id);
+            else selectedFarmerIds.delete(id);
+            const row = document.getElementById('fexp-row-' + id);
+            if (row) {
+                row.style.background = checked ? '#fff7ed' : 'white';
+                row.style.border = checked ? '2px solid #fed7aa' : '1.5px solid #e7e5e4';
+            }
+            updateFarmerBulkBar();
+        }
+
+        function toggleFarmerSelectAll() {
+            const masterCb = document.getElementById('farmer-select-all');
+            document.querySelectorAll('.farmer-exp-cb').forEach(cb => {
+                const id = parseInt(cb.dataset.id);
+                cb.checked = masterCb.checked;
+                toggleFarmerSelect(id, masterCb.checked);
+            });
+        }
+
+        // clearAndRender = false to skip re-render (e.g. after loadRequests already re-renders)
+        function clearFarmerBulk(clearAndRender = true) {
+            selectedFarmerIds.clear();
+            if (clearAndRender) {
+                document.querySelectorAll('.farmer-exp-cb').forEach(cb => cb.checked = false);
+                document.querySelectorAll('[id^="fexp-row-"]').forEach(row => {
+                    row.style.background = 'white';
+                    row.style.border = '';
+                });
+            }
+            document.getElementById('farmer-select-all').checked = false;
+            document.getElementById('farmer-bulk-notes').value = '';
+            updateFarmerBulkBar();
+        }
+
+        function updateFarmerBulkBar() {
+            const count = selectedFarmerIds.size;
+            const bar = document.getElementById('farmer-bulk-bar');
+            bar.style.display = count > 0 ? 'flex' : 'none';
+            document.getElementById('farmer-bulk-count').textContent = count + ' selected';
+        }
+
+        async function submitFarmerBulk() {
+            const ids = Array.from(selectedFarmerIds);
+            if (!ids.length) return;
+
+            const newStatus = document.getElementById('farmer-bulk-status').value;
+            const notes = document.getElementById('farmer-bulk-notes').value.trim();
+            const btn = document.getElementById('farmer-bulk-submit-btn');
+            const statusLabel = newStatus.replace(/_/g, ' ');
+
+            if (!confirm(`Update ${ids.length} selected export request(s) to "${statusLabel}"?\n\nRequests whose current status cannot transition to "${statusLabel}" will be skipped automatically.`)) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+
+            try {
+                const res = await fetch('../../backend/api/export/farmer-bulk-update-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ export_ids: ids, status: newStatus, farmer_notes: notes })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    let msg = `✅ ${data.message}`;
+                    if (data.skipped_count) {
+                        msg += ` (${data.skipped_count} skipped — invalid transition)`;
+                    }
+                    showToast(msg, 'success');
+                    clearFarmerBulk(false);
+                    loadRequests(); // reload refreshes everything
+                } else {
+                    showToast(data.message || 'Bulk update failed', 'error');
+                }
+            } catch (e) {
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '⚡ Update All';
+            }
+        }
+
+        function openDetailModal(exportId) {
+            const r = allRequests.find(x => x.id == exportId);
+            if (!r) return;
+            selectedExportId = r.id;
+            selectedStatus = null;
+
+            document.getElementById('modal-export-id').textContent = `#EXP-${r.id.toString().padStart(5, '0')} • Submitted ${new Date(r.created_at).toLocaleDateString()}`;
+
+            // ── Status Pipeline Visual ──────────────────────────────────
+            const pipelineEl = document.getElementById('modal-pipeline');
+            if (pipelineEl) {
+                const statusOrder = ['pending', 'under_review', 'approved', 'quality_testing', 'documentation', 'shipped', 'delivered'];
+                const currentIdx = statusOrder.indexOf(r.status);
+                pipelineEl.innerHTML = statusOrder.map((s, i) => {
+                    const sc = STATUS_CONFIG[s] || {};
+                    const isDone = i < currentIdx;
+                    const isAct = i === currentIdx;
+                    const bg = isAct ? sc.color : (isDone ? '#10b981' : '#e7e5e4');
+                    const clr = (isAct || isDone) ? 'white' : '#a8a29e';
+                    return `<div style="flex:1;min-width:50px;text-align:center;padding:5px 3px;border-radius:7px;background:${bg};color:${clr};font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;transition:all 0.2s;" onclick="selectStatus('${s}')" title="Click to select: ${sc.label || s}">${sc.label || s}</div>`;
+                }).join('<div style="width:3px;flex-shrink:0;"></div>');
+            }
+
+            // Buyer info
+            document.getElementById('modal-buyer-info').innerHTML = [
+                ['Name', r.buyer_name],
+                ['Email', r.buyer_email || 'N/A'],
+                ['Phone', r.buyer_phone || 'N/A'],
+                ['Country', r.buyer_country || 'N/A'],
+                ['Business', r.business_name || 'Individual'],
+                ['Reg. No.', r.business_registration_no || 'N/A'],
+                ['Importer License', r.importer_license_no || 'N/A'],
+                ['Payment Terms', r.payment_terms?.toUpperCase() || 'N/A'],
+                ['Contact Person', r.contact_person || 'N/A'],
+                ['Contact Email', r.contact_email || 'N/A'],
+                ['Contact Phone', r.contact_phone || 'N/A'],
+            ].map(([k, v]) => `
+                <div>
+                    <div style="font-size: 10px; color: #a8a29e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${k}</div>
+                    <div style="font-size: 13px; color: #1c1917; font-weight: 700; margin-top: 2px;">${v}</div>
+                </div>`).join('');
+
+            // Shipment info
+            const fullDeliveryAddr = [r.delivery_street, r.delivery_city, r.delivery_postal_code].filter(Boolean).join(', ') || 'Not specified';
+            document.getElementById('modal-shipment-info').innerHTML = [
+                ['Product', r.product_name],
+                ['Quantity', `${r.quantity} ${r.unit}`],
+                ['Order Type', r.order_type ? (r.order_type === 'sample' ? '🧪 Sample Order' : '📦 Bulk Order') : 'Bulk Order'],
+                ['Incoterms', r.incoterms || 'N/A'],
+                ['Target Country', r.target_country],
+                ['Shipping Port', r.shipping_port || 'Nearest Port'],
+                ['Delivery Address', fullDeliveryAddr],
+                ['Mode', r.preferred_shipping_mode === 'air' ? '✈️ Air Freight' : '🚢 Sea Freight'],
+                ['Required By', r.required_delivery_date ? new Date(r.required_delivery_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Not specified'],
+                ['Offered Price', r.offered_price ? `₹${parseFloat(r.offered_price).toLocaleString()}` : 'Not specified'],
+                ['Packaging Req.', r.packaging_requirements || 'Standard'],
+                ['Status', STATUS_CONFIG[r.status]?.label || r.status]
+            ].map(([k, v]) => `
+                <div>
+                    <div style="font-size: 10px; color: #a8a29e; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${k}</div>
+                    <div style="font-size: 13px; color: #1c1917; font-weight: 700; margin-top: 2px;">${v}</div>
+                </div>`).join('');
+
+            // Checklist
+            const checklist = [
+                { label: 'Organic Certificate Required', needed: r.requires_organic_cert == 1 },
+                { label: 'Phytosanitary Certificate Required', needed: r.requires_phytosanitary == 1 },
+                { label: 'Quality Test Required', needed: r.requires_quality_test == 1 },
+                { label: 'Commercial Invoice', needed: true },
+                { label: 'Packing List', needed: true },
+                { label: 'Bill of Lading / Airway Bill', needed: true },
+                { label: 'Certificate of Origin', needed: true }
+            ];
+            document.getElementById('modal-checklist').innerHTML = checklist.map(c => `
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: ${c.needed ? '#fef9c3' : '#fafaf9'}; margin-bottom: 6px;">
+                    <span style="font-size: 16px;">${c.needed ? '⚠️' : '✓'}</span>
+                    <span style="font-size: 13px; font-weight: 600; color: ${c.needed ? '#a16207' : '#a8a29e'}; ${!c.needed ? 'text-decoration: line-through;' : ''}">${c.label}</span>
+                </div>`).join('');
+
+            // Special notes
+            const notesSection = document.getElementById('modal-notes-section');
+            if (r.special_notes) {
+                notesSection.style.display = 'block';
+                document.getElementById('modal-special-notes').textContent = r.special_notes;
+            } else {
+                notesSection.style.display = 'none';
+            }
+
+            const transitions = STATUS_TRANSITIONS[r.status] || [];
+            const btnLabels = {
+                'under_review': '🔍 Mark Under Review',
+                'approved': '✅ Approve',
+                'rejected': '❌ Reject',
+                'quality_testing': '🔬 Send to Quality Testing',
+                'documentation': '📑 Start Documentation',
+                'shipped': '🚢 Mark as Shipped'
+            };
+            const btnColors = {
+                'approved': '#10b981', 'rejected': '#ef4444', 'shipped': '#3b82f6',
+                'under_review': '#7c3aed', 'quality_testing': '#f97316', 'documentation': '#1e40af'
+            };
+
+            // If shipping is locked, show a lock warning in the modal
+            const shippingLockHtml = (!farmerVerified && r.status === 'documentation') ? `
+                <div style="background: #fef3c7; border: 1.5px solid #fbbf24; border-radius: 12px; padding: 14px 16px; display:flex; align-items:flex-start; gap:10px; margin-bottom:12px;">
+                    <span style="font-size:22px;">🔒</span>
+                    <div>
+                        <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:3px;">Shipping Locked — Certificates Not Verified</div>
+                        <div style="font-size:12px;color:#78350f;">You cannot mark this export as Shipped until all 6 compliance certificates are uploaded and approved by an admin.</div>
+                        <a href="certificates.html" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:#d97706;text-decoration:underline;">→ Go to Certificates page</a>
+                    </div>
+                </div>` : '';
+
+            document.getElementById('modal-status-buttons').innerHTML = (shippingLockHtml) + (transitions.length
+                ? transitions.map(s => {
+                    // Lock the shipped button in modal if not verified
+                    if (s === 'shipped' && !farmerVerified) {
+                        return `<button disabled
+                            style="padding:10px 18px;border-radius:10px;border:2px solid #d1d5db;background:#f9fafb;color:#9ca3af;font-weight:700;font-size:12px;cursor:not-allowed;opacity:0.6;"
+                            title="Shipping locked — get all 6 certificates verified first">
+                            🔒 Shipping Locked
+                        </button>`;
+                    }
+                    return `<button onclick="selectStatus('${s}')" id="status-btn-${s}"
+                        style="padding: 10px 18px; border-radius: 10px; border: 2px solid ${btnColors[s] || '#e7e5e4'}; background: white; color: ${btnColors[s] || '#1c1917'}; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='${btnColors[s]}'; this.style.color='white';"
+                        onmouseout="this.style.background='white'; this.style.color='${btnColors[s] || '#1c1917'}';">
+                        ${btnLabels[s] || s}
+                    </button>`;
+                }).join('')
+                : '<p style="color: #a8a29e; font-size: 13px; font-weight: 600;">No further actions available for this status.</p>');
+
+            document.getElementById('modal-farmer-notes').value = r.farmer_notes || '';
+            document.getElementById('detailModal').style.display = 'flex';
+
+            // Load tracking timeline
+            loadFarmerTimeline(r.id);
+        }
+
+        // ── Load status tracking timeline ────────────────────────────
+        async function loadFarmerTimeline(exportId) {
+            const el = document.getElementById('modal-timeline');
+            if (!el) return;
+            el.innerHTML = '<div style="text-align:center;padding:16px;color:#a8a29e;font-size:12px;">Loading history...</div>';
+            try {
+                const res = await fetch(`../../backend/api/export/get-export-tracking.php?export_id=${exportId}`);
+                const data = await res.json();
+                if (data.success && data.history.length) {
+                    el.innerHTML = data.history.map((h, i) => {
+                        const sc = STATUS_CONFIG[h.status] || { color: '#a8a29e', bg: '#fafaf9' };
+                        const dt = new Date(h.created_at).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        const who = h.updated_by_name ? `${h.updated_by_name} (${(h.updated_by_role || '').replace(/_/g, ' ')})` : 'System';
+                        const isLast = i === data.history.length - 1;
+                        return `
+                        <div style="display:flex;gap:10px;margin-bottom:${isLast ? '0' : '12px'}">
+                            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                                <div style="width:10px;height:10px;border-radius:50%;background:${sc.color};margin-top:3px;"></div>
+                                ${!isLast ? '<div style="width:2px;flex:1;background:#e7e5e4;margin:3px 0;"></div>' : ''}
+                            </div>
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                    <span style="background:${sc.bg};color:${sc.color};padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;">${sc.label || h.status}</span>
+                                    <span style="font-size:10px;color:#a8a29e;">${dt}</span>
+                                </div>
+                                <div style="font-size:11px;color:#78716c;margin-top:2px;">By: <strong>${who}</strong></div>
+                                ${h.notes ? `<div style="font-size:11px;color:#57534e;margin-top:2px;background:#fafaf9;padding:4px 8px;border-radius:6px;">${h.notes}</div>` : ''}
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    el.innerHTML = '<div style="text-align:center;padding:12px;color:#a8a29e;font-size:12px;">No history yet.</div>';
+                }
+            } catch (e) {
+                el.innerHTML = '<div style="text-align:center;padding:12px;color:#ef4444;font-size:11px;">Could not load history.</div>';
+            }
+        }
+
+        // ── One-click quick update (no modal) ────────────────────────
+        async function quickAction(exportId, newStatus, evt) {
+            evt && evt.stopPropagation();
+            const r = allRequests.find(x => x.id == exportId);
+            if (!r) return;
+
+            const statusLabel = STATUS_CONFIG[newStatus]?.label || newStatus.replace(/_/g, ' ');
+            if (!confirm(`Update #EXP-${String(exportId).padStart(5, '0')} to "${statusLabel}"?\n\nStatus will change from "${STATUS_CONFIG[r.status]?.label}" → "${statusLabel}".`)) return;
+
+            // Find and disable the clicked button
+            const clickedBtn = evt && evt.target.closest('button');
+            if (clickedBtn) { clickedBtn.disabled = true; clickedBtn.textContent = '…'; }
+
+            try {
+                const res = await fetch('../../backend/api/export/update-export-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ export_id: exportId, status: newStatus, farmer_notes: '' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ ' + (STATUS_CONFIG[newStatus]?.label || newStatus) + ' — Status updated!', 'success');
+                    loadRequests();
+                } else {
+                    showToast(data.message || 'Update failed', 'error');
+                    if (clickedBtn) { clickedBtn.disabled = false; clickedBtn.textContent = STATUS_CONFIG[newStatus]?.label || newStatus; }
+                }
+            } catch (e) {
+                showToast('Connection error. Please try again.', 'error');
+                if (clickedBtn) { clickedBtn.disabled = false; }
+            }
+        }
+
+        function selectStatus(status) {
+            selectedStatus = status;
+            // Reset all status buttons
+            document.querySelectorAll('[id^="status-btn-"]').forEach(b => {
+                b.style.boxShadow = '';
+                b.style.transform = '';
+            });
+            // Highlight selected
+            const btn = document.getElementById('status-btn-' + status);
+            if (btn) {
+                btn.style.boxShadow = '0 0 0 3px rgba(255,126,33,0.4)';
+                btn.style.transform = 'scale(1.03)';
+            }
+            // Highlight pipeline step
+            const pipelineEl = document.getElementById('modal-pipeline');
+            if (pipelineEl) {
+                pipelineEl.querySelectorAll('div[title]').forEach(d => {
+                    d.style.outline = d.title.includes(status) ? '2.5px solid #FF7E21' : '';
+                });
+            }
+        }
+
+        async function submitStatusUpdate() {
+            if (!selectedStatus) {
+                showToast('Please select a status to update to', 'error');
+                return;
+            }
+            // Frontend gate: prevent submitting 'shipped' if not verified
+            if (selectedStatus === 'shipped' && !farmerVerified) {
+                showToast('🔒 Shipping blocked: Get all 6 certificates verified first!', 'error');
+                return;
+            }
+            const notes = document.getElementById('modal-farmer-notes').value;
+            const btn = document.getElementById('modal-update-btn');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+
+            try {
+                const res = await fetch('../../backend/api/export/update-export-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ export_id: selectedExportId, status: selectedStatus, farmer_notes: notes })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ ' + data.message, 'success');
+                    // Refresh timeline in-modal without closing
+                    loadFarmerTimeline(selectedExportId);
+                    loadRequests();
+                    // Update displayed status label
+                    document.getElementById('modal-export-id').textContent =
+                        `#EXP-${String(selectedExportId).padStart(5, '0')} • Now: ${STATUS_CONFIG[selectedStatus]?.label || selectedStatus}`;
+                    selectedStatus = null;
+                } else if (data.error_code === 'CERTIFICATES_NOT_VERIFIED') {
+                    showToast('🔒 ' + data.message, 'error');
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Update Request';
+            }
+        }
+
+        // ── Load and display farmer certificate verification status ──────────
+        async function loadFarmerCertStatus() {
+            const banner = document.getElementById('cert-verify-banner');
+            try {
+                const res = await fetch('../../backend/api/export/get-farmer-certificates.php');
+                const data = await res.json();
+                if (!data.success) return;
+
+                farmerVerified = data.is_fully_verified === true;
+                const count = data.verified_count ?? 0;
+                const total = data.total_required ?? 6;
+
+                if (farmerVerified) {
+                    banner.style.cssText = 'display:flex; background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 1.5px solid #86efac; border-radius: 16px; padding: 16px 22px; margin-bottom: 24px; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;';
+                    banner.innerHTML = `
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:42px;height:42px;border-radius:12px;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:20px;">✅</div>
+                            <div>
+                                <div style="font-size:15px;font-weight:700;color:#14532d;">Verified Farmer — Export Shipping Enabled</div>
+                                <div style="font-size:12px;color:#166534;margin-top:2px;">All ${total} compliance certificates verified. You can ship export orders.</div>
+                            </div>
+                        </div>
+                        <span style="background:#dcfce7;color:#166534;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid #86efac;">✅ FULLY VERIFIED</span>`;
+                } else {
+                    banner.style.cssText = 'display:flex; background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 1.5px solid #fbbf24; border-radius: 16px; padding: 16px 22px; margin-bottom: 24px; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;';
+                    banner.innerHTML = `
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:42px;height:42px;border-radius:12px;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:20px;">🔒</div>
+                            <div>
+                                <div style="font-size:15px;font-weight:700;color:#78350f;">Shipping Locked — Certificates Not Fully Verified</div>
+                                <div style="font-size:12px;color:#92400e;margin-top:2px;">You have ${count}/${total} certificates verified. All 6 must be approved by an admin before you can ship export orders.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                            <div style="background:#fef9c3;border:1px solid #fbbf24;border-radius:10px;padding:5px 14px;">
+                                <span style="font-size:22px;font-weight:700;color:#b45309;">${count}</span>
+                                <span style="font-size:11px;color:#a16207;font-weight:700;"> / ${total} verified</span>
+                            </div>
+                            <a href="certificates.html" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:#f59e0b;color:white;border-radius:10px;font-weight:700;font-size:12px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
+                                🛡️ Upload Certificates
+                            </a>
+                        </div>`;
+                }
+            } catch (e) {
+                console.error('Could not load cert status', e);
+            }
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+            selectedExportId = null;
+            selectedStatus = null;
+        }
+
+        async function logout() {
+            await fetch('../../backend/api/auth/logout.php');
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = () => {
+            loadFarmerCertStatus();
+            loadRequests();
+        };
+    </script>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>

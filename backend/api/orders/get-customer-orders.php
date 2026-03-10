@@ -15,11 +15,14 @@ $pdo = getDBConnection();
 try {
     $stmt = $pdo->prepare("
         SELECT o.id, o.status, o.total_price, o.currency_code, o.exchange_rate, o.quantity, o.order_date, p.id as product_id, p.product_name, p.image_url, p.unit, u.full_name as farmer_name, o.shipped_at, o.delivered_at, o.payment_status, 'catalog' as source,
-               CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END as is_rated
+               CASE WHEN r.id IS NOT NULL THEN 1 ELSE 0 END as is_rated,
+               CASE WHEN ret.id IS NOT NULL THEN 1 ELSE 0 END as has_return,
+               ret.status as return_status
         FROM orders o
         LEFT JOIN products p ON o.product_id = p.id
         LEFT JOIN users u ON o.farmer_id = u.id
         LEFT JOIN reviews r ON o.id = r.order_id AND o.customer_id = r.customer_id
+        LEFT JOIN returns ret ON o.id = ret.order_id AND ret.status NOT IN ('rejected')
         WHERE o.customer_id = ?
         ORDER BY order_date DESC
     ");

@@ -81,13 +81,30 @@
                 <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
                 Auctions
             </a>
+            <a href="export.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=%231c1917" width="18" alt="">
+                Export
+            </a>
             <a href="market-analytics.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
                 <img src="https://api.iconify.design/lucide:trending-up.svg?color=%231c1917" width="18" alt="">
                 Analytics
             </a>
-
+            <a href="returns.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%231c1917" width="18" alt="">
+                Returns
+            </a>
+            <a href="history.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:clock.svg?color=%231c1917" width="18" alt="">
+                History
+            </a>
             <a href="profile.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -211,10 +228,7 @@
                 }
             }
 
-            window.onload = async () => {
-                await CurrencyManager.init();
-                loadDashboard();
-            };
+            // onload is overridden at the bottom to also call loadDashboardReturns
         </script>
     </aside>
 
@@ -318,8 +332,190 @@
                     orders</a>
             </div>
         </div>
-        <!-- Removed New Bulk Order Button -->
+
+        <!-- Wallet & Returns Section -->
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;margin-top:32px;margin-bottom:32px;">
+            <!-- Wallet Card -->
+            <div
+                style="background:linear-gradient(135deg,#1c1917,#3d2b1f);border-radius:24px;padding:32px;position:relative;overflow:hidden;">
+                <div
+                    style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,126,33,0.08);border-radius:50%;">
+                </div>
+                <div
+                    style="position:absolute;bottom:-30px;left:40px;width:120px;height:120px;background:rgba(255,126,33,0.05);border-radius:50%;">
+                </div>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                        <div>
+                            <p
+                                style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;">
+                                Caravan Wallet</p>
+                        </div>
+                        <div style="font-size:28px;">💰</div>
+                    </div>
+                    <div style="font-size:36px;font-weight:800;color:white;letter-spacing:-0.02em;margin-bottom:4px;">
+                        ₹<span id="dash-wallet-balance">0.00</span></div>
+                    <p style="font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;">Available Balance</p>
+                    <div style="margin-top:16px;">
+                        <a href="returns.html"
+                            style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#FF7E21;font-weight:700;text-decoration:none;">
+                            View Wallet Details →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Returns -->
+            <div style="background:white;border:1px solid #e7e5e4;border-radius:24px;padding:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h2 style="font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;">
+                        <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%23FF7E21" width="20">
+                        Return History
+                    </h2>
+                    <a href="returns.html"
+                        style="color:#FF7E21;text-decoration:none;font-weight:700;font-size:13px;">View all</a>
+                </div>
+                <div id="dash-returns-list">
+                    <p style="color:#a8a29e;font-size:13px;text-align:center;padding:24px;">Loading returns...</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div style="margin-top:32px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr;gap:24px;">
+                <div
+                    style="background:linear-gradient(135deg,#1c1917,#3d2b1f);border-radius:24px;padding:28px;position:relative;overflow:hidden;">
+                    <div
+                        style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,126,33,0.08);border-radius:50%;">
+                    </div>
+                    <div style="position:relative;z-index:1;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <h2 style="font-size:18px;color:white;">Recent Activity</h2>
+                            <a href="history.html"
+                                style="color:#FF7E21;text-decoration:none;font-size:13px;font-weight:700;">View All
+                                →</a>
+                        </div>
+                        <div id="customer-activity-list">
+                            <p style="color:#a8a29e;font-size:13px;text-align:center;padding:24px;">Loading activity...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+
+    <script>
+        async function loadDashboardReturns() {
+            try {
+                // Load wallet
+                const wRes = await fetch('../../backend/api/returns/get-wallet.php');
+                const wData = await wRes.json();
+                if (wData.success) {
+                    document.getElementById('dash-wallet-balance').innerText = parseFloat(wData.balance).toFixed(2);
+                }
+
+                // Load returns
+                const rRes = await fetch('../../backend/api/returns/get-customer-returns.php');
+                const rData = await rRes.json();
+                const container = document.getElementById('dash-returns-list');
+
+                if (rData.success && rData.returns && rData.returns.length > 0) {
+                    const STATUS_MAP = {
+                        requested: { label: 'Requested', bg: '#fef3c7', color: '#92400e' },
+                        under_review: { label: 'Under Review', bg: '#dbeafe', color: '#1e40af' },
+                        approved: { label: 'Approved', bg: '#d1fae5', color: '#065f46' },
+                        rejected: { label: 'Rejected', bg: '#fee2e2', color: '#991b1b' },
+                        refund_processing: { label: 'Processing', bg: '#ede9fe', color: '#5b21b6' },
+                        refund_completed: { label: 'Refunded', bg: '#d1fae5', color: '#065f46' },
+                    };
+                    container.innerHTML = rData.returns.slice(0, 5).map(r => {
+                        const sc = STATUS_MAP[r.status] || STATUS_MAP['requested'];
+                        const date = new Date(r.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        const amt = parseFloat(r.refund_amount || 0);
+                        return `
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f5f5f4;">
+                            <div style="width:40px;height:40px;border-radius:10px;background:#f5f5f4;overflow:hidden;flex-shrink:0;">
+                                <img src="${r.image_url ? '../../' + r.image_url : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=100'}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=100'">
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+                                    <span style="font-size:13px;font-weight:700;color:#1c1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.product_name}</span>
+                                </div>
+                                <div style="font-size:11px;color:#78716c;font-weight:600;">RET-${r.id.toString().padStart(5, '0')} · ${date}</div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+                                <span style="background:${sc.bg};color:${sc.color};padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;text-transform:uppercase;">${sc.label}</span>
+                                <span style="font-size:12px;font-weight:700;color:#1c1917;">₹${amt.toFixed(2)}</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align:center;padding:32px;">
+                            <div style="font-size:28px;margin-bottom:8px;">✅</div>
+                            <p style="color:#a8a29e;font-size:12px;font-weight:600;">No return requests yet</p>
+                        </div>`;
+                }
+            } catch (e) {
+                console.error('Dashboard returns error:', e);
+            }
+        }
+
+        async function loadCustomerActivity() {
+            try {
+                const res = await fetch('../../backend/api/returns/get-customer-activity.php');
+                const data = await res.json();
+                const container = document.getElementById('customer-activity-list');
+
+                if (data.success && data.activity && data.activity.length > 0) {
+                    const TYPE_ICONS = {
+                        order: '🛍️',
+                        return: '🔄',
+                        wallet: '💳',
+                        bid: '🔨',
+                        export: '🌍',
+                        certificate: '📜'
+                    };
+
+                    container.innerHTML = data.activity.slice(0, 8).map(a => {
+                        const date = new Date(a.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        const icon = TYPE_ICONS[a.type] || '📝';
+                        const amountText = a.amount ? ` · ₹${parseFloat(a.amount).toFixed(2)}` : '';
+
+                        return `
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">
+                                ${icon}
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:13px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    ${a.description || (a.type.charAt(0).toUpperCase() + a.type.slice(1))}
+                                </div>
+                                <div style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:500;">
+                                    ${a.status.toUpperCase()} · ${date}${amountText}
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = `<p style="color:rgba(255,255,255,0.3);font-size:12px;text-align:center;padding:20px;">No recent activity</p>`;
+                }
+            } catch (e) {
+                console.error('Activity load error:', e);
+            }
+        }
+
+        // Load after main dashboard
+        const origOnload = window.onload;
+        window.onload = async () => {
+            if (typeof CurrencyManager !== 'undefined') await CurrencyManager.init();
+            loadDashboard();
+            loadDashboardReturns();
+            loadCustomerActivity();
+        };
+    </script>
     <script src="../assets/js/main.js"></script>
 </body>
 

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // Immediate Session Enforcement
+    (async () => {
+        const res = await fetch('../../backend/api/auth/check-session.php');
+        const data = await res.json();
+        if (!data.logged_in) window.location.href = '../auth/login.html';
+    })();
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Certificates | Caravan of Flavours</title>
+    <meta name="description"
+        content="Upload and manage your farmer compliance certificates including Organic Certificate, FSSAI License, Spice Board Registration, GST Certificate, Farm Ownership Proof, and Quality Testing Report.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.8"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #fafaf9;
+            color: #1c1917;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ── Sidebar ──────────────────────────────── */
+        .sidebar {
+            width: 200px;
+            background: white;
+            border-right: 1px solid #e7e5e4;
+            position: fixed;
+            height: 100vh;
+            padding: 24px;
+            z-index: 50;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1c1917;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #fafaf9;
+        }
+
+        .nav-link.active {
+            background: #FF7E21;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* ── Main ────────────────────────────────── */
+        main {
+            margin-left: 200px;
+            padding: 32px 40px;
+            min-height: 100vh;
+        }
+
+        /* ── Progress Banner ─────────────────────── */
+        .progress-banner {
+            background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-banner::before {
+            content: '🌿';
+            position: absolute;
+            right: 32px;
+            font-size: 80px;
+            opacity: 0.08;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .progress-ring-wrap {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+
+        .progress-ring-wrap svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-center span:first-child {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .progress-center span:last-child {
+            font-size: 9px;
+            color: #a8a29e;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .verified-badge-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* ── Cert Cards ──────────────────────────── */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .cert-card {
+            background: white;
+            border-radius: 20px;
+            border: 1.5px solid #e7e5e4;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .cert-card.verified {
+            border-color: #a7f3d0;
+            background: #f0fdf4;
+        }
+
+        .cert-card.pending {
+            border-color: #fde68a;
+            background: #fefce8;
+        }
+
+        .cert-card.rejected {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .cert-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .chip-not-uploaded {
+            background: #f5f5f4;
+            color: #a8a29e;
+        }
+
+        .chip-pending {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .chip-verified {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .chip-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .upload-btn-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            border: 1.5px solid #FF7E21;
+            background: white;
+            color: #FF7E21;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .btn-upload:hover {
+            background: #fff7ed;
+        }
+
+        .btn-upload.replace {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .btn-upload.replace:hover {
+            background: #f0fdf4;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #78716c;
+            word-break: break-all;
+        }
+
+        .admin-note-box {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #991b1b;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .cert-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            margin-bottom: 14px;
+        }
+
+        /* ── Upload Progress Spinner ──────────────── */
+        .uploading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            z-index: 10;
+        }
+
+        .spin {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e7e5e4;
+            border-top-color: #FF7E21;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Info Banner ──────────────────────────── */
+        .info-banner {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #ff0000;
+            background: transparent;
+            border: 2px solid #ff0000;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: auto;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cert-card {
+            animation: fadeInUp 0.4s ease both;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="farmer-dashboard.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="inventory.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:package.svg?color=%231c1917" width="18" alt=""> Inventory
+            </a>
+            <a href="orders.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt=""> Orders
+            </a>
+            <a href="auctions.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt=""> Auctions
+            </a>
+            <a href="export.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=%231c1917" width="18" alt=""> Export
+            </a>
+            <a href="certificates.html" class="nav-link active" id="nav-certs">
+                <img src="https://api.iconify.design/lucide:shield-check.svg?color=white" width="18" alt="">
+                Certificates
+            </a>
+            <a href="analysis.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%231c1917" width="18" alt=""> Analysis
+            </a>
+            <a href="profile.html" class="nav-link">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt=""> Profile
+            </a>
+        </nav>
+
+        <div style="margin-top: auto; padding-top: 24px;">
+            <button onclick="logout()" class="logout-btn">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Header -->
+        <header style="margin-bottom: 28px;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 style="font-size: 28px; font-weight: 800; color: #1c1917; letter-spacing: -0.02em;">
+                        🛡️ My Certificates
+                    </h1>
+                    <p style="font-size: 14px; color: #78716c; margin-top: 6px;">
+                        Upload your compliance documents for admin verification. Verified farmers earn the <strong>✅
+                            Verified Farmer</strong> badge.
+                    </p>
+                </div>
+                <div id="header-verified-badge" style="display:none;">
+                    <span class="verified-badge-banner">
+                        <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2310b981" width="14" alt="">
+                        Verified Farmer
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Banner -->
+        <div class="progress-banner" id="progress-banner">
+            <div class="progress-ring-wrap">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" />
+                    <circle id="progress-circle" cx="40" cy="40" r="34" fill="none" stroke="#FF7E21" stroke-width="8"
+                        stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"
+                        style="transition: stroke-dashoffset 0.8s ease;" />
+                </svg>
+                <div class="progress-center">
+                    <span id="progress-text">0/6</span>
+                    <span>Verified</span>
+                </div>
+            </div>
+            <div style="flex: 1;">
+                <div id="banner-title" style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Verification
+                    Progress</div>
+                <div id="banner-desc" style="font-size: 13px; color: #a8a29e; line-height: 1.6;">
+                    Upload all 6 certificates to get verified. Once admin approves all documents, you'll earn the
+                    <strong style="color:#FF7E21;">Verified Farmer</strong> badge and customers will see it on your
+                    products.
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Banner -->
+        <div class="info-banner">
+            <span style="font-size: 22px; flex-shrink:0;">ℹ️</span>
+            <div>
+                <div style="font-size: 13px; font-weight: 700; color: #1e40af; margin-bottom: 4px;">How Verification
+                    Works</div>
+                <div style="font-size: 12px; color: #3b82f6; line-height: 1.7;">
+                    1. Upload each of the 6 required certificates (PDF, JPG, PNG, DOC — max 10 MB each) &nbsp;•&nbsp;
+                    2. Admin reviews and verifies or rejects each document &nbsp;•&nbsp;
+                    3. Once all 6 are verified, your profile gets a <strong>✅ Verified Farmer</strong> badge
+                    &nbsp;•&nbsp;
+                    4. Re-uploading a certificate resets it to <em>Pending</em> review
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Cards -->
+        <div class="cert-grid" id="cert-grid">
+            <!-- Injected by JS -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #a8a29e;">
+                <div class="spin" style="margin: 0 auto 16px;"></div>
+                <p style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Loading
+                    certificates...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ── Certificate definitions ──────────────────────────────────────────
+        const CERT_TYPES = [
+            {
+                type: 'organic_certificate',
+                icon: '🌿',
+                iconBg: '#f0fdf4',
+                label: 'Organic Certificate',
+                desc: 'Certifies that your farm follows organic farming practices without synthetic chemicals or GMOs.',
+                required: true,
+                issuedBy: 'APEDA / Accredited Certifying Body'
+            },
+            {
+                type: 'fssai_license',
+                icon: '🍽️',
+                iconBg: '#eff6ff',
+                label: 'FSSAI License',
+                desc: 'Food Safety and Standards Authority of India license — mandatory for all food product businesses.',
+                required: true,
+                issuedBy: 'Food Safety and Standards Authority of India'
+            },
+            {
+                type: 'spice_board_registration',
+                icon: '🌶️',
+                iconBg: '#fff7ed',
+                label: 'Spice Board Registration',
+                desc: 'Registration with the Spices Board of India for exporting spices internationally.',
+                required: true,
+                issuedBy: 'Spices Board of India, Kochi'
+            },
+            {
+                type: 'gst_certificate',
+                icon: '🧾',
+                iconBg: '#fdf4ff',
+                label: 'GST Certificate',
+                desc: 'Goods and Services Tax registration certificate for business transactions.',
+                required: true,
+                issuedBy: 'Government of India — GST Portal'
+            },
+            {
+                type: 'farm_ownership_proof',
+                icon: '🏡',
+                iconBg: '#fefce8',
+                label: 'Farm Ownership Proof',
+                desc: 'Document proving ownership or lease of the farm land (e.g., land patta, lease deed).',
+                required: true,
+                issuedBy: 'Local Revenue Authority / Gram Panchayat'
+            },
+            {
+                type: 'quality_testing_report',
+                icon: '🔬',
+                iconBg: '#f5f3ff',
+                label: 'Quality Testing Report',
+                desc: 'Lab-tested report confirming product quality — pesticide residue, moisture, aflatoxin etc.',
+                required: true,
+                issuedBy: 'Spices Board Lab / NABL Accredited Lab'
+            }
+        ];
+
+        let certs = {}; // keyed by cert_type
+
+        // ── Load certificates ────────────────────────────────────────────────
+        async function loadCertificates() {
+            try {
+                const res = await fetch('../../backend/api/export/get-farmer-certificates.php');
+                const data = await res.json();
+                if (data.success) {
+                    certs = data.certificates || {};
+                    updateProgress(data.verified_count || 0, data.total_required || 6, data.is_fully_verified || false);
+                }
+            } catch (e) { certs = {}; }
+            renderCertCards();
+        }
+
+        // ── Update progress ring ─────────────────────────────────────────────
+        function updateProgress(verified, total, isFullyVerified) {
+            const pct = total > 0 ? verified / total : 0;
+            const circumference = 2 * Math.PI * 34; // r=34
+            const offset = circumference * (1 - pct);
+
+            document.getElementById('progress-circle').style.strokeDashoffset = offset;
+            document.getElementById('progress-circle').style.stroke = isFullyVerified ? '#10b981' : '#FF7E21';
+            document.getElementById('progress-text').textContent = `${verified}/${total}`;
+
+            if (isFullyVerified) {
+                document.getElementById('header-verified-badge').style.display = 'block';
+                document.getElementById('banner-title').textContent = '✅ Fully Verified Farmer!';
+                document.getElementById('banner-desc').innerHTML = 'Congratulations! All your certificates have been verified by admin. Your products now display the <strong style="color:#10b981;">✅ Verified Farmer</strong> badge to customers.';
+            } else {
+                document.getElementById('header-verified-badge').style.display = 'none';
+            }
+        }
+
+        // ── Render cards ─────────────────────────────────────────────────────
+        function renderCertCards() {
+            const grid = document.getElementById('cert-grid');
+            grid.innerHTML = CERT_TYPES.map((ct, i) => {
+                const cert = certs[ct.type];
+                const status = cert ? cert.verification_status : 'not_uploaded';
+
+                const chipMap = {
+                    'not_uploaded': ['chip-not-uploaded', '⬜ Not Uploaded'],
+                    'pending': ['chip-pending', '🕐 Pending Review'],
+                    'verified': ['chip-verified', '✅ Verified'],
+                    'rejected': ['chip-rejected', '❌ Rejected'],
+                };
+                const [chipClass, chipLabel] = chipMap[status] || chipMap['not_uploaded'];
+
+                const cardClass = status === 'verified' ? 'verified' : status === 'pending' ? 'pending' : status === 'rejected' ? 'rejected' : '';
+
+                const fileInfo = cert ? `
+                    <div class="file-info">
+                        <img src="https://api.iconify.design/lucide:file-text.svg?color=%2378716c" width="13" alt="">
+                        ${escHtml(cert.original_filename)}
+                    </div>` : '';
+
+                const adminNote = (status === 'rejected' && cert?.admin_notes) ? `
+                    <div class="admin-note-box">
+                        <img src="https://api.iconify.design/lucide:alert-circle.svg?color=%23991b1b" width="14" alt="" style="flex-shrink:0;margin-top:1px;">
+                        <div><strong>Admin Note:</strong> ${escHtml(cert.admin_notes)}</div>
+                    </div>` : '';
+
+                const uploadedDate = cert ? `<div style="font-size:10px;color:#a8a29e;margin-top:6px;">Uploaded: ${new Date(cert.uploaded_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>` : '';
+                const verifiedDate = (cert && status === 'verified' && cert.verified_at) ? `<div style="font-size:10px;color:#10b981;margin-top:2px;">Verified: ${new Date(cert.verified_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>` : '';
+
+                const btnLabel = cert ? 'Replace' : 'Upload';
+                const btnClass = cert ? 'btn-upload replace' : 'btn-upload';
+
+                return `
+                <div class="cert-card ${cardClass}" id="cert-card-${ct.type}" style="animation-delay:${i * 0.07}s;">
+                    <div class="cert-icon" style="background:${ct.iconBg};">${ct.icon}</div>
+
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px; flex-wrap:wrap;">
+                        <h3 style="font-size:15px; font-weight:700; color:#1c1917; line-height:1.3;">${ct.label}</h3>
+                        <span class="cert-status-chip ${chipClass}">${chipLabel}</span>
+                    </div>
+
+                    <p style="font-size:12px; color:#78716c; line-height:1.6; margin-bottom:6px;">${ct.desc}</p>
+                    <p style="font-size:11px; color:#a8a29e; margin-bottom:14px;">
+                        <strong>Issued by:</strong> ${ct.issuedBy}
+                    </p>
+
+                    ${fileInfo}
+                    ${uploadedDate}
+                    ${verifiedDate}
+                    ${adminNote}
+
+                    <div class="upload-btn-wrap" style="margin-top:14px;">
+                        <label class="${btnClass}">
+                            <img src="https://api.iconify.design/lucide:upload-cloud.svg?color=${cert ? '%2310b981' : '%23FF7E21'}" width="14" alt="">
+                            ${btnLabel}
+                            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none;"
+                                onchange="uploadCertificate(this, '${ct.type}', '${escHtml(ct.label)}')">
+                        </label>
+                        ${status === 'verified' ? '<span style="font-size:11px;color:#10b981;font-weight:700;">Admin Verified ✓</span>' : ''}
+                    </div>
+
+                    <!-- Upload spinner overlay (hidden by default) -->
+                    <div class="uploading-overlay" id="overlay-${ct.type}" style="display:none;">
+                        <div style="text-align:center;">
+                            <div class="spin"></div>
+                            <div style="margin-top:10px;font-size:11px;font-weight:700;color:#78716c;">Uploading...</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Upload a certificate ─────────────────────────────────────────────
+        async function uploadCertificate(input, certType, certLabel) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const overlay = document.getElementById('overlay-' + certType);
+            overlay.style.display = 'flex';
+
+            const fd = new FormData();
+            fd.append('certificate', file);
+            fd.append('cert_type', certType);
+
+            try {
+                const res = await fetch('../../backend/api/export/upload-farmer-certificate.php', {
+                    method: 'POST', body: fd
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(`✅ ${certLabel} uploaded! Pending admin review.`, 'success');
+                    await loadCertificates();
+                } else {
+                    showToast(data.message || 'Upload failed', 'error');
+                }
+            } catch (e) {
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // ── Escape HTML ──────────────────────────────────────────────────────
+        function escHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+
+        // ── Logout ───────────────────────────────────────────────────────────
+        async function logout() {
+            try {
+                await fetch('../../backend/api/auth/logout.php');
+                window.location.href = '../auth/login.html';
+            } catch (e) { console.error(e); }
+        }
+
+        // ── Init ─────────────────────────────────────────────────────────────
+        window.onload = loadCertificates;
+    </script>
+</body>
+
+</html>

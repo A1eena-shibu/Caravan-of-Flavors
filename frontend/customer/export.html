@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Request | Caravan of Flavours</title>
+    <meta name="description"
+        content="Submit international spice export requests directly from Indian farmers. Connect with verified spice exporters from Kerala.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/custom-ui.js?v=1.8"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF7E21',
+                        'primary-hover': '#E66D1A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-btn.active {
+            background: #1c1917;
+            color: white;
+        }
+
+        .tab-btn {
+            transition: all 0.2s;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #fafaf9;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+            color: #1c1917;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #FF7E21;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1c1917;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .checkbox-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafaf9;
+        }
+
+        .checkbox-card:hover {
+            border-color: #FF7E21;
+            background: #fff7ed;
+        }
+
+        .checkbox-card input:checked~span {
+            color: #FF7E21;
+            font-weight: 700;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .form-input.error {
+            border-color: #ef4444 !important;
+            background: #fef2f2;
+        }
+
+        .field-error {
+            font-size: 11px;
+            color: #ef4444;
+            font-weight: 700;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body style="background: #fafaf9; color: #1c1917; font-family: 'Outfit', sans-serif;">
+    <!-- Sidebar -->
+    <aside
+        style="width: 200px; background: white; border-right: 1px solid #e7e5e4; position: fixed; height: 100vh; padding: 24px; z-index: 50; overflow-y: auto;">
+        <div class="logo" style="margin-bottom: 40px; display: flex; align-items: center; gap: 14px;">
+            <img src="../assets/images/logo.png" alt="Logo" style="height: 42px; width: auto; object-fit: contain;">
+            <div style="display: flex; flex-direction: column;">
+                <h3
+                    style="font-size: 18px; color: #1c1917; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;">
+                    Caravan</h3>
+                <small
+                    style="font-size: 10px; color: #a8a29e; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase;">Of
+                    Flavours</small>
+            </div>
+        </div>
+
+        <nav style="display: flex; flex-direction: column; gap: 4px;">
+            <a href="customer-dashboard.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:layout-dashboard.svg?color=%231c1917" width="18" alt="">
+                Dashboard
+            </a>
+            <a href="catalog.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:book-open.svg?color=%231c1917" width="18" alt="">
+                Catalog
+            </a>
+            <a href="orders.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-bag.svg?color=%231c1917" width="18" alt="">
+                Orders
+            </a>
+            <a href="cart.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
+                Cart
+            </a>
+            <a href="auctions.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:gavel.svg?color=%231c1917" width="18" alt="">
+                Auctions
+            </a>
+            <a href="export.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: white; background: #FF7E21; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=white" width="18" alt="">
+                Export
+            </a>
+            <a href="market-analytics.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:trending-up.svg?color=%231c1917" width="18" alt="">
+                Analytics
+            </a>
+            <a href="returns.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%231c1917" width="18" alt="">
+                Returns
+            </a>
+            <a href="history.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:clock.svg?color=%231c1917" width="18" alt="">
+                History
+            </a>
+            <a href="profile.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
+                Profile
+            </a>
+        </nav>
+
+        <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
+            <button onclick="logout()"
+                style="display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 8px; color: #ff0000; background: transparent; border: 2px solid #ff0000; width: 100%; cursor: pointer; font-weight: 700; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:log-out.svg?color=%23ff0000" width="18"
+                    style="transform: rotate(180deg);" alt="">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main style="margin-left: 200px; padding: 32px 40px; min-height: 100vh;">
+        <header style="margin-bottom: 32px;">
+            <h1 style="font-size: 28px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">International Spice
+                Export</h1>
+            <p style="font-size: 14px; color: #78716c; margin-top: 6px;">Request bulk spices directly from Indian
+                farmers for international export</p>
+        </header>
+
+        <!-- Tabs -->
+        <div style="display: flex; gap: 8px; margin-bottom: 28px;">
+            <button id="tab-request" class="tab-btn active" onclick="showTab('request')"
+                style="padding: 10px 24px; border-radius: 10px; border: 1px solid #1c1917; background: #1c1917; color: white; font-size: 13px; font-weight: 700; cursor: pointer;">
+                New Request
+            </button>
+            <button id="tab-history" class="tab-btn" onclick="showTab('history')"
+                style="padding: 10px 24px; border-radius: 10px; border: 1px solid #e7e5e4; background: white; color: #78716c; font-size: 13px; font-weight: 700; cursor: pointer;">
+                My Export Requests
+            </button>
+        </div>
+
+        <!-- New Export Request Form -->
+        <div id="tab-request-content">
+            <div style="display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: start;">
+                <!-- Form -->
+                <div style="background: white; border: 1px solid #e7e5e4; border-radius: 24px; padding: 36px;">
+                    <form id="export-form" onsubmit="submitExportRequest(event)">
+                        <!-- Product Selection -->
+                        <div style="margin-bottom: 28px;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">1</span>
+                                Select Spice Product
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div>
+                                    <label class="form-label" for="product-select">Choose Product *</label>
+                                    <select id="product-select" name="product_id" class="form-input"
+                                        onchange="onProductChange(); clearErr('product-select')">
+                                        <option value="">Loading products...</option>
+                                    </select>
+                                    <div class="field-error" id="err-product-select"></div>
+                                </div>
+                                <div id="product-preview"
+                                    style="display: none; background: #fafaf9; border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 14px;">
+                                    <img id="preview-img" src=""
+                                        style="width: 60px; height: 60px; border-radius: 10px; object-fit: cover;"
+                                        alt="">
+                                    <div>
+                                        <div id="preview-name"
+                                            style="font-size: 15px; font-weight: 700; color: #1c1917;"></div>
+                                        <div id="preview-stock"
+                                            style="font-size: 12px; color: #78716c; font-weight: 600; margin-top: 2px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="quantity">Quantity Required (kg) *</label>
+                                    <input type="number" id="quantity" name="quantity" min="1" step="0.01"
+                                        placeholder="e.g. 500" class="form-input" oninput="clearErr('quantity')">
+                                    <div class="field-error" id="err-quantity"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Info -->
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">2</span>
+                                Business Information
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label" for="business-name">Business / Company Name</label>
+                                    <input type="text" id="business-name" name="business_name"
+                                        placeholder="e.g. SpiceWorld Ltd." class="form-input"
+                                        oninput="clearErr('business-name')">
+                                    <div class="field-error" id="err-business-name"></div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="business-reg">Business Registration No.</label>
+                                    <input type="text" id="business-reg" name="business_registration_no"
+                                        placeholder="e.g. UK12345678" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label" for="importer-license">Import License No. (if any)</label>
+                                    <input type="text" id="importer-license" name="importer_license_no"
+                                        placeholder="Importer license number" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label" for="payment-terms">Preferred Payment Terms</label>
+                                    <select id="payment-terms" name="payment_terms" class="form-input">
+                                        <option value="advance">Advance Payment</option>
+                                        <option value="lc">Letter of Credit (LC)</option>
+                                        <option value="dp">Documents against Payment (DP)</option>
+                                        <option value="da">Documents against Acceptance (DA)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="offered-price">Offered Price (₹ per kg)</label>
+                                    <input type="number" id="offered-price" name="offered_price" min="0" step="0.01"
+                                        placeholder="Optional — your price offer" class="form-input"
+                                        oninput="clearErr('offered-price')">
+                                    <div class="field-error" id="err-offered-price"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Buyer Contact Details -->
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">3</span>
+                                Buyer Contact Details
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div style="grid-column: 1 / -1;">
+                                    <label class="form-label" for="contact-person">Contact Person Name *</label>
+                                    <input type="text" id="contact-person" name="contact_person"
+                                        placeholder="e.g. John Smith" class="form-input"
+                                        oninput="clearErr('contact-person')">
+                                    <div class="field-error" id="err-contact-person"></div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="contact-email">Contact Email *</label>
+                                    <input type="email" id="contact-email" name="contact_email"
+                                        placeholder="e.g. buyer@company.com" class="form-input"
+                                        oninput="clearErr('contact-email')">
+                                    <div class="field-error" id="err-contact-email"></div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="contact-phone">Contact Phone</label>
+                                    <input type="tel" id="contact-phone" name="contact_phone"
+                                        placeholder="e.g. +44 7911 123456" class="form-input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">4</span>
+                                Shipping & Destination
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label" for="target-country">Target Country *</label>
+                                    <input type="text" id="target-country" name="target_country"
+                                        placeholder="e.g. United Kingdom, USA, Germany" class="form-input"
+                                        oninput="clearErr('target-country')">
+                                    <div class="field-error" id="err-target-country"></div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="shipping-port">Destination Port / City *</label>
+                                    <input type="text" id="shipping-port" name="shipping_port"
+                                        placeholder="e.g. Port of London, Hamburg" class="form-input"
+                                        oninput="clearErr('shipping-port')">
+                                    <div class="field-error" id="err-shipping-port"></div>
+                                </div>
+                                <!-- Delivery Address -->
+                                <div style="grid-column: 1 / -1;">
+                                    <label class="form-label" for="delivery-street">Street / Warehouse Address</label>
+                                    <input type="text" id="delivery-street" name="delivery_street"
+                                        placeholder="e.g. 12 Harbour Road, Dock Area" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label" for="delivery-city">City</label>
+                                    <input type="text" id="delivery-city" name="delivery_city" placeholder="e.g. London"
+                                        class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label" for="delivery-postal">Postal / ZIP Code</label>
+                                    <input type="text" id="delivery-postal" name="delivery_postal_code"
+                                        placeholder="e.g. E1W 3SS" class="form-input">
+                                </div>
+                                <div style="grid-column: 1 / -1;">
+                                    <label class="form-label">Preferred Shipping Mode *</label>
+                                    <div
+                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                                        <label
+                                            style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 2px solid #e7e5e4; border-radius: 12px; cursor: pointer; transition: all 0.2s;"
+                                            onmouseover="this.style.borderColor='#FF7E21'"
+                                            onmouseout="checkShippingHover(this)">
+                                            <input type="radio" name="preferred_shipping_mode" value="sea" checked
+                                                style="accent-color: #FF7E21;">
+                                            <div>
+                                                <div style="font-size: 20px;">🚢</div>
+                                                <div
+                                                    style="font-size: 13px; font-weight: 700; color: #1c1917; margin-top: 2px;">
+                                                    Sea Freight</div>
+                                                <div style="font-size: 11px; color: #78716c;">For bulk quantities</div>
+                                            </div>
+                                        </label>
+                                        <label
+                                            style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 2px solid #e7e5e4; border-radius: 12px; cursor: pointer; transition: all 0.2s;"
+                                            onmouseover="this.style.borderColor='#FF7E21'"
+                                            onmouseout="checkShippingHover(this)">
+                                            <input type="radio" name="preferred_shipping_mode" value="air"
+                                                style="accent-color: #FF7E21;">
+                                            <div>
+                                                <div style="font-size: 20px;">✈️</div>
+                                                <div
+                                                    style="font-size: 13px; font-weight: 700; color: #1c1917; margin-top: 2px;">
+                                                    Air Freight</div>
+                                                <div style="font-size: 11px; color: #78716c;">For premium/urgent spices
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="field-error" id="err-shipping-mode" style="margin-top:4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Trade Terms & Order Type -->
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">5</span>
+                                Trade Terms & Order Type
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label" for="incoterms">Incoterms *
+                                        <span
+                                            style="font-weight:500;text-transform:none;letter-spacing:0;color:#78716c;">(Delivery
+                                            responsibility)</span>
+                                    </label>
+                                    <select id="incoterms" name="incoterms" class="form-input"
+                                        oninput="clearErr('incoterms')">
+                                        <option value="">— Select Incoterm —</option>
+                                        <option value="FOB">FOB — Free On Board (Cochin Port)</option>
+                                        <option value="CIF">CIF — Cost, Insurance &amp; Freight</option>
+                                        <option value="EXW">EXW — Ex Works (Farmer's Warehouse)</option>
+                                        <option value="DDP">DDP — Delivered Duty Paid (Buyer's Door)</option>
+                                        <option value="CFR">CFR — Cost &amp; Freight</option>
+                                        <option value="DAP">DAP — Delivered At Place</option>
+                                    </select>
+                                    <div class="field-error" id="err-incoterms"></div>
+                                    <div style="font-size:11px;color:#78716c;margin-top:5px;">FOB/CIF most common for
+                                        spice exports from India</div>
+                                </div>
+                                <div>
+                                    <label class="form-label">Order Type *</label>
+                                    <div
+                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 2px;">
+                                        <label
+                                            style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e7e5e4;border-radius:12px;cursor:pointer;transition:all 0.2s;"
+                                            onmouseover="this.style.borderColor='#FF7E21'"
+                                            onmouseout="checkOrderTypeHover(this)">
+                                            <input type="radio" name="order_type" value="bulk" checked
+                                                style="accent-color:#FF7E21;">
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#1c1917;">📦 Bulk Order
+                                                </div>
+                                                <div style="font-size:11px;color:#78716c;">Commercial quantity</div>
+                                            </div>
+                                        </label>
+                                        <label
+                                            style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e7e5e4;border-radius:12px;cursor:pointer;transition:all 0.2s;"
+                                            onmouseover="this.style.borderColor='#FF7E21'"
+                                            onmouseout="checkOrderTypeHover(this)">
+                                            <input type="radio" name="order_type" value="sample"
+                                                style="accent-color:#FF7E21;">
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#1c1917;">🧪 Sample
+                                                    Order</div>
+                                                <div style="font-size:11px;color:#78716c;">Trial / evaluation</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="required-delivery-date">Required Delivery
+                                        Date</label>
+                                    <input type="date" id="required-delivery-date" name="required_delivery_date"
+                                        class="form-input" oninput="clearErr('required-delivery-date')">
+                                    <div class="field-error" id="err-required-delivery-date"></div>
+                                    <div style="font-size:11px;color:#78716c;margin-top:5px;">Helps the farmer plan the
+                                        shipment timeline</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 6: Certification Requirements -->
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">6</span>
+                                Certification Requirements
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <label class="checkbox-card">
+                                    <input type="checkbox" id="req-organic" name="requires_organic_cert"
+                                        style="accent-color: #FF7E21; width: 18px; height: 18px;">
+                                    <div>
+                                        <span style="font-size: 13px; font-weight: 700; color: #1c1917;">Organic
+                                            Certificate Required</span>
+                                        <p style="font-size: 11px; color: #78716c; margin-top: 2px;">I require an
+                                            organic certification for this shipment</p>
+                                    </div>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" id="req-phyto" name="requires_phytosanitary"
+                                        style="accent-color: #FF7E21; width: 18px; height: 18px;">
+                                    <div>
+                                        <span style="font-size: 13px; font-weight: 700; color: #1c1917;">Phytosanitary
+                                            Certificate Required</span>
+                                        <p style="font-size: 11px; color: #78716c; margin-top: 2px;">Required for
+                                            plant/agricultural product exports</p>
+                                    </div>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" id="req-quality" name="requires_quality_test"
+                                        style="accent-color: #FF7E21; width: 18px; height: 18px;">
+                                    <div>
+                                        <span style="font-size: 13px; font-weight: 700; color: #1c1917;">Quality Test
+                                            Certificate Required</span>
+                                        <p style="font-size: 11px; color: #78716c; margin-top: 2px;">Lab-tested moisture
+                                            level, pesticide residue & aflatoxin</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Section 7: Additional Requirements -->
+                        <div style="margin-bottom: 28px; padding-top: 24px; border-top: 1px solid #f0ede9;">
+                            <h3
+                                style="font-size: 14px; font-weight: 700; color: #FF7E21; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                                <span
+                                    style="background: #FF7E21; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;">7</span>
+                                Additional Requirements
+                            </h3>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div>
+                                    <label class="form-label" for="packaging-req">Packaging Requirements</label>
+                                    <textarea id="packaging-req" name="packaging_requirements" rows="2"
+                                        placeholder="e.g. Vacuum-packed 25kg bags, custom labeling in English..."
+                                        class="form-input" style="resize: none;"></textarea>
+                                </div>
+                                <div>
+                                    <label class="form-label" for="special-notes">Special Notes</label>
+                                    <textarea id="special-notes" name="special_notes" rows="3"
+                                        placeholder="Any additional information or specific requirements for this export..."
+                                        class="form-input" style="resize: none;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submit-btn"
+                            style="width: 100%; background: linear-gradient(135deg, #FF7E21, #e65c00); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(255,126,33,0.3); transition: all 0.2s;"
+                            onmouseover="this.style.transform='translateY(-2px)'"
+                            onmouseout="this.style.transform='translateY(0)'">
+                            Submit Export Request 🌍
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Info Sidebar -->
+                <div style="display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px;">
+                    <!-- How it works -->
+                    <div style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 24px;">
+                        <h3 style="font-size: 14px; font-weight: 700; color: #1c1917; margin-bottom: 16px;">How Export
+                            Works</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div
+                                    style="width: 28px; height: 28px; background: #fff7ed; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">
+                                    📝</div>
+                                <div>
+                                    <div style="font-size: 12px; font-weight: 700; color: #1c1917;">Submit Request</div>
+                                    <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Fill in your export
+                                        requirements</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div
+                                    style="width: 28px; height: 28px; background: #f5f3ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">
+                                    🌾</div>
+                                <div>
+                                    <div style="font-size: 12px; font-weight: 700; color: #1c1917;">Farmer Reviews</div>
+                                    <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Farmer evaluates and
+                                        can approve or negotiate</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div
+                                    style="width: 28px; height: 28px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">
+                                    🔬</div>
+                                <div>
+                                    <div style="font-size: 12px; font-weight: 700; color: #1c1917;">Quality &
+                                        Documentation</div>
+                                    <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Testing &
+                                        certification process</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div
+                                    style="width: 28px; height: 28px; background: #eff6ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;">
+                                    🚢</div>
+                                <div>
+                                    <div style="font-size: 12px; font-weight: 700; color: #1c1917;">Shipment</div>
+                                    <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Shipped via Cochin
+                                        Port or Air</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Required Documents Info -->
+                    <div
+                        style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%); border-radius: 20px; padding: 24px; color: white;">
+                        <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 14px;">📑 Export Documents</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 12px; color: #d6d3d1; line-height: 1.5;">Standard documents that will
+                                be prepared:</div>
+                            <div style="font-size: 12px; color: #fafaf9; font-weight: 600;">✓ Commercial Invoice</div>
+                            <div style="font-size: 12px; color: #fafaf9; font-weight: 600;">✓ Packing List</div>
+                            <div style="font-size: 12px; color: #fafaf9; font-weight: 600;">✓ Bill of Lading / Airway
+                                Bill</div>
+                            <div style="font-size: 12px; color: #fafaf9; font-weight: 600;">✓ Certificate of Origin
+                                (India)</div>
+                            <div style="font-size: 12px; color: #FF7E21; font-weight: 600;">🏛 IEC: Directorate General
+                                of Foreign Trade</div>
+                            <div style="font-size: 12px; color: #FF7E21; font-weight: 600;">🌶 Spices Board India — CRES
+                                Certificate</div>
+                            <div style="font-size: 12px; color: #FF7E21; font-weight: 600;">🍽 FSSAI Food Safety License
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spices Board Info -->
+                    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 20px; padding: 20px;">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🏛️</div>
+                        <h4 style="font-size: 13px; font-weight: 700; color: #c2410c; margin-bottom: 6px;">Spices Board
+                            India</h4>
+                        <p style="font-size: 11px; color: #7c2d12; line-height: 1.6;">Head office located in Kochi,
+                            Kerala. All spice exports from India must be registered with the Spices Board to obtain CRES
+                            (Certificate of Registration as Exporter of Spices).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Export Requests History -->
+        <div id="tab-history-content" style="display: none;">
+            <div id="history-list">
+                <div style="text-align: center; padding: 80px; color: #a8a29e;">
+                    <img src="https://api.iconify.design/lucide:loader-2.svg"
+                        style="width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px;"
+                        alt="">
+                    <p style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+                        Loading...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let products = [];
+
+        const STATUS_CONFIG = {
+            'pending': { label: 'Pending Review', color: '#a16207', bg: '#fef9c3' },
+            'under_review': { label: 'Under Review', color: '#7c3aed', bg: '#f5f3ff' },
+            'approved': { label: 'Approved ✓', color: '#166534', bg: '#f0fdf4' },
+            'rejected': { label: 'Rejected', color: '#991b1b', bg: '#fef2f2' },
+            'quality_testing': { label: 'Quality Testing', color: '#c2410c', bg: '#fff7ed' },
+            'documentation': { label: 'Documentation', color: '#1e40af', bg: '#eff6ff' },
+            'shipped': { label: 'Shipped 🚢', color: '#065f46', bg: '#ecfdf5' },
+            'delivered': { label: 'Delivered ✓', color: '#166534', bg: '#f0fdf4' },
+            'cancelled': { label: 'Cancelled', color: '#6b7280', bg: '#f9fafb' }
+        };
+
+        function showTab(tab) {
+            ['request', 'history'].forEach(t => {
+                document.getElementById(`tab-${t}-content`).style.display = t === tab ? 'block' : 'none';
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.style.background = '#1c1917';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#1c1917';
+                } else {
+                    btn.style.background = 'white';
+                    btn.style.color = '#78716c';
+                    btn.style.borderColor = '#e7e5e4';
+                }
+            });
+            if (tab === 'history') loadHistory();
+        }
+
+        function checkShippingHover(el) {
+            if (!el.querySelector('input').checked) {
+                el.style.borderColor = '#e7e5e4';
+            }
+        }
+
+        function checkOrderTypeHover(el) {
+            if (!el.querySelector('input').checked) {
+                el.style.borderColor = '#e7e5e4';
+            }
+        }
+
+        // Set min date for delivery date picker to tomorrow
+        (function setMinDeliveryDate() {
+            const input = document.getElementById('required-delivery-date');
+            if (!input) return;
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            input.min = tomorrow.toISOString().split('T')[0];
+        })();
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('../../backend/api/products/get-all-products.php');
+                const data = await res.json();
+                if (data.success) {
+                    products = data.products || [];
+                    const select = document.getElementById('product-select');
+                    select.innerHTML = '<option value="">— Select a Spice —</option>' + products.map(p =>
+                        `<option value="${p.id}" data-name="${p.product_name}" data-img="${p.image_url || ''}" data-qty="${p.quantity}" data-unit="${p.unit || 'kg'}" data-farmer="${p.farmer_name || ''}">${p.product_name} (${p.quantity} ${p.unit || 'kg'} available) — ${p.farmer_name || 'Farmer'}</option>`
+                    ).join('');
+                }
+            } catch (e) {
+                console.error('Failed to load products', e);
+            }
+        }
+
+        function onProductChange() {
+            const select = document.getElementById('product-select');
+            const opt = select.options[select.selectedIndex];
+            const preview = document.getElementById('product-preview');
+            if (opt.value) {
+                const img = opt.dataset.img;
+                document.getElementById('preview-img').src = img ? '../../' + img : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200';
+                document.getElementById('preview-name').textContent = opt.dataset.name;
+                document.getElementById('preview-stock').textContent = `${opt.dataset.qty} ${opt.dataset.unit} available • Farmer: ${opt.dataset.farmer}`;
+                preview.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function showErr(fieldId, msg) {
+            const el = document.getElementById(fieldId);
+            if (el) { el.classList.add('error'); }
+            const err = document.getElementById('err-' + fieldId);
+            if (err) { err.textContent = msg; err.classList.add('show'); }
+        }
+
+        function clearErr(fieldId) {
+            const el = document.getElementById(fieldId);
+            if (el) el.classList.remove('error');
+            const err = document.getElementById('err-' + fieldId);
+            if (err) { err.textContent = ''; err.classList.remove('show'); }
+        }
+
+        function validateForm() {
+            let valid = true;
+
+            // 1. Product
+            const productId = document.getElementById('product-select').value;
+            if (!productId) {
+                showErr('product-select', 'Please select a spice product.');
+                valid = false;
+            } else clearErr('product-select');
+
+            // Get selected product for stock check
+            const select = document.getElementById('product-select');
+            const opt = select.options[select.selectedIndex];
+            const stock = parseFloat(opt?.dataset?.qty || 0);
+
+            // 2. Quantity
+            const qtyInput = document.getElementById('quantity');
+            const qty = parseFloat(qtyInput.value);
+            if (!qtyInput.value || isNaN(qty)) {
+                showErr('quantity', 'Quantity is required.');
+                valid = false;
+            } else if (qty <= 0) {
+                showErr('quantity', 'Quantity must be greater than 0.');
+                valid = false;
+            } else if (stock > 0 && qty > stock) {
+                showErr('quantity', `Insufficient stock. Only ${stock} kg available.`);
+                valid = false;
+            } else {
+                // Sea freight minimum
+                const mode = document.querySelector('input[name="preferred_shipping_mode"]:checked')?.value;
+                if (mode === 'sea' && qty < 50) {
+                    showErr('quantity', 'Sea freight requires a minimum of 50 kg.');
+                    valid = false;
+                } else clearErr('quantity');
+            }
+
+            // 3. Business Name (required)
+            const bizName = document.getElementById('business-name').value.trim();
+            if (!bizName) {
+                showErr('business-name', 'Business / Company name is required.');
+                valid = false;
+            } else clearErr('business-name');
+
+            // 4. Contact Person
+            const contactPerson = document.getElementById('contact-person').value.trim();
+            if (!contactPerson) {
+                showErr('contact-person', 'Contact person name is required.');
+                valid = false;
+            } else clearErr('contact-person');
+
+            // 4b. Contact Email
+            const contactEmail = document.getElementById('contact-email').value.trim();
+            const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!contactEmail) {
+                showErr('contact-email', 'Contact email is required.');
+                valid = false;
+            } else if (!emailRe.test(contactEmail)) {
+                showErr('contact-email', 'Please enter a valid email address.');
+                valid = false;
+            } else clearErr('contact-email');
+
+            // 5. Offered Price (if entered, must be > 0)
+            const priceVal = document.getElementById('offered-price').value;
+            if (priceVal !== '' && priceVal !== null) {
+                const price = parseFloat(priceVal);
+                if (isNaN(price) || price <= 0) {
+                    showErr('offered-price', 'Offered price must be greater than 0.');
+                    valid = false;
+                } else clearErr('offered-price');
+            } else clearErr('offered-price');
+
+            // 6. Target Country
+            const country = document.getElementById('target-country').value.trim();
+            if (!country) {
+                showErr('target-country', 'Target country is required.');
+                valid = false;
+            } else clearErr('target-country');
+
+            // 7. Destination Port
+            const port = document.getElementById('shipping-port').value.trim();
+            if (!port) {
+                showErr('shipping-port', 'Destination port / city is required.');
+                valid = false;
+            } else clearErr('shipping-port');
+
+            // 8. Shipping mode
+            const mode = document.querySelector('input[name="preferred_shipping_mode"]:checked');
+            if (!mode) {
+                const modeErr = document.getElementById('err-shipping-mode');
+                if (modeErr) { modeErr.textContent = 'Please select a shipping mode.'; modeErr.classList.add('show'); }
+                valid = false;
+            } else {
+                const modeErr = document.getElementById('err-shipping-mode');
+                if (modeErr) { modeErr.textContent = ''; modeErr.classList.remove('show'); }
+            }
+
+            // 9. Incoterms
+            const incoterms = document.getElementById('incoterms').value;
+            if (!incoterms) {
+                showErr('incoterms', 'Please select an Incoterm.');
+                valid = false;
+            } else clearErr('incoterms');
+
+            // 10. Delivery Date — must be in the future if provided
+            const deliveryDate = document.getElementById('required-delivery-date').value;
+            if (deliveryDate) {
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                if (new Date(deliveryDate) <= today) {
+                    showErr('required-delivery-date', 'Delivery date must be in the future.');
+                    valid = false;
+                } else clearErr('required-delivery-date');
+            }
+
+            // Scroll to first error
+            if (!valid) {
+                const firstErr = document.querySelector('.field-error.show');
+                if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            return valid;
+        }
+
+        async function submitExportRequest(e) {
+            e.preventDefault();
+
+            // Frontend validation first
+            if (!validateForm()) return;
+
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span style="opacity:0.7">Submitting...</span>';
+
+            const select = document.getElementById('product-select');
+            const opt = select.options[select.selectedIndex];
+
+            const payload = {
+                product_id: document.getElementById('product-select').value,
+                quantity: parseFloat(document.getElementById('quantity').value),
+                business_name: document.getElementById('business-name').value.trim(),
+                business_registration_no: document.getElementById('business-reg').value.trim(),
+                importer_license_no: document.getElementById('importer-license').value.trim(),
+                contact_person: document.getElementById('contact-person').value.trim(),
+                contact_email: document.getElementById('contact-email').value.trim(),
+                contact_phone: document.getElementById('contact-phone').value.trim(),
+                delivery_street: document.getElementById('delivery-street').value.trim(),
+                delivery_city: document.getElementById('delivery-city').value.trim(),
+                delivery_postal_code: document.getElementById('delivery-postal').value.trim(),
+                incoterms: document.getElementById('incoterms').value,
+                order_type: document.querySelector('input[name="order_type"]:checked')?.value || 'bulk',
+                required_delivery_date: document.getElementById('required-delivery-date').value || null,
+                offered_price: document.getElementById('offered-price').value || null,
+                payment_terms: document.getElementById('payment-terms').value,
+                target_country: document.getElementById('target-country').value.trim(),
+                shipping_port: document.getElementById('shipping-port').value.trim(),
+                preferred_shipping_mode: document.querySelector('input[name="preferred_shipping_mode"]:checked').value,
+                requires_organic_cert: document.getElementById('req-organic').checked,
+                requires_phytosanitary: document.getElementById('req-phyto').checked,
+                requires_quality_test: document.getElementById('req-quality').checked,
+                packaging_requirements: document.getElementById('packaging-req').value.trim(),
+                special_notes: document.getElementById('special-notes').value.trim(),
+                currency_code: 'INR'
+            };
+
+            try {
+                const res = await fetch('../../backend/api/export/submit-export-request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Export request submitted! 🌍 The farmer will review your request.', 'success');
+                    document.getElementById('export-form').reset();
+                    document.getElementById('product-preview').style.display = 'none';
+                    setTimeout(() => showTab('history'), 1500);
+                } else {
+                    showToast(data.message, 'error');
+                    if (data.field) showErr(data.field, data.message);
+                }
+            } catch (err) {
+                showToast('Connection error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Submit Export Request 🌍';
+            }
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('history-list');
+            try {
+                const res = await fetch('../../backend/api/export/get-customer-export-requests.php');
+                const data = await res.json();
+                if (data.success && data.requests.length > 0) {
+                    container.innerHTML = data.requests.map(r => {
+                        const sc = STATUS_CONFIG[r.status] || STATUS_CONFIG['pending'];
+                        const date = new Date(r.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const canCancel = ['pending', 'under_review'].includes(r.status);
+                        return `
+                        <div style="background: white; border: 1px solid #e7e5e4; border-radius: 20px; padding: 24px; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div style="width: 64px; height: 64px; border-radius: 14px; background: #f5f5f4; overflow: hidden; flex-shrink: 0;">
+                                    <img src="${r.image_url ? '../../' + r.image_url : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'">
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                        <span style="background: ${sc.bg}; color: ${sc.color}; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase;">${sc.label}</span>
+                                        <span style="font-size: 11px; color: #a8a29e; font-weight: 600;">#EXP-${r.id.toString().padStart(5, '0')}</span>
+                                    </div>
+                                    <h3 style="font-size: 16px; font-weight: 700; color: #1c1917; margin-bottom: 4px;">${r.product_name}</h3>
+                                    <div style="font-size: 12px; color: #78716c; font-weight: 600; display: flex; gap: 14px;">
+                                        <span>🌾 ${r.farmer_name}</span>
+                                        <span>📦 ${r.quantity} ${r.unit}</span>
+                                        <span>🎯 ${r.target_country}</span>
+                                        <span>📅 ${date}</span>
+                                    </div>
+                                    ${r.farmer_notes ? `<div style="margin-top: 8px; padding: 8px 12px; background: #f0fdf4; border-radius: 8px; font-size: 12px; color: #166534; font-weight: 600;">💬 Farmer: ${r.farmer_notes}</div>` : ''}
+                                </div>
+                                <div style="text-align: right; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                                    <div style="font-size: 20px; font-weight: 700; color: #FF7E21;">${r.preferred_shipping_mode === 'air' ? '✈️' : '🚢'}</div>
+                                    ${canCancel ? `<button onclick="cancelRequest(${r.id})" style="padding: 8px 16px; border-radius: 10px; border: 1px solid #fecaca; background: #fef2f2; color: #991b1b; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fef2f2'">Cancel Request</button>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 80px 20px; background: white; border-radius: 20px; border: 1px solid #e7e5e4;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">🌍</div>
+                            <h3 style="font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 8px;">No Export Requests Yet</h3>
+                            <p style="color: #a8a29e; font-size: 13px; margin-bottom: 20px;">Submit your first export request to connect with farmers</p>
+                            <button onclick="showTab('request')" style="background: #FF7E21; color: white; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;">New Export Request</button>
+                        </div>`;
+                }
+            } catch (e) {
+                container.innerHTML = '<div style="text-align:center;padding:60px;color:#ef4444;font-weight:700;">Failed to load export history. Please refresh.</div>';
+            }
+        }
+
+        async function cancelRequest(id) {
+            const confirmed = await window.showConfirm('Are you sure you want to cancel this export request?');
+            if (!confirmed) return;
+            try {
+                const res = await fetch('../../backend/api/export/cancel-export-request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ export_id: id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Export request cancelled.', 'success');
+                    loadHistory();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                showToast('Connection error.', 'error');
+            }
+        }
+
+        async function logout() {
+            await fetch('../../backend/api/auth/logout.php');
+            window.location.href = '../auth/login.html';
+        }
+
+        window.onload = () => {
+            loadProducts();
+        };
+    </script>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>

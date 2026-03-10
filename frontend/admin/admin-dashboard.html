@@ -181,6 +181,21 @@
                 <img src="https://api.iconify.design/lucide:pie-chart.svg?color=%2394a3b8" width="18" alt="">
                 Analysis
             </a>
+            <a href="#" onclick="switchView('exports')" id="nav-exports"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:globe.svg?color=%2394a3b8" width="18" alt="">
+                Export Mgmt
+            </a>
+            <a href="returns-admin.html"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%2394a3b8" width="18" alt="">
+                Returns
+            </a>
+            <a href="#" onclick="switchView('farmer-certs')" id="nav-farmer-certs"
+                style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
+                <img src="https://api.iconify.design/lucide:shield-check.svg?color=%2394a3b8" width="18" alt="">
+                Farmer Certs
+            </a>
             <a href="#" onclick="switchView('add-admins')" id="nav-add-admins"
                 style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 14px;">
                 <img src="https://api.iconify.design/lucide:user-plus.svg?color=%2394a3b8" width="18" alt="">
@@ -192,6 +207,7 @@
                 Profile
             </a>
         </nav>
+
         <!-- Script moved to bottom -->
 
         <div style="position: absolute; bottom: 24px; left: 24px; right: 24px;">
@@ -595,6 +611,297 @@
             </div>
         </div>
 
+
+
+        <!-- Export Management View -->
+        <div id="exports-view" style="display: none;">
+            <!-- Export Stats -->
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 28px;">
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #e2e8f0;">
+                    <div
+                        style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        TOTAL</div>
+                    <div id="admin-exp-total" style="font-size: 26px; font-weight: 700;">--</div>
+                </div>
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #fde68a;">
+                    <div
+                        style="font-size: 11px; color: #a16207; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        PENDING</div>
+                    <div id="admin-exp-pending" style="font-size: 26px; font-weight: 700; color: #a16207;">--</div>
+                </div>
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #bbf7d0;">
+                    <div
+                        style="font-size: 11px; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        APPROVED</div>
+                    <div id="admin-exp-approved" style="font-size: 26px; font-weight: 700; color: #166534;">--</div>
+                </div>
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #bfdbfe;">
+                    <div
+                        style="font-size: 11px; color: #1e40af; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        SHIPPED</div>
+                    <div id="admin-exp-shipped" style="font-size: 26px; font-weight: 700; color: #1e40af;">--</div>
+                </div>
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #d1fae5;">
+                    <div
+                        style="font-size: 11px; color: #065f46; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        DELIVERED</div>
+                    <div id="admin-exp-delivered" style="font-size: 26px; font-weight: 700; color: #065f46;">--</div>
+                </div>
+                <div style="background: white; border-radius: 14px; padding: 18px; border: 1px solid #fecaca;">
+                    <div
+                        style="font-size: 11px; color: #991b1b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">
+                        REJECTED</div>
+                    <div id="admin-exp-rejected" style="font-size: 26px; font-weight: 700; color: #991b1b;">--</div>
+                </div>
+            </div>
+
+            <!-- Export Requests Table -->
+            <div style="background: white; border-radius: 16px; padding: 24px 20px; border: 1px solid #e2e8f0;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; margin: 0;">🌍 All Export Requests</h2>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <select id="admin-exp-filter" onchange="filterAdminExports()"
+                            style="padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc; color: #475569;">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="approved">Approved</option>
+                            <option value="quality_testing">Quality Testing</option>
+                            <option value="documentation">Documentation</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <button onclick="loadAdminExports()"
+                            style="color: #64748b; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;">
+                            <img src="https://api.iconify.design/lucide:refresh-cw.svg?color=%2364748b" width="14">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk Action Toolbar (hidden until rows selected) -->
+                <div id="bulk-action-bar"
+                    style="display:none; align-items:center; gap:12px; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; padding:12px 16px; margin-bottom:16px; flex-wrap:wrap;">
+                    <span id="bulk-selected-count" style="font-size:13px; font-weight:700; color:#1e40af;">0
+                        selected</span>
+                    <select id="bulk-status-select"
+                        style="padding:8px 12px; border:1px solid #bfdbfe; border-radius:8px; font-size:13px; font-weight:600; outline:none; background:white; color:#1e293b;">
+                        <option value="under_review">🔍 Under Review</option>
+                        <option value="approved">✅ Approved</option>
+                        <option value="rejected">❌ Rejected</option>
+                        <option value="quality_testing">🔬 Quality Testing</option>
+                        <option value="documentation">📑 Documentation</option>
+                        <option value="shipped">🚢 Shipped</option>
+                        <option value="delivered">🏠 Delivered</option>
+                        <option value="cancelled">🚫 Cancelled</option>
+                    </select>
+                    <input type="text" id="bulk-notes-input" placeholder="Admin note for bulk update (optional)"
+                        style="flex:1; min-width:200px; padding:8px 12px; border:1px solid #bfdbfe; border-radius:8px; font-size:13px; outline:none; background:white;">
+                    <button onclick="submitBulkUpdate()" id="bulk-update-btn"
+                        style="background:#1e40af; color:white; border:none; padding:9px 18px; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap;">
+                        ⚡ Bulk Update
+                    </button>
+                    <button onclick="clearBulkSelection()"
+                        style="background:transparent; color:#64748b; border:1px solid #cbd5e1; padding:9px 14px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer;">
+                        Clear
+                    </button>
+                </div>
+
+                <!-- Select All row -->
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding:0 4px;">
+                    <input type="checkbox" id="select-all-exports" onchange="toggleSelectAll()"
+                        style="width:16px;height:16px;accent-color:#ff7e21;cursor:pointer;">
+                    <label for="select-all-exports"
+                        style="font-size:12px;font-weight:700;color:#64748b;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;">Select
+                        All</label>
+                </div>
+
+                <div id="admin-exports-list">
+                    <div style="text-align: center; padding: 60px; color: #94a3b8;">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             FARMER CERTIFICATES VIEW
+        ═══════════════════════════════════════════════════════ -->
+        <div id="farmer-certs-view" style="display: none;">
+            <!-- Stats Row -->
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
+                <div
+                    style="background:white; border-radius:14px; padding:20px; border:1px solid #fde68a; display:flex; align-items:center; gap:16px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:12px; background:#fef9c3; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                        🕐</div>
+                    <div>
+                        <div
+                            style="font-size:12px; color:#a16207; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">
+                            Pending Review</div>
+                        <div id="fcs-pending" style="font-size:28px; font-weight:800; color:#a16207;">--</div>
+                    </div>
+                </div>
+                <div
+                    style="background:white; border-radius:14px; padding:20px; border:1px solid #a7f3d0; display:flex; align-items:center; gap:16px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:12px; background:#dcfce7; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                        ✅</div>
+                    <div>
+                        <div
+                            style="font-size:12px; color:#166534; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">
+                            Verified</div>
+                        <div id="fcs-verified" style="font-size:28px; font-weight:800; color:#166534;">--</div>
+                    </div>
+                </div>
+                <div
+                    style="background:white; border-radius:14px; padding:20px; border:1px solid #fecaca; display:flex; align-items:center; gap:16px;">
+                    <div
+                        style="width:44px; height:44px; border-radius:12px; background:#fee2e2; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                        ❌</div>
+                    <div>
+                        <div
+                            style="font-size:12px; color:#991b1b; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">
+                            Rejected</div>
+                        <div id="fcs-rejected" style="font-size:28px; font-weight:800; color:#991b1b;">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmer List -->
+            <div style="background:white; border-radius:16px; padding:24px 20px; border:1px solid #e2e8f0;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                    <h2 style="font-size:20px; font-weight:700; margin:0;">🛡️ Farmer Certificate Verification</h2>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <select id="fcs-filter" onchange="filterFarmerCerts()"
+                            style="padding:8px 14px; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; font-weight:600; outline:none; background:#f8fafc; color:#475569;">
+                            <option value="all">All Farmers</option>
+                            <option value="pending">Has Pending Docs</option>
+                            <option value="verified">Fully Verified</option>
+                            <option value="partial">Partial / Incomplete</option>
+                        </select>
+                        <button onclick="loadFarmerCerts()"
+                            style="background:transparent; border:none; cursor:pointer; display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#64748b;">
+                            <img src="https://api.iconify.design/lucide:refresh-cw.svg?color=%2364748b" width="14">
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div id="farmer-certs-list">
+                    <div style="text-align:center; padding:60px; color:#94a3b8;">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farmer Cert Review Modal -->
+        <div id="farmerCertModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px);">
+            <div style="background:white; border-radius:24px; width:100%; max-width:660px; max-height:92vh; overflow-y:auto;"
+                onclick="event.stopPropagation()">
+                <div
+                    style="padding:24px 28px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:flex-start; position:sticky; top:0; background:white; z-index:10; border-radius:24px 24px 0 0;">
+                    <div>
+                        <h3 style="font-size:18px; font-weight:700; margin:0;">🛡️ Review Farmer Certificates</h3>
+                        <p id="fcm-farmer-name" style="font-size:12px; color:#94a3b8; margin-top:4px;"></p>
+                    </div>
+                    <button onclick="closeFarmerCertModal()"
+                        style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:50%; width:34px; height:34px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                        <img src="https://api.iconify.design/lucide:x.svg" width="16">
+                    </button>
+                </div>
+                <div style="padding:24px 28px;" id="fcm-body">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Export Update Modal (Enhanced with Timeline + Docs) -->
+        <div id="adminExpModal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px);">
+            <div style="background:white; border-radius:24px; width:100%; max-width:620px; max-height:92vh; overflow-y:auto;"
+                onclick="event.stopPropagation()">
+                <!-- Modal Header -->
+                <div
+                    style="padding:24px 28px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:flex-start; position:sticky;top:0;background:white;z-index:10;border-radius:24px 24px 0 0;">
+                    <div>
+                        <h3 style="font-size:18px; font-weight:700; margin:0;">Update Export Request</h3>
+                        <p id="admin-modal-exp-id"
+                            style="font-size:11px; color:#94a3b8; margin-top:4px; text-transform:uppercase; letter-spacing:0.06em;">
+                        </p>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <!-- Email Notification Button -->
+                        <button id="admin-send-email-btn" onclick="sendExportEmailNotification()"
+                            style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; padding:8px 14px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <img src="https://api.iconify.design/lucide:mail.svg?color=%231e40af" width="14"> Send Email
+                        </button>
+                        <!-- Document Template Button -->
+                        <button id="admin-doc-template-btn" onclick="openDocTemplate()"
+                            style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; padding:8px 14px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <img src="https://api.iconify.design/lucide:file-text.svg?color=%23166534" width="14">
+                            Invoice
+                        </button>
+                        <button onclick="closeAdminExpModal()"
+                            style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:50%; width:34px; height:34px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                            <img src="https://api.iconify.design/lucide:x.svg" width="16">
+                        </button>
+                    </div>
+                </div>
+
+                <div style="padding:24px 28px; display:flex; flex-direction:column; gap:18px;">
+                    <!-- Status Pipeline Visual -->
+                    <div id="admin-modal-pipeline" style="display:flex; gap:4px; overflow-x:auto; padding-bottom:4px;">
+                    </div>
+
+                    <!-- Status Update -->
+                    <div>
+                        <div
+                            style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
+                            Set New Status</div>
+                        <select id="admin-exp-new-status"
+                            style="width:100%; padding:12px 16px; border:1px solid #e2e8f0; border-radius:12px; font-size:14px; font-weight:600; outline:none; background:#f8fafc;">
+                            <option value="under_review">🔍 Under Review</option>
+                            <option value="approved">✅ Approved</option>
+                            <option value="rejected">❌ Rejected</option>
+                            <option value="quality_testing">🔬 Quality Testing</option>
+                            <option value="documentation">📑 Documentation</option>
+                            <option value="shipped">🚢 Shipped</option>
+                            <option value="delivered">🏠 Delivered</option>
+                            <option value="cancelled">🚫 Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Admin Notes -->
+                    <div>
+                        <div
+                            style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">
+                            Admin Notes (optional)</div>
+                        <textarea id="admin-exp-notes" placeholder="Add notes visible to both farmer and customer..."
+                            rows="3"
+                            style="width:100%; border:1px solid #e2e8f0; border-radius:12px; padding:12px 16px; font-size:13px; font-family:'Outfit',sans-serif; outline:none; resize:none; background:#f8fafc;"></textarea>
+                    </div>
+
+                    <!-- Update Button -->
+                    <button id="admin-exp-submit-btn" onclick="submitAdminExpUpdate()"
+                        style="width:100%; background:#ff7e21; color:white; border:none; padding:14px; border-radius:12px; font-weight:700; font-size:14px; cursor:pointer;">Update
+                        Status</button>
+
+                    <!-- Tracking Timeline -->
+                    <div>
+                        <div
+                            style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                            📋 Status History
+                        </div>
+                        <div id="admin-exp-timeline" style="max-height:260px; overflow-y:auto;">
+                            <div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Loading history...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!-- Add Admins View -->
@@ -1228,6 +1535,8 @@
                     auctions: document.getElementById('auctions-view'),
                     activity: document.getElementById('activity-view'),
                     analysis: document.getElementById('analysis-view'),
+                    exports: document.getElementById('exports-view'),
+                    'farmer-certs': document.getElementById('farmer-certs-view'),
                     'add-admins': document.getElementById('add-admins-view'),
                     profile: document.getElementById('profile-view')
                 };
@@ -1241,6 +1550,8 @@
                     auctions: document.getElementById('nav-auctions'),
                     activity: document.getElementById('nav-activity'),
                     analysis: document.getElementById('nav-analysis'),
+                    exports: document.getElementById('nav-exports'),
+                    'farmer-certs': document.getElementById('nav-farmer-certs'),
                     'add-admins': document.getElementById('nav-add-admins'),
                     profile: document.getElementById('nav-profile')
                 };
@@ -1262,6 +1573,8 @@
                         auctions: 'Auctions Management',
                         activity: 'User Activity Logs',
                         analysis: 'Platform Analysis',
+                        exports: '🌍 Export Management',
+                        'farmer-certs': '🛡️ Farmer Certificate Verification',
                         'add-admins': 'Add New Administrator',
                         profile: 'Admin Profile'
                     };
@@ -1299,6 +1612,8 @@
                 if (viewName === 'analysis') loadAnalysisData();
                 if (viewName === 'profile') loadAdminProfile();
                 if (viewName === 'overview') loadAdminStats();
+                if (viewName === 'exports') loadAdminExports();
+                if (viewName === 'farmer-certs') loadFarmerCerts();
                 if (viewName === 'add-admins') {
                     document.getElementById('add-admin-form').reset();
                     document.getElementById('admin-error-container').style.display = 'none';
@@ -3372,6 +3687,505 @@
                     showToast('Connection error', 'error');
                     if (btn) btn.textContent = 'Select';
                 }
+            }
+
+            // ===== ADMIN EXPORT MANAGEMENT (Enhanced) =====
+            let allAdminExports = [];
+            let selectedAdminExpId = null;
+            let selectedExportIds = new Set(); // for bulk
+
+            const ADMIN_EXP_STATUS_CONFIG = {
+                'pending': { label: 'Pending', color: '#a16207', bg: '#fef9c3' },
+                'under_review': { label: 'Under Review', color: '#7c3aed', bg: '#f5f3ff' },
+                'approved': { label: 'Approved', color: '#166534', bg: '#f0fdf4' },
+                'rejected': { label: 'Rejected', color: '#991b1b', bg: '#fef2f2' },
+                'quality_testing': { label: 'Quality Testing', color: '#c2410c', bg: '#fff7ed' },
+                'documentation': { label: 'Documentation', color: '#1e40af', bg: '#eff6ff' },
+                'shipped': { label: 'Shipped', color: '#065f46', bg: '#ecfdf5' },
+                'delivered': { label: 'Delivered', color: '#166534', bg: '#f0fdf4' },
+                'cancelled': { label: 'Cancelled', color: '#6b7280', bg: '#f9fafb' }
+            };
+
+            const EXP_PIPELINE = ['pending', 'under_review', 'approved', 'quality_testing', 'documentation', 'shipped', 'delivered'];
+
+            async function loadAdminExports() {
+                const container = document.getElementById('admin-exports-list');
+                container.innerHTML = '<div style="text-align:center;padding:60px;color:#94a3b8;">Loading export requests...</div>';
+                selectedExportIds.clear();
+                updateBulkBar();
+                try {
+                    const res = await fetch('../../backend/api/export/get-admin-export-requests.php');
+                    const data = await res.json();
+                    if (data.success) {
+                        allAdminExports = data.requests;
+                        const s = data.stats;
+                        document.getElementById('admin-exp-total').textContent = s.total || 0;
+                        document.getElementById('admin-exp-pending').textContent = s.pending || 0;
+                        document.getElementById('admin-exp-approved').textContent = s.approved || 0;
+                        document.getElementById('admin-exp-shipped').textContent = s.shipped || 0;
+                        document.getElementById('admin-exp-delivered').textContent = s.delivered || 0;
+                        document.getElementById('admin-exp-rejected').textContent = s.rejected || 0;
+                        renderAdminExports(allAdminExports);
+                    } else {
+                        container.innerHTML = '<div style="text-align:center;padding:60px;color:#ef4444;font-weight:700;">Failed to load export requests.</div>';
+                    }
+                } catch (e) {
+                    container.innerHTML = '<div style="text-align:center;padding:60px;color:#ef4444;">Connection error.</div>';
+                }
+            }
+
+            function filterAdminExports() {
+                const filter = document.getElementById('admin-exp-filter').value;
+                const filtered = filter === 'all' ? allAdminExports : allAdminExports.filter(r => r.status === filter);
+                renderAdminExports(filtered);
+                selectedExportIds.clear();
+                updateBulkBar();
+                document.getElementById('select-all-exports').checked = false;
+            }
+
+            function renderAdminExports(requests) {
+                const container = document.getElementById('admin-exports-list');
+                if (!requests.length) {
+                    container.innerHTML = '<div style="text-align:center;padding:60px;color:#94a3b8;"><div style="font-size:40px;margin-bottom:12px;">🌍</div><p style="font-weight:700;">No export requests found</p></div>';
+                    return;
+                }
+                container.innerHTML = requests.map(r => {
+                    const sc = ADMIN_EXP_STATUS_CONFIG[r.status] || ADMIN_EXP_STATUS_CONFIG['pending'];
+                    const date = new Date(r.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const ship = r.preferred_shipping_mode === 'air' ? '✈️ Air' : '🚢 Sea';
+                    const isChecked = selectedExportIds.has(r.id) ? 'checked' : '';
+                    return `
+                    <div id="exp-row-${r.id}" style="border:1.5px solid ${isChecked ? '#bfdbfe' : (sc.bg === '#f9fafb' ? '#e5e7eb' : sc.bg)}; border-radius:14px; padding:16px 20px; margin-bottom:10px; display:flex; align-items:center; gap:14px; background:${isChecked ? '#eff6ff' : 'white'}; transition:all 0.2s;">
+                        <input type="checkbox" class="exp-checkbox" data-id="${r.id}" ${isChecked}
+                            onchange="toggleExpSelect(${r.id}, this.checked)"
+                            style="width:16px;height:16px;accent-color:#ff7e21;cursor:pointer;flex-shrink:0;">
+                        <div style="flex:1; min-width:0;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px; flex-wrap:wrap;">
+                                <span style="background:${sc.bg}; color:${sc.color}; padding:2px 10px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; white-space:nowrap;">${sc.label}</span>
+                                <span style="font-size:11px; color:#94a3b8; font-weight:600;">#EXP-${r.id.toString().padStart(5, '0')}</span>
+                                <span style="font-size:11px; color:#94a3b8;">${date}</span>
+                            </div>
+                            <div style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.product_name} — ${r.quantity} ${r.unit}</div>
+                            <div style="font-size:12px; color:#64748b; display:flex; gap:12px; flex-wrap:wrap;">
+                                <span>👤 <strong>${r.buyer_name}</strong> (${r.buyer_country || '?'})</span>
+                                <span>🌾 <strong>${r.farmer_name}</strong></span>
+                                <span>🎯 ${r.target_country}</span>
+                                <span>${ship}</span>
+                            </div>
+                            ${r.admin_notes ? `<div style="margin-top:5px;padding:5px 10px;background:#f0fdf4;border-radius:7px;font-size:11px;color:#166534;font-weight:600;">📝 ${r.admin_notes}</div>` : ''}
+                        </div>
+                        <button onclick="openAdminExpModal(${r.id}, '${r.status}')"
+                            style="background:#1e293b;color:white;border:none;padding:9px 16px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:background 0.2s;"
+                            onmouseover="this.style.background='#ff7e21'" onmouseout="this.style.background='#1e293b'">
+                            Manage →
+                        </button>
+                    </div>`;
+                }).join('');
+            }
+
+            // ─── Bulk Selection ─────────────────────────────────────────────
+            function toggleExpSelect(id, checked) {
+                if (checked) selectedExportIds.add(id);
+                else selectedExportIds.delete(id);
+                updateBulkBar();
+                const row = document.getElementById('exp-row-' + id);
+                if (row) {
+                    row.style.background = checked ? '#eff6ff' : 'white';
+                    row.style.borderColor = checked ? '#bfdbfe' : '';
+                }
+            }
+
+            function toggleSelectAll() {
+                const checked = document.getElementById('select-all-exports').checked;
+                document.querySelectorAll('.exp-checkbox').forEach(cb => {
+                    const id = parseInt(cb.dataset.id);
+                    cb.checked = checked;
+                    toggleExpSelect(id, checked);
+                });
+            }
+
+            function clearBulkSelection() {
+                selectedExportIds.clear();
+                document.querySelectorAll('.exp-checkbox').forEach(cb => cb.checked = false);
+                document.getElementById('select-all-exports').checked = false;
+                document.querySelectorAll('[id^="exp-row-"]').forEach(row => {
+                    row.style.background = 'white';
+                    row.style.borderColor = '';
+                });
+                updateBulkBar();
+            }
+
+            function updateBulkBar() {
+                const bar = document.getElementById('bulk-action-bar');
+                const count = selectedExportIds.size;
+                bar.style.display = count > 0 ? 'flex' : 'none';
+                document.getElementById('bulk-selected-count').textContent = count + ' selected';
+            }
+
+            async function submitBulkUpdate() {
+                const ids = Array.from(selectedExportIds);
+                if (!ids.length) return;
+                const newStatus = document.getElementById('bulk-status-select').value;
+                const notes = document.getElementById('bulk-notes-input').value.trim();
+                const btn = document.getElementById('bulk-update-btn');
+
+                if (!confirm(`Update ${ids.length} export request(s) to "${newStatus.replace(/_/g, ' ')}"?`)) return;
+
+                btn.disabled = true;
+                btn.textContent = 'Updating...';
+                try {
+                    const res = await fetch('../../backend/api/export/bulk-update-export-status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ export_ids: ids, status: newStatus, admin_notes: notes })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`✅ ${data.message}`, 'success');
+                        clearBulkSelection();
+                        loadAdminExports();
+                    } else {
+                        showToast(data.message || 'Bulk update failed', 'error');
+                    }
+                } catch (e) {
+                    showToast('Connection error during bulk update', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = '⚡ Bulk Update';
+                }
+            }
+
+            // ─── Single Modal ────────────────────────────────────────────────
+            function openAdminExpModal(exportId, currentStatus) {
+                selectedAdminExpId = exportId;
+                document.getElementById('admin-modal-exp-id').textContent = `#EXP-${exportId.toString().padStart(5, '0')} • Current: ${currentStatus.replace(/_/g, ' ').toUpperCase()}`;
+                document.getElementById('admin-exp-new-status').value = currentStatus;
+                document.getElementById('admin-exp-notes').value = '';
+
+                // Render status pipeline
+                const pipelineEl = document.getElementById('admin-modal-pipeline');
+                const statusOrder = ['pending', 'under_review', 'approved', 'quality_testing', 'documentation', 'shipped', 'delivered'];
+                const currentIdx = statusOrder.indexOf(currentStatus);
+                pipelineEl.innerHTML = statusOrder.map((s, i) => {
+                    const sc = ADMIN_EXP_STATUS_CONFIG[s] || {};
+                    const isDone = i < currentIdx;
+                    const isActive = i === currentIdx;
+                    const isPending = i > currentIdx;
+                    const bg = isActive ? sc.color : (isDone ? '#10b981' : '#e2e8f0');
+                    const txtClr = (isActive || isDone) ? 'white' : '#94a3b8';
+                    return `<div style="flex:1;min-width:56px;text-align:center;padding:6px 4px;border-radius:8px;background:${bg};color:${txtClr};font-size:9px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;" onclick="document.getElementById('admin-exp-new-status').value='${s}'" title="Click to select">${sc.label || s}</div>`;
+                }).join('<div style="width:4px;flex-shrink:0;"></div>');
+
+                document.getElementById('adminExpModal').style.display = 'flex';
+                loadExportTimeline(exportId);
+            }
+
+            function closeAdminExpModal() {
+                document.getElementById('adminExpModal').style.display = 'none';
+                selectedAdminExpId = null;
+            }
+
+            async function loadExportTimeline(exportId) {
+                const el = document.getElementById('admin-exp-timeline');
+                el.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:13px;">Loading history...</div>';
+                try {
+                    const res = await fetch(`../../backend/api/export/get-export-tracking.php?export_id=${exportId}`);
+                    const data = await res.json();
+                    if (data.success && data.history.length) {
+                        el.innerHTML = data.history.map((h, i) => {
+                            const sc = ADMIN_EXP_STATUS_CONFIG[h.status] || { color: '#64748b', bg: '#f8fafc' };
+                            const dt = new Date(h.created_at).toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                            const who = h.updated_by_name ? `${h.updated_by_name} (${(h.updated_by_role || '').replace(/_/g, ' ')})` : 'System';
+                            const isLast = i === data.history.length - 1;
+                            return `
+                            <div style="display:flex;gap:12px;margin-bottom:${isLast ? '0' : '14px'};">
+                                <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+                                    <div style="width:12px;height:12px;border-radius:50%;background:${sc.color};margin-top:3px;"></div>
+                                    ${!isLast ? '<div style="width:2px;flex:1;background:#e2e8f0;margin:4px 0;"></div>' : ''}
+                                </div>
+                                <div style="flex:1;padding-bottom:4px;">
+                                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                        <span style="background:${sc.bg};color:${sc.color};padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;">${sc.label || h.status}</span>
+                                        <span style="font-size:11px;color:#94a3b8;">${dt}</span>
+                                    </div>
+                                    <div style="font-size:12px;color:#64748b;margin-top:3px;">By: <strong>${who}</strong></div>
+                                    ${h.notes ? `<div style="font-size:12px;color:#475569;margin-top:3px;background:#f8fafc;padding:5px 9px;border-radius:7px;">${h.notes}</div>` : ''}
+                                </div>
+                            </div>`;
+                        }).join('');
+                    } else {
+                        el.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:12px;">No history found.</div>';
+                    }
+                } catch (e) {
+                    el.innerHTML = '<div style="text-align:center;padding:12px;color:#ef4444;font-size:12px;">Failed to load history.</div>';
+                }
+            }
+
+            async function submitAdminExpUpdate() {
+                if (!selectedAdminExpId) return;
+                const newStatus = document.getElementById('admin-exp-new-status').value;
+                const notes = document.getElementById('admin-exp-notes').value;
+                const btn = document.getElementById('admin-exp-submit-btn');
+                btn.disabled = true;
+                btn.textContent = 'Updating...';
+                try {
+                    const res = await fetch('../../backend/api/export/admin-update-export-status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ export_id: selectedAdminExpId, status: newStatus, admin_notes: notes })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        // Reload timeline inline without closing
+                        loadExportTimeline(selectedAdminExpId);
+                        loadAdminExports();
+                        // Update modal header
+                        document.getElementById('admin-modal-exp-id').textContent =
+                            `#EXP-${selectedAdminExpId.toString().padStart(5, '0')} • Current: ${newStatus.replace(/_/g, ' ').toUpperCase()}`;
+                    } else {
+                        showToast(data.message || 'Update failed', 'error');
+                    }
+                } catch (e) {
+                    showToast('Connection error', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Update Status';
+                }
+            }
+
+            async function sendExportEmailNotification() {
+                if (!selectedAdminExpId) return;
+                const btn = document.getElementById('admin-send-email-btn');
+                btn.disabled = true;
+                btn.innerHTML = '<img src="https://api.iconify.design/lucide:loader-2.svg?color=%231e40af" width="14" style="animation:spin 1s linear infinite"> Sending...';
+                try {
+                    const res = await fetch('../../backend/api/export/send-export-email.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ export_id: selectedAdminExpId })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('📧 Email notifications sent to buyer & farmer!', 'success');
+                    } else {
+                        showToast(data.message || 'Email sending failed', 'error');
+                    }
+                } catch (e) {
+                    showToast('Email service error', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<img src="https://api.iconify.design/lucide:mail.svg?color=%231e40af" width="14"> Send Email';
+                }
+            }
+
+            function openDocTemplate() {
+                if (!selectedAdminExpId) return;
+                window.open(`../../backend/api/export/generate-export-template.php?export_id=${selectedAdminExpId}&type=commercial_invoice`, '_blank');
+            }
+
+            // ══════════════════════════════════════════════════════════════
+            // FARMER CERTIFICATES MANAGEMENT
+            // ══════════════════════════════════════════════════════════════
+            let allFarmerCertsData = [];
+            let currentFcsFarmer = null;
+
+            const CERT_TYPE_LABELS = {
+                'organic_certificate': { icon: '🌿', label: 'Organic Certificate' },
+                'fssai_license': { icon: '🍽️', label: 'FSSAI License' },
+                'spice_board_registration': { icon: '🌶️', label: 'Spice Board Registration' },
+                'gst_certificate': { icon: '🧾', label: 'GST Certificate' },
+                'farm_ownership_proof': { icon: '🏡', label: 'Farm Ownership Proof' },
+                'quality_testing_report': { icon: '🔬', label: 'Quality Testing Report' },
+            };
+            const ALL_CERT_TYPES = Object.keys(CERT_TYPE_LABELS);
+
+            async function loadFarmerCerts() {
+                document.getElementById('farmer-certs-list').innerHTML = '<div style="text-align:center; padding:60px; color:#94a3b8;">Loading...</div>';
+                try {
+                    const res = await fetch('../../backend/api/export/admin-get-farmer-certificates.php');
+                    const data = await res.json();
+                    if (data.success) {
+                        allFarmerCertsData = data.farmers || [];
+                        const s = data.stats || {};
+                        document.getElementById('fcs-pending').textContent = s.total_pending || 0;
+                        document.getElementById('fcs-verified').textContent = s.total_verified || 0;
+                        document.getElementById('fcs-rejected').textContent = s.total_rejected || 0;
+                        renderFarmerCertsList(allFarmerCertsData);
+                    } else {
+                        document.getElementById('farmer-certs-list').innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;font-weight:700;">Failed to load.</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('farmer-certs-list').innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;font-weight:700;">Connection error.</div>';
+                }
+            }
+
+            function filterFarmerCerts() {
+                const filter = document.getElementById('fcs-filter').value;
+                let filtered = allFarmerCertsData;
+                if (filter === 'pending') {
+                    filtered = allFarmerCertsData.filter(f => parseInt(f.total_pending) > 0);
+                } else if (filter === 'verified') {
+                    filtered = allFarmerCertsData.filter(f => f.is_fully_verified);
+                } else if (filter === 'partial') {
+                    filtered = allFarmerCertsData.filter(f => !f.is_fully_verified && parseInt(f.total_uploaded) > 0);
+                }
+                renderFarmerCertsList(filtered);
+            }
+
+            function renderFarmerCertsList(farmers) {
+                const container = document.getElementById('farmer-certs-list');
+                if (!farmers.length) {
+                    container.innerHTML = '<div style="text-align:center;padding:60px;color:#94a3b8;"><div style="font-size:40px;margin-bottom:12px;">📂</div><p style="font-size:14px;font-weight:700;">No farmers have uploaded certificates yet.</p></div>';
+                    return;
+                }
+                container.innerHTML = farmers.map(f => {
+                    const verifiedCount = parseInt(f.total_verified) || 0;
+                    const pendingCount = parseInt(f.total_pending) || 0;
+                    const totalRequired = parseInt(f.total_required) || 6;
+                    const pct = Math.round((verifiedCount / totalRequired) * 100);
+
+                    const statusBadge = f.is_fully_verified
+                        ? '<span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;">✅ Fully Verified</span>'
+                        : pendingCount > 0
+                            ? `<span style="background:#fef9c3;color:#a16207;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;">🕐 ${pendingCount} Pending</span>`
+                            : '<span style="background:#f1f5f9;color:#64748b;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;">Incomplete</span>';
+
+                    return `
+                    <div style="display:flex; align-items:center; gap:16px; padding:16px; border-bottom:1px solid #f8fafc; cursor:pointer; transition:background 0.15s; border-radius:10px;"
+                        onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''"
+                        onclick='openFarmerCertModal(${JSON.stringify(f)})'>
+                        <div style="width:44px; height:44px; border-radius:12px; background:#ecfdf5; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🌿</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:14px; font-weight:700; color:#1e293b;">${escAdminHtml(f.full_name)}</div>
+                            <div style="font-size:12px; color:#64748b;">${escAdminHtml(f.email)}</div>
+                        </div>
+                        <div style="text-align:center; min-width:100px;">
+                            <div style="font-size:12px; font-weight:700; color:#1e293b; margin-bottom:4px;">${verifiedCount}/${totalRequired} docs</div>
+                            <div style="height:6px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                                <div style="height:100%; width:${pct}%; background:${pct === 100 ? '#10b981' : '#FF7E21'}; border-radius:4px; transition:width 0.4s;"></div>
+                            </div>
+                        </div>
+                        <div style="min-width:120px; text-align:right;">${statusBadge}</div>
+                        <img src="https://api.iconify.design/lucide:chevron-right.svg?color=%2394a3b8" width="16" style="flex-shrink:0;">
+                    </div>`;
+                }).join('');
+            }
+
+            function openFarmerCertModal(farmer) {
+                currentFcsFarmer = farmer;
+                document.getElementById('fcm-farmer-name').textContent = `${farmer.full_name} • ${farmer.email}`;
+                renderFarmerCertModalBody(farmer);
+                document.getElementById('farmerCertModal').style.display = 'flex';
+            }
+
+            function renderFarmerCertModalBody(farmer) {
+                const body = document.getElementById('fcm-body');
+                const certs = farmer.certificates || {};
+
+                body.innerHTML = ALL_CERT_TYPES.map(type => {
+                    const meta = CERT_TYPE_LABELS[type];
+                    const cert = certs[type];
+                    const status = cert ? cert.verification_status : 'not_uploaded';
+
+                    const chipMap = {
+                        'not_uploaded': ['#f1f5f9', '#94a3b8', '⬜ Not Uploaded'],
+                        'pending': ['#fef9c3', '#a16207', '🕐 Pending'],
+                        'verified': ['#dcfce7', '#166534', '✅ Verified'],
+                        'rejected': ['#fee2e2', '#991b1b', '❌ Rejected'],
+                    };
+                    const [chipBg, chipColor, chipLabel] = chipMap[status] || chipMap['not_uploaded'];
+
+                    const fileRow = cert ? `
+                        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#f8fafc; border-radius:8px; margin-top:8px;">
+                            <img src="https://api.iconify.design/lucide:file-text.svg?color=%2364748b" width="13">
+                            <span style="font-size:11px; color:#64748b; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escAdminHtml(cert.original_filename)}</span>
+                            <a href="../../${cert.file_path}" target="_blank" style="font-size:11px; font-weight:700; color:#3b82f6; text-decoration:none; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+                                <img src="https://api.iconify.design/lucide:external-link.svg?color=%233b82f6" width="11"> View
+                            </a>
+                        </div>` : '';
+
+                    const adminNoteRow = (cert && cert.admin_notes) ? `
+                        <div style="font-size:11px; color:#991b1b; background:#fef2f2; border-radius:6px; padding:6px 10px; margin-top:6px;">
+                            <strong>Note:</strong> ${escAdminHtml(cert.admin_notes)}
+                        </div>` : '';
+
+                    const actionBtns = cert && status === 'pending' ? `
+                        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                            <input type="text" id="admin-note-${type}" placeholder="Admin note (optional)" style="flex:1; min-width:160px; padding:7px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:12px; outline:none;">
+                            <button onclick="adminVerifyCert(${farmer.farmer_id}, '${type}', 'verify')" style="background:#10b981; color:white; border:none; padding:7px 16px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">✅ Verify</button>
+                            <button onclick="adminVerifyCert(${farmer.farmer_id}, '${type}', 'reject')" style="background:#ef4444; color:white; border:none; padding:7px 16px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">❌ Reject</button>
+                        </div>` :
+                        (cert && status === 'verified') ? `
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button onclick="adminVerifyCert(${farmer.farmer_id}, '${type}', 'reject')" style="background:transparent; color:#ef4444; border:1px solid #fecaca; padding:6px 14px; border-radius:8px; font-weight:700; font-size:11px; cursor:pointer;">Revoke Verification</button>
+                        </div>` :
+                            (cert && status === 'rejected') ? `
+                        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                            <input type="text" id="admin-note-${type}" placeholder="Admin note (optional)" style="flex:1; min-width:160px; padding:7px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:12px; outline:none;">
+                            <button onclick="adminVerifyCert(${farmer.farmer_id}, '${type}', 'verify')" style="background:#10b981; color:white; border:none; padding:7px 16px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">✅ Verify Now</button>
+                        </div>` : '';
+
+                    return `
+                    <div style="border:1.5px solid ${status === 'verified' ? '#a7f3d0' : status === 'rejected' ? '#fecaca' : status === 'pending' ? '#fde68a' : '#e2e8f0'}; border-radius:14px; padding:16px 18px; margin-bottom:12px; background:${status === 'verified' ? '#f0fdf4' : status === 'rejected' ? '#fef2f2' : status === 'pending' ? '#fefce8' : 'white'};">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:20px;">${meta.icon}</span>
+                                <span style="font-size:14px; font-weight:700; color:#1e293b;">${meta.label}</span>
+                            </div>
+                            <span style="background:${chipBg}; color:${chipColor}; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700;">${chipLabel}</span>
+                        </div>
+                        ${fileRow}
+                        ${adminNoteRow}
+                        ${actionBtns}
+                    </div>`;
+                }).join('');
+            }
+
+            async function adminVerifyCert(farmerId, certType, action) {
+                const noteEl = document.getElementById('admin-note-' + certType);
+                const notes = noteEl ? noteEl.value.trim() : '';
+                try {
+                    const res = await fetch('../../backend/api/export/admin-verify-certificate.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ farmer_id: farmerId, cert_type: certType, action, admin_notes: notes })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        if (data.is_fully_verified) showToast('🌟 This farmer is now Fully Verified!', 'success');
+                        // Update local data and re-render modal
+                        const farmerIdx = allFarmerCertsData.findIndex(f => f.farmer_id == farmerId);
+                        if (farmerIdx !== -1) {
+                            if (!allFarmerCertsData[farmerIdx].certificates[certType]) {
+                                allFarmerCertsData[farmerIdx].certificates[certType] = {};
+                            }
+                            allFarmerCertsData[farmerIdx].certificates[certType].verification_status = data.new_status;
+                            allFarmerCertsData[farmerIdx].certificates[certType].admin_notes = notes || null;
+                            allFarmerCertsData[farmerIdx].is_fully_verified = data.is_fully_verified;
+                            currentFcsFarmer = allFarmerCertsData[farmerIdx];
+                            renderFarmerCertModalBody(currentFcsFarmer);
+                            renderFarmerCertsList(allFarmerCertsData);  // refresh list too
+                            loadFarmerCerts(); // full reload to update stats
+                        }
+                    } else {
+                        showToast(data.message || 'Action failed', 'error');
+                    }
+                } catch (e) {
+                    showToast('Connection error', 'error');
+                }
+            }
+
+            function closeFarmerCertModal() {
+                document.getElementById('farmerCertModal').style.display = 'none';
+                currentFcsFarmer = null;
+            }
+
+            function escAdminHtml(str) {
+                const d = document.createElement('div');
+                d.textContent = str || '';
+                return d.innerHTML;
             }
         </script>
 </body>
