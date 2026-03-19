@@ -66,6 +66,10 @@
                 <img src="https://api.iconify.design/lucide:shopping-cart.svg?color=%231c1917" width="18" alt="">
                 Orders
             </a>
+
+            <div style="padding: 10px 14px; margin-top: 12px; margin-bottom: 4px; border-top: 1px solid #f5f5f4; padding-top: 12px;">
+                <p style="font-size: 10px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.1em;">Supply Chain</p>
+            </div>
             <a href="auctions.html"
                 style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
@@ -84,8 +88,18 @@
                 <img src="https://api.iconify.design/lucide:shield-check.svg?color=%231c1917" width="18" alt="">
                 Certificates
             </a>
+
+            <div style="padding: 10px 14px; margin-top: 12px; margin-bottom: 4px; border-top: 1px solid #f5f5f4; padding-top: 12px;">
+                <p style="font-size: 10px; font-weight: 700; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.1em;">Management</p>
+            </div>
+            <a href="returns.html"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
+                onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
+                <img src="https://api.iconify.design/lucide:rotate-ccw.svg?color=%231c1917" width="18" alt="">
+                Returns & Refunds
+            </a>
             <a href="analysis.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
                 <img src="https://api.iconify.design/lucide:bar-chart-3.svg?color=%231c1917" width="18" alt="">
                 Analysis
@@ -97,7 +111,7 @@
                 History
             </a>
             <a href="profile.html"
-                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px;"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; text-decoration: none; color: #1c1917; font-weight: 500; font-size: 14px; transition: all 0.2s;"
                 onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
                 <img src="https://api.iconify.design/lucide:user.svg?color=%231c1917" width="18" alt="">
                 Profile
@@ -225,37 +239,6 @@
             </div>
         </div>
 
-        <!-- Return Requests Section -->
-        <div style="margin-bottom:32px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <div>
-                    <h3 style="font-size:18px;font-weight:700;color:#1c1917;">Return Requests</h3>
-                    <p style="font-size:13px;color:#78716c;margin-top:2px;">Returns filed against your products</p>
-                </div>
-                <div style="display:flex;gap:8px;" id="return-stats-badges"></div>
-            </div>
-
-            <!-- Return Filter Tabs -->
-            <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;" id="return-tabs">
-                <button onclick="loadFarmerReturns('all')" id="rtab-all" class="return-tab-btn"
-                    style="padding:6px 16px;border-radius:16px;border:none;background:#1c1917;color:white;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">All</button>
-                <button onclick="loadFarmerReturns('requested')" id="rtab-requested" class="return-tab-btn"
-                    style="padding:6px 16px;border-radius:16px;border:1px solid #e7e5e4;background:white;color:#78716c;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;">Requested</button>
-                <button onclick="loadFarmerReturns('approved')" id="rtab-approved" class="return-tab-btn"
-                    style="padding:6px 16px;border-radius:16px;border:1px solid #e7e5e4;background:white;color:#78716c;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;">Approved</button>
-                <button onclick="loadFarmerReturns('refund_completed')" id="rtab-refund_completed"
-                    class="return-tab-btn"
-                    style="padding:6px 16px;border-radius:16px;border:1px solid #e7e5e4;background:white;color:#78716c;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;">Refunded</button>
-                <button onclick="loadFarmerReturns('rejected')" id="rtab-rejected" class="return-tab-btn"
-                    style="padding:6px 16px;border-radius:16px;border:1px solid #e7e5e4;background:white;color:#78716c;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;">Rejected</button>
-            </div>
-
-            <div id="farmer-returns-list">
-                <div style="text-align:center;padding:40px;">
-                    <p style="color:#a8a29e;font-size:12px;font-weight:600;">Loading return requests...</p>
-                </div>
-            </div>
-        </div>
 
 
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
@@ -298,43 +281,6 @@
             </div>
         </div>
 
-        <!-- Refund History Section -->
-        <div style="margin-top:32px;margin-bottom:16px;">
-            <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;">
-                <!-- Refund Stats Card -->
-                <div
-                    style="background:linear-gradient(135deg,#1c1917,#3d2b1f);border-radius:24px;padding:32px;position:relative;overflow:hidden;">
-                    <div
-                        style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,126,33,0.08);border-radius:50%;">
-                    </div>
-                    <div style="position:relative;z-index:1;">
-                        <div
-                            style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
-                            <p
-                                style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;">
-                                Total Refunded</p>
-                            <div style="font-size:24px;">💸</div>
-                        </div>
-                        <div
-                            style="font-size:32px;font-weight:800;color:white;letter-spacing:-0.02em;margin-bottom:4px;">
-                            ₹<span id="farmer-total-refunded">0.00</span></div>
-                        <p id="farmer-refund-count" style="font-size:12px;color:rgba(255,255,255,0.4);font-weight:600;">
-                            0 refunds processed</p>
-                    </div>
-                </div>
-
-                <!-- Refund History List -->
-                <div style="background:white;border:1px solid #e7e5e4;border-radius:24px;padding:24px;">
-                    <h3
-                        style="font-size:18px;font-weight:700;color:#1c1917;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-                        <img src="https://api.iconify.design/lucide:history.svg?color=%23FF7E21" width="20"> Refund
-                        History
-                    </h3>
-                    <div id="farmer-refund-history">
-                        <p style="color:#a8a29e;font-size:12px;text-align:center;padding:24px;">Loading refund
-                            history...</p>
-                    </div>
-                </div>
                 <!-- All Activity List -->
                 <!-- Unified History Section -->
                 <div style="margin-top:32px;margin-bottom:16px;">
@@ -383,163 +329,6 @@
             </div>
         </div>
     </main>
-    <div id="returnDetailModal"
-        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:24px;">
-        <div style="background:white;border-radius:32px;padding:0;width:100%;max-width:560px;position:relative;max-height:90vh;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.15);"
-            onclick="event.stopPropagation()">
-            <!-- Modal Header -->
-            <div style="padding:28px 32px 20px;border-bottom:1px solid #f5f5f4;">
-                <button onclick="closeReturnDetail()"
-                    style="position:absolute;top:20px;right:24px;background:none;border:none;cursor:pointer;font-size:20px;color:#a8a29e;">✕</button>
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                    <div
-                        style="width:40px;height:40px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">
-                        🔄</div>
-                    <div>
-                        <h2 id="rdm-title" style="font-size:20px;font-weight:800;color:#1c1917;letter-spacing:-0.02em;">
-                            Return Details</h2>
-                        <p id="rdm-subtitle" style="font-size:12px;color:#78716c;font-weight:600;"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Body (scrollable) -->
-            <div style="padding:24px 32px 28px;overflow-y:auto;max-height:calc(90vh - 120px);">
-                <!-- Status Pipeline -->
-                <div id="rdm-pipeline"
-                    style="display:flex;align-items:center;gap:0;margin-bottom:24px;padding:16px;background:#fafaf9;border-radius:16px;overflow-x:auto;">
-                </div>
-
-                <!-- Product & Customer Info -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-                    <div style="background:#f5f5f4;border-radius:14px;padding:14px;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                            Product</p>
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <img id="rdm-product-img" src=""
-                                style="width:40px;height:40px;border-radius:10px;object-fit:cover;background:#e7e5e4;">
-                            <div>
-                                <p id="rdm-product-name" style="font-size:13px;font-weight:700;color:#1c1917;"></p>
-                                <p id="rdm-order-id" style="font-size:10px;color:#a8a29e;font-weight:600;"></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="background:#f5f5f4;border-radius:14px;padding:14px;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                            Customer</p>
-                        <p id="rdm-customer-name" style="font-size:13px;font-weight:700;color:#1c1917;"></p>
-                        <p id="rdm-customer-email" style="font-size:10px;color:#78716c;font-weight:600;"></p>
-                    </div>
-                </div>
-
-                <!-- Return Reason -->
-                <div style="margin-bottom:16px;">
-                    <p
-                        style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                        Return Reason</p>
-                    <div id="rdm-reason"
-                        style="background:#fef3c7;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#92400e;">
-                    </div>
-                </div>
-
-                <!-- Customer Description -->
-                <div id="rdm-desc-wrap" style="margin-bottom:16px;display:none;">
-                    <p
-                        style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                        Customer's Description</p>
-                    <div id="rdm-description"
-                        style="background:#f5f5f4;border-radius:12px;padding:12px 14px;font-size:13px;color:#44403c;line-height:1.5;">
-                    </div>
-                </div>
-
-                <!-- Proof Image -->
-                <div id="rdm-proof-wrap" style="margin-bottom:16px;display:none;">
-                    <p
-                        style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                        Proof Image</p>
-                    <a id="rdm-proof-link" href="" target="_blank"
-                        style="display:block;border-radius:16px;overflow:hidden;border:1px solid #e7e5e4;">
-                        <img id="rdm-proof-img" src=""
-                            style="width:100%;max-height:240px;object-fit:cover;display:block;">
-                    </a>
-                </div>
-
-                <!-- Refund Info -->
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
-                    <div style="background:#f5f5f4;border-radius:14px;padding:12px;text-align:center;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;margin-bottom:4px;">
-                            Refund Amount</p>
-                        <p id="rdm-amount" style="font-size:16px;font-weight:800;color:#1c1917;"></p>
-                    </div>
-                    <div style="background:#f5f5f4;border-radius:14px;padding:12px;text-align:center;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;margin-bottom:4px;">
-                            Method</p>
-                        <p id="rdm-method" style="font-size:13px;font-weight:700;color:#1c1917;"></p>
-                    </div>
-                    <div style="background:#f5f5f4;border-radius:14px;padding:12px;text-align:center;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;margin-bottom:4px;">
-                            Requested</p>
-                        <p id="rdm-date" style="font-size:13px;font-weight:700;color:#1c1917;"></p>
-                    </div>
-                </div>
-
-                <!-- Admin Notes -->
-                <div id="rdm-admin-wrap" style="display:none;margin-bottom:16px;">
-                    <p
-                        style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">
-                        Admin Notes</p>
-                    <div id="rdm-admin-notes"
-                        style="background:#dbeafe;border-radius:12px;padding:12px 14px;font-size:13px;color:#1e40af;font-weight:600;">
-                    </div>
-                </div>
-
-                <!-- Dates -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div style="background:#f5f5f4;border-radius:14px;padding:12px;text-align:center;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;margin-bottom:4px;">
-                            Order Date</p>
-                        <p id="rdm-order-date" style="font-size:12px;font-weight:700;color:#1c1917;"></p>
-                    </div>
-                    <div style="background:#f5f5f4;border-radius:14px;padding:12px;text-align:center;">
-                        <p
-                            style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;margin-bottom:4px;">
-                            Delivered</p>
-                        <p id="rdm-delivered-date" style="font-size:12px;font-weight:700;color:#1c1917;"></p>
-                    </div>
-                </div>
-
-                <!-- Farmer Action Buttons -->
-                <div id="rdm-actions"
-                    style="display:none;margin-top:20px;padding-top:20px;border-top:2px solid #f5f5f4;">
-                    <p
-                        style="font-size:10px;font-weight:700;color:#a8a29e;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
-                        Your Response</p>
-                    <textarea id="rdm-farmer-notes" rows="2"
-                        placeholder="Add notes for the customer (required if rejecting)..."
-                        style="width:100%;border:1.5px solid #e7e5e4;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;outline:none;resize:none;box-sizing:border-box;margin-bottom:12px;"></textarea>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <button onclick="submitFarmerReturnAction('approved')" id="rdm-approve-btn"
-                            style="padding:14px;background:#059669;color:white;border:none;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.2s;"
-                            onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
-                            ✅ Approve Return
-                        </button>
-                        <button onclick="submitFarmerReturnAction('rejected')" id="rdm-reject-btn"
-                            style="padding:14px;background:white;color:#dc2626;border:2px solid #fecaca;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.2s;"
-                            onmouseover="this.style.background='#fef2f2';this.style.borderColor='#dc2626'"
-                            onmouseout="this.style.background='white';this.style.borderColor='#fecaca'">
-                            ❌ Reject Return
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         async function logout() {
@@ -598,8 +387,6 @@
         window.onload = () => {
             if (typeof CurrencyManager !== 'undefined') CurrencyManager.init();
             loadStats();
-            loadFarmerReturns('all');
-            loadFarmerRefundHistory();
             loadFarmerFullActivity();
         };
 
@@ -813,344 +600,6 @@
         }
     </script>
 
-    <script>
-        async function loadFarmerRefundHistory() {
-            try {
-                const res = await fetch('../../backend/api/returns/get-farmer-refund-history.php');
-                const data = await res.json();
-                if (!data.success) return;
-
-                document.getElementById('farmer-total-refunded').innerText = parseFloat(data.total_refunded).toFixed(2);
-                document.getElementById('farmer-refund-count').innerText = data.refund_count + ' refunds processed';
-
-                const container = document.getElementById('farmer-refund-history');
-                const refunds = data.refunds || [];
-
-                if (refunds.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align:center;padding:32px;">
-                            <div style="font-size:28px;margin-bottom:8px;">💳</div>
-                            <p style="color:#a8a29e;font-size:12px;font-weight:600;">No refunds processed yet</p>
-                        </div>`;
-                    return;
-                }
-
-                container.innerHTML = refunds.map(r => {
-                    const date = new Date(r.updated_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                    const amt = parseFloat(r.refund_amount || 0);
-                    return `
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f5f5f4;">
-                        <div style="width:36px;height:36px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <img src="https://api.iconify.design/lucide:check-circle.svg?color=%23059669" width="18">
-                        </div>
-                        <div style="flex:1;min-width:0;">
-                            <p style="font-size:13px;font-weight:700;color:#1c1917;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.product_name}</p>
-                            <p style="font-size:11px;color:#78716c;font-weight:600;">👤 ${r.customer_name} · RET-${r.id.toString().padStart(5, '0')} · ${date}</p>
-                        </div>
-                        <div style="flex-shrink:0;text-align:right;">
-                            <p style="font-size:14px;font-weight:800;color:#059669;">₹${amt.toFixed(2)}</p>
-                            <p style="font-size:9px;font-weight:700;color:#a8a29e;text-transform:uppercase;">${r.refund_method === 'wallet' ? 'Wallet' : 'Original'}</p>
-                        </div>
-                    </div>`;
-                }).join('');
-            } catch (e) {
-                console.error('Refund history error:', e);
-            }
-        }
-    </script>
-
-    <script>
-        const RET_STATUS_CONFIG = {
-            requested: { label: 'Requested', bg: '#fef3c7', color: '#92400e' },
-            under_review: { label: 'Under Review', bg: '#dbeafe', color: '#1e40af' },
-            approved: { label: 'Approved', bg: '#d1fae5', color: '#065f46' },
-            rejected: { label: 'Rejected', bg: '#fee2e2', color: '#991b1b' },
-            refund_processing: { label: 'Processing', bg: '#ede9fe', color: '#5b21b6' },
-            refund_completed: { label: 'Refunded', bg: '#d1fae5', color: '#065f46' },
-        };
-
-        const RET_REASON_LABELS = {
-            damaged: '📦 Damaged', wrong_item: '🔄 Wrong Item', expired: '⏰ Expired',
-            quality_issue: '⚠️ Quality Issue', other: '💬 Other'
-        };
-
-        async function loadFarmerReturns(status = 'all') {
-            // Update tabs
-            document.querySelectorAll('.return-tab-btn').forEach(btn => {
-                const isActive = btn.id === 'rtab-' + status;
-                btn.style.background = isActive ? '#1c1917' : 'white';
-                btn.style.color = isActive ? 'white' : '#78716c';
-                btn.style.fontWeight = isActive ? '700' : '600';
-                if (!isActive) btn.style.border = '1px solid #e7e5e4';
-                else btn.style.border = 'none';
-            });
-
-            const container = document.getElementById('farmer-returns-list');
-            container.innerHTML = '<div style="text-align:center;padding:40px;"><img src="https://api.iconify.design/lucide:loader-2.svg" style="width:28px;height:28px;animation:spin 1s linear infinite;margin:0 auto;"></div>';
-
-            try {
-                const url = '../../backend/api/returns/get-farmer-returns.php' + (status !== 'all' ? '?status=' + status : '');
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (!data.success) {
-                    container.innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;font-weight:700;">Failed to load returns.</div>';
-                    return;
-                }
-
-                // Update stats badges
-                const s = data.summary || {};
-                const badgesEl = document.getElementById('return-stats-badges');
-                const requested = s.requested || 0;
-                const total = s.total || 0;
-                badgesEl.innerHTML = `
-    <span
-        style="padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;background:#f5f5f4;color:#78716c;">${total}
-        Total</span>
-    ${requested > 0 ? `<span
-        style="padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;background:#fef3c7;color:#92400e;">${requested}
-        Pending</span>` : ''}
-    `;
-
-                const returns = data.returns || [];
-                if (returns.length === 0) {
-                    container.innerHTML = `
-    <div style="text-align:center;padding:48px;background:white;border-radius:20px;border:1px solid #e7e5e4;">
-        <div style="font-size:36px;margin-bottom:12px;">✅</div>
-        <h4 style="font-size:16px;font-weight:700;color:#1c1917;margin-bottom:4px;">No Return Requests</h4>
-        <p style="color:#a8a29e;font-size:12px;">No returns match this filter. Great job!</p>
-    </div>`;
-                    return;
-                }
-
-                container.innerHTML = returns.map(r => {
-                    const sc = RET_STATUS_CONFIG[r.status] || RET_STATUS_CONFIG['requested'];
-                    const date = new Date(r.created_at).toLocaleDateString('en-IN', {
-                        day: 'numeric', month: 'short', year: 'numeric'
-                    });
-                    const amount = parseFloat(r.refund_amount || 0);
-                    const rJson = encodeURIComponent(JSON.stringify(r));
-                    return `
-    <div style="background:white;border:1px solid #e7e5e4;border-radius:20px;padding:20px;margin-bottom:12px;transition:all 0.2s;"
-        onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.06)'" onmouseout="this.style.boxShadow='none'">
-        <div style="display:flex;align-items:flex-start;gap:14px;">
-            <div style="width:50px;height:50px;border-radius:12px;background:#f5f5f4;overflow:hidden;flex-shrink:0;">
-                <img src="${r.image_url ? '../../' + r.image_url : 'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'}"
-                    style="width:100%;height:100%;object-fit:cover;"
-                    onerror="this.src='https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200'">
-            </div>
-            <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
-                    <span
-                        style="background:${sc.bg};color:${sc.color};padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;">${sc.label}</span>
-                    <span style="font-size:10px;color:#a8a29e;font-weight:600;">#RET-${r.id.toString().padStart(5,
-                        '0')}</span>
-                    <span style="font-size:10px;color:#a8a29e;">·</span>
-                    <span style="font-size:10px;color:#a8a29e;font-weight:600;">ORD-${r.order_id.toString().padStart(5,
-                            '0')}</span>
-                </div>
-                <h4
-                    style="font-size:15px;font-weight:700;color:#1c1917;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                    ${r.product_name}</h4>
-                <div style="font-size:11px;color:#78716c;font-weight:600;display:flex;gap:10px;flex-wrap:wrap;">
-                    <span>👤 ${r.customer_name}</span>
-                    <span>${RET_REASON_LABELS[r.reason] || r.reason}</span>
-                    <span>💰 ₹${amount.toFixed(2)}</span>
-                    <span>📅 ${date}</span>
-                </div>
-            </div>
-            <div style="flex-shrink:0;align-self:center;">
-                <button onclick='openReturnDetail(decodeURIComponent("${rJson}"))'
-                    style="padding:8px 16px;background:#FF7E21;color:white;border:none;border-radius:12px;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;transition:all 0.2s;"
-                    onmouseover="this.style.background='#E66D1A'" onmouseout="this.style.background='#FF7E21'">View
-                    Details</button>
-            </div>
-        </div>
-    </div>`;
-                }).join('');
-
-            } catch (e) {
-                console.error('Farmer returns error:', e);
-                container.innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;font-weight:700;">Connection error. Please refresh.</div>';
-            }
-        }
-
-        function openReturnDetail(jsonStr) {
-            const r = JSON.parse(jsonStr);
-            const sc = RET_STATUS_CONFIG[r.status] || RET_STATUS_CONFIG['requested'];
-            const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', {
-                day: 'numeric', month: 'short', year: 'numeric'
-            }) : '—';
-
-            document.getElementById('rdm-title').innerText = '#RET-' + String(r.id).padStart(5, '0');
-            document.getElementById('rdm-subtitle').innerText = r.product_name + ' · ' + r.customer_name;
-
-            // Product info
-            const prodImg = r.image_url ? '../../' + r.image_url :
-                'https://images.unsplash.com/photo-1596040033229?auto=format&fit=crop&w=200';
-            document.getElementById('rdm-product-img').src = prodImg;
-            document.getElementById('rdm-product-name').innerText = r.product_name;
-            document.getElementById('rdm-order-id').innerText = 'ORD-' + String(r.order_id).padStart(5, '0');
-
-            // Customer info
-            document.getElementById('rdm-customer-name').innerText = r.customer_name || 'Customer';
-            document.getElementById('rdm-customer-email').innerText = r.customer_email || '';
-
-            // Reason
-            document.getElementById('rdm-reason').innerText = RET_REASON_LABELS[r.reason] || r.reason;
-
-            // Description
-            const descWrap = document.getElementById('rdm-desc-wrap');
-            if (r.description) {
-                descWrap.style.display = 'block';
-                document.getElementById('rdm-description').innerText = r.description;
-            } else {
-                descWrap.style.display = 'none';
-            }
-
-            // Proof image
-            const proofWrap = document.getElementById('rdm-proof-wrap');
-            if (r.image_path) {
-                proofWrap.style.display = 'block';
-                document.getElementById('rdm-proof-img').src = '../../' + r.image_path;
-                document.getElementById('rdm-proof-link').href = '../../' + r.image_path;
-            } else {
-                proofWrap.style.display = 'none';
-            }
-
-            // Refund info
-            document.getElementById('rdm-amount').innerText = '₹' + parseFloat(r.refund_amount || 0).toFixed(2);
-            document.getElementById('rdm-method').innerText = r.refund_method === 'wallet' ? '💰 Wallet' : '💳 Original';
-            document.getElementById('rdm-date').innerText = fmtDate(r.created_at);
-
-            // Admin notes
-            const adminWrap = document.getElementById('rdm-admin-wrap');
-            if (r.admin_notes) {
-                adminWrap.style.display = 'block';
-                document.getElementById('rdm-admin-notes').innerText = '💬 ' + r.admin_notes;
-            } else {
-                adminWrap.style.display = 'none';
-            }
-
-            // Dates
-            document.getElementById('rdm-order-date').innerText = fmtDate(r.order_date);
-            document.getElementById('rdm-delivered-date').innerText = fmtDate(r.delivered_at);
-
-            // Status pipeline
-            const pipelineSteps = [
-                { key: 'requested', label: 'Requested', icon: '📝' },
-                { key: 'under_review', label: 'Reviewing', icon: '🔍' },
-                { key: 'approved', label: 'Approved', icon: '✅' },
-                { key: 'refund_processing', label: 'Processing', icon: '⏳' },
-                { key: 'refund_completed', label: 'Refunded', icon: '💚' },
-            ];
-            const rejected = r.status === 'rejected';
-            const currentIdx = rejected ? -1 : pipelineSteps.findIndex(s => s.key === r.status);
-
-            let pipeHtml = '';
-            if (rejected) {
-                pipeHtml = `<div style="flex:1;text-align:center;padding:8px;background:#fee2e2;border-radius:12px;">
-        <div style="font-size:18px;">❌</div>
-        <p style="font-size:10px;font-weight:700;color:#991b1b;margin-top:4px;">REJECTED</p>
-    </div>`;
-            } else {
-                pipeHtml = pipelineSteps.map((step, idx) => {
-                    const done = idx <= currentIdx; const isCurrent = idx === currentIdx; const bg = isCurrent ? '#FF7E21' : (done ? '#d1fae5'
-                        : '#f5f5f4'); const txtColor = isCurrent ? 'white' : (done ? '#065f46' : '#a8a29e'); const connector = idx <
-                            pipelineSteps.length - 1 ? `<div
-        style="width:20px;height:2px;background:${done ? '#10b981' : '#e7e5e4'};flex-shrink:0;">
-        </div>` : '';
-                    return `<div
-            style="flex:1;min-width:56px;text-align:center;padding:8px 4px;background:${bg};border-radius:12px;${isCurrent ? 'box-shadow:0 4px 12px rgba(255,126,33,0.25);' : ''}">
-            <div style="font-size:16px;">${step.icon}</div>
-            <p style="font-size:9px;font-weight:700;color:${txtColor};margin-top:2px;">${step.label}</p>
-        </div>${connector}`;
-                }).join('');
-            }
-            document.getElementById('rdm-pipeline').innerHTML = pipeHtml;
-
-            // Show action buttons only for actionable statuses
-            const actionsDiv = document.getElementById('rdm-actions');
-            const actionableStatuses = ['requested', 'under_review'];
-            if (actionableStatuses.includes(r.status)) {
-                actionsDiv.style.display = 'block';
-                document.getElementById('rdm-farmer-notes').value = '';
-            } else {
-                actionsDiv.style.display = 'none';
-            }
-
-            // Store current return id for action
-            document.getElementById('returnDetailModal').dataset.returnId = r.id;
-
-            // Show modal
-            const modal = document.getElementById('returnDetailModal');
-            modal.style.display = 'flex';
-        }
-
-        function closeReturnDetail() {
-            document.getElementById('returnDetailModal').style.display = 'none';
-        }
-
-        // Close on backdrop click
-        document.getElementById('returnDetailModal').addEventListener('click', function (e) {
-            if (e.target === this) closeReturnDetail();
-        });
-
-        function showFarmerToast(msg, type = 'success') {
-            const t = document.createElement('div');
-            t.style.cssText = `position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:${type
-                === 'error' ? '#fee2e2' : '#d1fae5'};color:${type === 'error' ? '#991b1b' : '#065f46'};padding:14px
-        24px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 8px 24px
-        rgba(0,0,0,0.1);font-family:'Outfit',sans-serif;`;
-            t.innerText = (type === 'error' ? '❌ ' : '✅ ') + msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3500);
-        }
-
-        async function submitFarmerReturnAction(action) {
-            const returnId = document.getElementById('returnDetailModal').dataset.returnId;
-            const notes = document.getElementById('rdm-farmer-notes').value.trim();
-
-            if (action === 'rejected' && !notes) {
-                showFarmerToast('Please provide a reason for rejection.', 'error');
-                return;
-            }
-
-            const approveBtn = document.getElementById('rdm-approve-btn');
-            const rejectBtn = document.getElementById('rdm-reject-btn');
-            approveBtn.disabled = true;
-            rejectBtn.disabled = true;
-            const originalText = action === 'approved' ? approveBtn.innerText : rejectBtn.innerText;
-            const targetBtn = action === 'approved' ? approveBtn : rejectBtn;
-            targetBtn.innerText = '⏳ Updating...';
-
-            try {
-                const res = await fetch('../../backend/api/returns/update-return-status.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        return_id: parseInt(returnId),
-                        status: action,
-                        admin_notes: notes
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showFarmerToast(data.message || (action === 'approved' ? 'Return approved & refunded!' : 'Return has been rejected.'), 'success');
-                    closeReturnDetail();
-                    loadFarmerReturns('all');
-                } else {
-                    showFarmerToast(data.message || 'Failed to update.', 'error');
-                }
-            } catch (e) {
-                showFarmerToast('Connection error. Please try again.', 'error');
-            } finally {
-                approveBtn.disabled = false;
-                rejectBtn.disabled = false;
-                targetBtn.innerText = originalText;
-            }
-        }
-    </script>
 
     <style>
         @keyframes spin {

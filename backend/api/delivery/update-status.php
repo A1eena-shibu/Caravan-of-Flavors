@@ -84,13 +84,15 @@ try {
     } else {
         // --- Standard Order Logic ---
         if ($user_role === 'delivery_staff') {
-            $stmt = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND delivery_staff_id = ?");
+            $stmt = $pdo->prepare("SELECT id, farmer_id, total_price FROM orders WHERE id = ? AND delivery_staff_id = ?");
             $stmt->execute([$order_id, $user_id]);
         } else {
-            $stmt = $pdo->prepare("SELECT id FROM orders WHERE id = ? AND delivery_agent_id = ?");
+            $stmt = $pdo->prepare("SELECT id, farmer_id, total_price FROM orders WHERE id = ? AND delivery_agent_id = ?");
             $stmt->execute([$order_id, $user_id]);
         }
-        if (!$stmt->fetch())
+        
+        $orderData = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$orderData)
             throw new Exception('Unauthorized to update this order');
 
         $updateSql = "UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP";
@@ -121,6 +123,31 @@ try {
 
         $stmt = $pdo->prepare($updateSql . " WHERE id = ?");
         $stmt->execute([$new_status, $order_id]);
+
+        // Process farmer wallet earnings on successful delivery
+        if ($new_status === 'delivered') {
+            $farmer_id = $orderData['farmer_id'];
+            $total_price = (float)$orderData['total_price'];
+
+            // Update farmer wallet
+            $updateWallet = $pdo->prepare("
+                INSERT INTO wallet (user_id, balance) VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE balance = balance + ?, updated_at = NOW()
+            ");
+            $updateWallet->execute([$farmer_id, $total_price, $total_price]);
+
+            // Add wallet transaction log
+            $logTx = $pdo->prepare("
+                INSERT INTO wallet_transactions (user_id, amount, type, description, reference_id, reference_type)
+                VALUES (?, ?, 'credit', ?, ?, 'order')
+            ");
+            $logTx->execute([
+                $farmer_id, 
+                $total_price, 
+                'Earnings for Order #ORD-' . str_pad($order_id, 5, '0', STR_PAD_LEFT), 
+                $order_id
+            ]);
+        }
 
         // Add to order_tracking
         $stmt = $pdo->prepare("INSERT INTO order_tracking (order_id, status, comment, created_by, type) VALUES (?, ?, ?, ?, 'order')");

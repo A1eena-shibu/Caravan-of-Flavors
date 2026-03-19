@@ -35,7 +35,7 @@ try {
     $pdo = getDBConnection();
 
     // First, verify that this order belongs to the requesting farmer and check its current status
-    $stmt = $pdo->prepare("SELECT status FROM orders WHERE id = ? AND farmer_id = ?");
+    $stmt = $pdo->prepare("SELECT status, total_price, farmer_id FROM orders WHERE id = ? AND farmer_id = ?");
     $stmt->execute([$order_id, $farmer_id]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -46,6 +46,7 @@ try {
     }
 
     $current_status = $order['status'];
+    $total_price = (float)$order['total_price'];
 
     // Validation for state transitions
     $allowed = false;
@@ -89,6 +90,26 @@ try {
     }
 
     if ($result) {
+        // --- Update Wallet if Delivered ---
+        if ($new_status === 'delivered') {
+            $updateWallet = $pdo->prepare("
+                INSERT INTO wallet (user_id, balance) VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE balance = balance + ?, updated_at = NOW()
+            ");
+            $updateWallet->execute([$farmer_id, $total_price, $total_price]);
+
+            $logTx = $pdo->prepare("
+                INSERT INTO wallet_transactions (user_id, amount, type, description, reference_id, reference_type)
+                VALUES (?, ?, 'credit', ?, ?, 'order')
+            ");
+            $logTx->execute([
+                $farmer_id, 
+                $total_price, 
+                'Earnings for Order #ORD-' . str_pad($order_id, 5, '0', STR_PAD_LEFT), 
+                $order_id
+            ]);
+        }
+
         // --- Log to Order Tracking ---
         $comment = "Order status updated to $new_status";
         if (isset($reason))

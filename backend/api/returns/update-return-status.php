@@ -67,38 +67,69 @@ try {
     ");
     $stmt->execute([$final_status, $admin_notes, $user_id, $return_id]);
 
-    // Credit wallet if final status is refund_completed
-    if ($final_status === 'refund_completed' && $return['refund_method'] === 'wallet') {
+    // Process refund logic when final status is refund_completed
+    if ($final_status === 'refund_completed') {
         $amount = (float)$return['refund_amount'];
         $customer_id = (int)$return['customer_id'];
+        $farmer_id = (int)$return['farmer_id'];
 
-        // Upsert wallet
-        $pdo->prepare("
-            INSERT INTO wallet (user_id, balance) VALUES (?, ?)
-            ON DUPLICATE KEY UPDATE balance = balance + VALUES(balance), updated_at = NOW()
-        ")->execute([$customer_id, $amount]);
-
-        // Log wallet transaction
-        $pdo->prepare("
-            INSERT INTO wallet_transactions (user_id, amount, type, description, reference_id, reference_type)
-            VALUES (?, ?, 'credit', ?, ?, 'return')
-        ")->execute([
-            $customer_id,
-            $amount,
-            'Refund for Return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT),
-            $return_id
-        ]);
-
-        // Notify customer — refund credited
-        try {
+        if ($return['refund_method'] === 'wallet') {
+            // Upsert CUSTOMER wallet
             $pdo->prepare("
-                INSERT INTO notifications (user_id, title, message, type)
-                VALUES (?, 'Refund Credited to Wallet', ?, 'refund')
+                INSERT INTO wallet (user_id, balance) VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE balance = balance + VALUES(balance), updated_at = NOW()
+            ")->execute([$customer_id, $amount]);
+
+            // Log CUSTOMER wallet transaction
+            $pdo->prepare("
+                INSERT INTO wallet_transactions (user_id, amount, type, description, reference_id, reference_type)
+                VALUES (?, ?, 'credit', ?, ?, 'return')
             ")->execute([
                 $customer_id,
-                'Your return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT) . ' has been approved and ₹' . number_format($amount, 2) . ' has been credited to your Caravan Wallet.'
+                $amount,
+                'Refund for Return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT),
+                $return_id
             ]);
-        } catch (Exception $e) {}
+
+            // Notify customer — refund credited
+            try {
+                $pdo->prepare("
+                    INSERT INTO notifications (user_id, title, message, type)
+                    VALUES (?, 'Refund Credited to Wallet', ?, 'refund')
+                ")->execute([
+                    $customer_id,
+                    'Your return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT) . ' has been approved and ₹' . number_format($amount, 2) . ' has been credited to your Caravan Wallet.'
+                ]);
+            } catch (Exception $e) {}
+        } else {
+            // Notify customer — refund processed to original payment method
+            try {
+                $pdo->prepare("
+                    INSERT INTO notifications (user_id, title, message, type)
+                    VALUES (?, 'Refund Processed', ?, 'refund')
+                ")->execute([
+                    $customer_id,
+                    'Your return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT) . ' has been approved and a ₹' . number_format($amount, 2) . ' refund has been initiated to your original payment method.'
+                ]);
+            } catch (Exception $e) {}
+        }
+
+        // Always debit FARMER wallet for the refund amount
+        $pdo->prepare("
+            INSERT INTO wallet (user_id, balance) VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE balance = balance - ?, updated_at = NOW()
+        ")->execute([$farmer_id, -$amount, $amount]);
+
+        // Log FARMER wallet transaction
+        $pdo->prepare("
+            INSERT INTO wallet_transactions (user_id, amount, type, description, reference_id, reference_type)
+            VALUES (?, ?, 'debit', ?, ?, 'return')
+        ")->execute([
+            $farmer_id,
+            $amount,
+            'Refund Deduction for Return #RET-' . str_pad($return_id, 5, '0', STR_PAD_LEFT),
+            $return_id
+        ]);
     }
 
     // Notify customer of rejection

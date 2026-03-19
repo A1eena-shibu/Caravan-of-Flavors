@@ -65,7 +65,7 @@ try {
     }
 
     // ── Create upload directory ──────────────────────────────────────────────
-    $uploadDir = __DIR__ . '/../../../../uploads/compliance-docs/' . $farmer_id . '/';
+    $uploadDir = __DIR__ . '/../../../uploads/compliance-docs/' . $farmer_id . '/';
     if (!is_dir($uploadDir)) {
         if (!mkdir($uploadDir, 0755, true)) {
             http_response_code(500);
